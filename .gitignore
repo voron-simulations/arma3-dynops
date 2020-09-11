@@ -1,2 +1,5 @@
+*.biprivatekey
+
 keys/*
+releases/*
 .hemtt/local
