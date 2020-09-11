@@ -1,0 +1,22 @@
+[package]
+name = "dynops"
+version = "0.1.0"
+authors = ["DarkWanderer <elquentaro@gmail.com>"]
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib"]
+bench = false
+
+[dependencies]
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+libc = "*"
+chrono = "*"
+serde_json = "*"
+nalgebra = "*"
+
+[profile.dev]
+panic = "unwind"
+
+[profile.release]
+panic = "unwind"
