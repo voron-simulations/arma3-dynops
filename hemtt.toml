@@ -1,5 +1,6 @@
 name = "Dynamic Operations"
 prefix = "dynops"
+modname = "dynops"
 author = "DarkWanderer"
 files = [
     "*.dll",
@@ -10,12 +11,20 @@ files = [
     "meta.cpp"
 ]
 
-keyname = "{{prefix}}_{{version}}"
-signame = "{{prefix}}_{{version}}-{{git \"id 8\"}}"
+key_name = "{{prefix}}_{{version}}"
+authority = "{{prefix}}_{{version}}-{{git \"id 8\"}}"
+
+postbuild = [
+    "!build_extension"
+]
 
 releasebuild = [
     "@zip dynops_{{semver.major}}.{{semver.minor}}.{{semver.patch}}"
 ]
 
-[header_exts]
-version = "0.1.0-{{git \"id 8\"}}"
+[scripts.build_extension]
+steps = [
+    "cd extensions/dynops && cargo build --release",
+    "copy /Y extensions\\dynops\\target\\release\\dynops.dll dynops_x64.dll"
+]
+show_output = true

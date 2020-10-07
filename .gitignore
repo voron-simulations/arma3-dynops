@@ -1,5 +1,12 @@
-*.biprivatekey
 
+
+
+# Transient files
 keys/*
 releases/*
 .hemtt/local
+*.pbo
+
+# Utility files
+*.biprivatekey
+hemtt.exe
