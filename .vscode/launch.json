@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "name": "Run ArmA 3 with mod",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "preLaunchTask": "HEMTT Build",
+            "program": "G:/Steam/steamapps/common/Arma 3/arma3_x64.exe",
+            "args": [
+                "-noSplash",
+                "-showScriptErrors",
+                "-noLogs",
+                "-mod=G:\\Steam\\steamapps\\common\\Arma 3\\!Workshop\\@CBA_A3",
+                "-mod=${workspaceFolder}",
+                "C:\\Users\\Oleg\\Documents\\Arma 3 - Other Profiles\\Kozak\\mpmissions\\Dynamic_Operations.Altis\\mission.sqm"
+            ],
+            "cwd": "G:/Steam/steamapps/common/Arma 3/",
+            "stopAtEntry": false,
+            "externalConsole": true
+        }
+    ]
+}

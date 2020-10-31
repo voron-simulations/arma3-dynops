@@ -15,7 +15,7 @@ key_name = "{{prefix}}_{{version}}"
 authority = "{{prefix}}_{{version}}-{{git \"id 8\"}}"
 
 postbuild = [
-    "!build_extension"
+    # "!build_extension"
 ]
 
 releasebuild = [

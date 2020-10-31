@@ -6,7 +6,7 @@
         {
             "label": "HEMTT Build",
             "type": "shell",
-            "command": "${workspaceFolder}/hemtt.exe",
+            "command": "${workspaceFolder}/hemtt",
             "args": [
                 "build"
             ],
@@ -22,7 +22,7 @@
         {
             "label": "HEMTT Release",
             "type": "shell",
-            "command": "${workspaceFolder}/hemtt.exe",
+            "command": "${workspaceFolder}/hemtt",
             "args": [
                 "build",
                 "--release",
