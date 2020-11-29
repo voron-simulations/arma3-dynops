@@ -1,8 +1,7 @@
 // This file contains wrappers interfacing with ArmA 3's RealVirtuality engine
 
 mod cluster;
-mod datetime;
-mod echo;
+mod misc;
 
 use libc::{c_char, c_int, strncpy};
 use std::ffi::{CStr, CString};
@@ -22,16 +21,17 @@ fn write_output(value: &str, output: *mut c_char, output_size: c_int) {
 fn exec_function(function: &str, args: &[String]) -> Result<String, String> {
     let result = catch_unwind(|| {
         return match function {
-            "datetime" => datetime::get_current_datetime(),
-            "echo" => echo::echo(args),
             "cluster" => cluster::entrypoint(args),
+            "datetime" => misc::get_current_datetime(),
+            "echo" => misc::echo(args),
+            "uuid" => misc::uuid(),
             "panic" => panic!("Test panic"),
             _ => format!("ERROR: Unknown function: {}", function).to_owned(),
         };
     });
     match result {
         Ok(value) => Ok(value),
-        Err(_) => Err("Library panicked".to_owned())
+        Err(_) => Err("Library panicked".to_owned()),
     }
 }
 
@@ -83,18 +83,16 @@ pub extern "C" fn RVExtensionVersion(output: *mut c_char, output_size: c_int) {
 
 #[cfg(test)]
 mod tests {
+
     #[test]
-    fn test_datetime() {
-        let args: Vec<String> = Vec::new();
-        crate::exec_function("datetime", &args).unwrap();
+    fn test_success() {
+        let args: Vec<String> = vec!["A".to_owned(), "B".to_owned()];
+        assert_eq!("echo(A, B)", crate::exec_function("echo", &args).unwrap());
     }
 
     #[test]
-    fn test_echo() {
-        let args: Vec<String> = vec!["A".to_owned(), "B".to_owned(), "C".to_owned()];
-        assert_eq!(
-            "echo(A, B, C)",
-            crate::exec_function("echo", &args).unwrap()
-        );
+    fn test_failure() {
+        let args: Vec<String> = Vec::new();
+        assert!(crate::exec_function("panic", &args).is_err());
     }
 }

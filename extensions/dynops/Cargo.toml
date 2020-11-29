@@ -1,19 +1,24 @@
 [package]
-name = "dynops"
-version = "0.1.0"
 authors = ["DarkWanderer <elquentaro@gmail.com>"]
 edition = "2018"
+name = "dynops"
+version = "0.1.0"
 
 [lib]
-crate-type = ["cdylib"]
 bench = false
+crate-type = ["cdylib"]
 
 [dependencies]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-libc = "*"
 chrono = "*"
-serde_json = "*"
+libc = "*"
 nalgebra = "*"
+serde_json = "*"
+uuid = { version = "*", features = ["v4"] }
+serde = { version = "*", features = ["derive"] }
+
+[dev-dependencies]
+csv = "*"
 
 [profile.dev]
 panic = "unwind"

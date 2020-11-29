@@ -4,9 +4,6 @@
 #include "script_component.hpp"
 params ["_unit", "_killer", "_instigator"];
 
-// DEBUG
-hint format ["%1 was killed by %2", name _unit, name _instigator];
-
 with missionNamespace do 
 {
 	if (isNil QGVAR(Casualties)) then { 

@@ -1,23 +1,23 @@
+mod coord;
 mod mvee;
+mod kdtree;
 
+use coord::Position2d;
 use mvee::get_mvee;
 use std::collections::HashMap;
 use std::fmt;
 use std::marker::PhantomData;
 
-#[derive(Debug, Copy, Clone, PartialEq)]
-pub struct Coordinate {
-    pub x: f64,
-    pub y: f64,
-}
+const EPSILON: f64 = 75.0;
+const MIN_POINTS: usize = 4;
 
-impl fmt::Display for Coordinate {
+impl fmt::Display for Position2d {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
         write!(f, "[{}, {}]", self.x, self.y)
     }
 }
 
-impl std::ops::Index<usize> for Coordinate {
+impl std::ops::Index<usize> for Position2d {
     type Output = f64;
 
     fn index(&self, i: usize) -> &Self::Output {
@@ -31,7 +31,7 @@ impl std::ops::Index<usize> for Coordinate {
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Area {
-    pub center: Coordinate,
+    pub center: Position2d,
     pub a: f64,
     pub b: f64,
     pub angle: f64,
@@ -51,17 +51,17 @@ trait Distance {
     fn get_distance(&self, other: &Self) -> f64;
 }
 
-impl Distance for Coordinate {
-    fn get_distance(&self, neighbor: &Coordinate) -> f64 {
+impl Distance for Position2d {
+    fn get_distance(&self, neighbor: &Position2d) -> f64 {
         ((self.x - neighbor.x).powi(2) + (self.y - neighbor.y).powi(2)).sqrt()
     }
 }
 
-fn parse_points(data: &[String]) -> Vec<Coordinate> {
+fn parse_points(data: &[String]) -> Vec<Position2d> {
     data.iter()
-        .map(|line| -> Coordinate {
+        .map(|line| -> Position2d {
             let coord: [f64; 2] = serde_json::from_str(line).unwrap();
-            Coordinate {
+            Position2d {
                 x: coord[0],
                 y: coord[1],
             }
@@ -77,10 +77,10 @@ fn format_area(area: &Area) -> String {
 }
 
 pub fn entrypoint(data: &[String]) -> String {
-    let points: Vec<Coordinate> = parse_points(data);
-    let classifications = cluster(75., 6, &points);
+    let points: Vec<Position2d> = parse_points(data);
+    let classifications = cluster(EPSILON, MIN_POINTS, &points);
 
-    let mut clusters: HashMap<usize, Vec<Coordinate>> = HashMap::new();
+    let mut clusters: HashMap<usize, Vec<Position2d>> = HashMap::new();
     for (class, coord) in classifications.iter().zip(points) {
         match class {
             Core(i) => {
@@ -283,16 +283,16 @@ mod tests {
 
     #[test]
     fn cluster_nine_points() {
-        let args: Vec<Coordinate> = vec![
-            Coordinate { x: 0., y: 0. },
-            Coordinate { x: 1., y: 0. },
-            Coordinate { x: 2., y: 0. },
-            Coordinate { x: 0., y: 1. },
-            Coordinate { x: 1., y: 1. },
-            Coordinate { x: 2., y: 1. },
-            Coordinate { x: 0., y: 2. },
-            Coordinate { x: 1., y: 2. },
-            Coordinate { x: 2., y: 2. },
+        let args: Vec<Position2d> = vec![
+            Position2d { x: 0., y: 0. },
+            Position2d { x: 1., y: 0. },
+            Position2d { x: 2., y: 0. },
+            Position2d { x: 0., y: 1. },
+            Position2d { x: 1., y: 1. },
+            Position2d { x: 2., y: 1. },
+            Position2d { x: 0., y: 2. },
+            Position2d { x: 1., y: 2. },
+            Position2d { x: 2., y: 2. },
         ];
         assert_eq!(
             vec![
@@ -308,5 +308,67 @@ mod tests {
             ],
             cluster(5., 3, &args)
         );
+    }
+
+    use serde::Deserialize;
+
+    #[derive(Debug, Deserialize)]
+    struct Record {
+        Type: String,
+        X: f64,
+        Y: f64,
+    }
+
+    fn test_cluster_csv(data: &str, exp_clusters: usize) {
+        let mut rdr = csv::ReaderBuilder::new()
+            .delimiter(b';')
+            .from_reader(data.as_bytes());
+
+        let mut coords: Vec<Position2d> = Vec::new();
+        coords.reserve(1000);
+        for result in rdr.deserialize() {
+            let record: Record = result.unwrap();
+            coords.push(Position2d {
+                x: record.X,
+                y: record.Y,
+            });
+        }
+
+        let cluster_indexes = cluster(EPSILON, MIN_POINTS, &coords);
+
+        let mut max: usize = 0;
+        for index in cluster_indexes {
+            match index {
+                Core(i) => max = std::cmp::max(max, i),
+                Edge(i) => max = std::cmp::max(max, i),
+                Noise => {}
+            };
+        }
+        assert_eq!(exp_clusters, max + 1);
+    }
+
+    #[test]
+    fn test_cluster_altis() {
+        test_cluster_csv(include_str!("data/buildings.Altis.csv"), 354);
+    }
+
+    #[test]
+    fn test_cluster_stratis() {
+        test_cluster_csv(include_str!("data/buildings.Stratis.csv"), 20);
+    }
+
+    #[test]
+    fn test_cluster_livonia() {
+        test_cluster_csv(include_str!("data/buildings.Enoch.csv"), 110);
+    }
+
+    #[test]
+    fn test_cluster_malden() {
+        test_cluster_csv(include_str!("data/buildings.Malden.csv"), 121);
+    }
+
+    #[test]
+    fn test_cluster_tanoa() {
+        test_cluster_csv(include_str!("data/buildings.Tanoa.csv"), 228);
     }
 }
