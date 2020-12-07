@@ -96,7 +96,9 @@ jobs:
       with:
         name: extension-x64-linux
         path: .
-        
+    
+    - run: ls
+    
     - name: Checkout the source code
       uses: actions/checkout@master
       
