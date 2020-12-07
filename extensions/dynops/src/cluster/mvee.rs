@@ -56,7 +56,7 @@ pub fn get_mvee(coords: &[Position2d], tolerance: f64) -> Area {
         angle: (angle * 180. / PI),
     }
 }
-
+/*
 #[cfg(test)]
 mod tests {
     use crate::cluster::get_mvee;
@@ -224,3 +224,4 @@ mod tests {
         );
     }
 }
+*/
