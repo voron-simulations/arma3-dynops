@@ -9,14 +9,16 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
+      
     - name: Checkout the source code
       uses: actions/checkout@master
+      
     - name: Lint (sqflint)
       uses: arma-actions/sqflint@master
       continue-on-error: true # No failure due to many false-positives:
  
-  build-extension-windows:
-    name: Build extension (Windows)
+  build-extension-windows-x64:
+    name: Build extension (Windows x64)
     runs-on: windows-latest
     steps:
       - name: Install Rust stable
@@ -40,11 +42,11 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: dynops_x64.dll
+          name: extension-x64-windows
           path: dynops_x64.dll
 
-  build-extension-linux:
-    name: Build extension (Linux)
+  build-extension-linux-x64:
+    name: Build extension (Linux x64)
     runs-on: ubuntu-latest
     steps:
       - name: Install Rust stable
@@ -63,28 +65,32 @@ jobs:
         working-directory: extensions/dynops
         run: |
           cargo build --release
-          move target/release/dynops.so ../../dynops_x64.so
+          mv target/release/dynops.so ../../dynops_x64.so
           
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: dynops_x64.so
+          name: extension-x64-linux
           path: dynops_x64.so
 
   build:
+    name: Build Mod
     runs-on: ubuntu-latest
+    needs:
+     - build-extension-windows-x64
+     - build-extension-linux-x64
     steps:
        
     - name: Download Windows x64
       uses: actions/download-artifact@v2
       with:
-        name: dynops_x64.dll
+        name: extension-x64-windows
         path: .
 
     - name: Download Linux x64
       uses: actions/download-artifact@v2
       with:
-        name: dynops_x64.so
+        name: dextension-x64-linux
         path: .
         
     - name: Checkout the source code
