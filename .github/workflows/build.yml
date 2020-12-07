@@ -1,0 +1,87 @@
+name: Build
+
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout the source code
+      uses: actions/checkout@master
+    - name: Lint (sqflint)
+      uses: arma-actions/sqflint@master
+      continue-on-error: true # No failure due to many false-positives:
+ 
+  build-extension-windows:
+    name: Build extension (Windows)
+    runs-on: windows-latest
+    steps:
+      - name: Build extension
+        uses: actions/checkout@master
+      
+      - name: Install Rust stable
+        run: |
+          rustup toolchain update stable --no-self-update
+          rustup default stable
+          
+      - name: Test
+        working-directory: extensions/dynops
+        run: cargo test
+      
+      - name: Build release
+        working-directory: extensions/dynops
+        run: |
+          cargo build --release
+          move target/release/dynops.dll ../../dynops_x64.dll
+          
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: dynops_x64.dll
+          path: dynops_x64.dll
+
+  build-extension-linux:
+    name: Build extension (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build extension
+        uses: actions/checkout@master
+      
+      - name: Install Rust stable
+        run: |
+          rustup toolchain update stable --no-self-update
+          rustup default stable
+          
+      - name: Test
+        working-directory: extensions/dynops
+        run: cargo test
+      
+      - name: Build release
+        working-directory: extensions/dynops
+        run: |
+          cargo build --release
+          move target/release/dynops.so ../../dynops_x64.so
+          
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: dynops_x64.so
+          path: dynops_x64.so
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout the source code
+      uses: actions/checkout@master
+    - name: Build using HEMTT
+      uses: arma-actions/hemtt@master
+      with:
+        command: build --release --ci
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v2-preview
+      with:
+        name: dynops-${{ github.sha }}-nobin
+        path: releases/dynops_*.zip
