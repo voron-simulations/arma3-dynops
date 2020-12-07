@@ -1,6 +1,6 @@
 mod coord;
 mod mvee;
-mod kdtree;
+// mod kdtree;
 
 use coord::Position2d;
 use mvee::get_mvee;
