@@ -96,8 +96,6 @@ jobs:
         name: extension-x64-linux
         path: .
     
-    - run: ls
-    
     - name: Checkout the source code
       uses: actions/checkout@master
       
@@ -106,6 +104,8 @@ jobs:
       with:
         command: build --release --ci
 
+    - run: ls -R
+    
     - name: Upload Artifact
       uses: actions/upload-artifact@v2-preview
       with:
