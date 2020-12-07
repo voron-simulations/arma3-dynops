@@ -19,14 +19,14 @@ jobs:
     name: Build extension (Windows)
     runs-on: windows-latest
     steps:
-      - name: Build extension
-        uses: actions/checkout@master
-      
       - name: Install Rust stable
         run: |
           rustup toolchain update stable --no-self-update
           rustup default stable
           
+      - name: Checkout
+        uses: actions/checkout@master
+      
       - name: Test
         working-directory: extensions/dynops
         run: cargo test
@@ -47,14 +47,14 @@ jobs:
     name: Build extension (Linux)
     runs-on: ubuntu-latest
     steps:
-      - name: Build extension
-        uses: actions/checkout@master
-      
       - name: Install Rust stable
         run: |
           rustup toolchain update stable --no-self-update
           rustup default stable
           
+      - name: Checkout
+        uses: actions/checkout@master
+      
       - name: Test
         working-directory: extensions/dynops
         run: cargo test
@@ -74,12 +74,27 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+       
+    - name: Download Windows x64
+      uses: actions/download-artifact@v2
+      with:
+        name: dynops_x64.dll
+        path: .
+
+    - name: Download Linux x64
+      uses: actions/download-artifact@v2
+      with:
+        name: dynops_x64.so
+        path: .
+        
     - name: Checkout the source code
       uses: actions/checkout@master
+      
     - name: Build using HEMTT
       uses: arma-actions/hemtt@master
       with:
         command: build --release --ci
+
     - name: Upload Artifact
       uses: actions/upload-artifact@v2-preview
       with:
