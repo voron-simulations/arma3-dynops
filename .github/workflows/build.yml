@@ -7,13 +7,12 @@ on:
 
 jobs:
   lint:
+    name: SQFLint
     runs-on: ubuntu-latest
     steps:
-      
-    - name: Checkout the source code
+    - name: Checkout
       uses: actions/checkout@master
-      
-    - name: Lint (sqflint)
+    - name: SQFLint
       uses: arma-actions/sqflint@master
       continue-on-error: true # No failure due to many false-positives:
  
@@ -24,9 +23,9 @@ jobs:
       - uses: Swatinem/rust-cache@v1
 
       - name: Install Rust stable
-        run: |
-          rustup toolchain update stable --no-self-update
-          rustup default stable
+        uses: actions-rs/toolchain@v1
+        with:
+            toolchain: stable
           
       - name: Checkout
         uses: actions/checkout@master
@@ -52,11 +51,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: Swatinem/rust-cache@v1
-        
+
       - name: Install Rust stable
-        run: |
-          rustup toolchain update stable --no-self-update
-          rustup default stable
+        uses: actions-rs/toolchain@v1
+        with:
+            toolchain: stable
           
       - name: Checkout
         uses: actions/checkout@master
@@ -78,7 +77,7 @@ jobs:
           path: dynops_x64.so
 
   build:
-    name: Build Mod
+    name: Build
     runs-on: ubuntu-latest
     needs:
      - build-extension-windows-x64
