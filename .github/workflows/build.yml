@@ -9,6 +9,7 @@ jobs:
   lint:
     name: SQFLint
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
     - name: Checkout
       uses: actions/checkout@master
@@ -19,14 +20,18 @@ jobs:
   build-extension-windows-x64:
     name: Build extension (Windows x64)
     runs-on: windows-latest
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@master
+      - name: Checkout
+        uses: actions/checkout@master
         
-      - uses: actions-rs/toolchain@v1
+      - name: Install Rust stable
+        uses: actions-rs/toolchain@v1
         with:
             toolchain: stable
           
-      - uses: Swatinem/rust-cache@v1
+      - name: Init Cargo cache
+        uses: Swatinem/rust-cache@v1
         with:
           working-directory: extensions/dynops
       
@@ -49,15 +54,18 @@ jobs:
   build-extension-linux-x64:
     name: Build extension (Linux x64)
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - uses: actions/checkout@master
+      - name: Checkout
+        uses: actions/checkout@master
       
       - name: Install Rust stable
         uses: actions-rs/toolchain@v1
         with:
             toolchain: stable
           
-      - uses: Swatinem/rust-cache@v1
+      - name: Init Cargo cache
+        uses: Swatinem/rust-cache@v1
         with:
           working-directory: extensions/dynops
           
@@ -80,6 +88,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     needs:
      - build-extension-windows-x64
      - build-extension-linux-x64
