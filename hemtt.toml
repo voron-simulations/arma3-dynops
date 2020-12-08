@@ -14,17 +14,8 @@ files = [
 key_name = "{{prefix}}_{{version}}"
 authority = "{{prefix}}_{{version}}-{{git \"id 8\"}}"
 
-postbuild = [
-    # "!build_extension"
-]
-
 releasebuild = [
     "@zip dynops_{{semver.major}}.{{semver.minor}}.{{semver.patch}}"
 ]
 
-[scripts.build_extension]
-steps = [
-    "cd extensions/dynops && cargo build --release",
-    "copy /Y extensions\\dynops\\target\\release\\dynops.dll dynops_x64.dll"
-]
 show_output = true
