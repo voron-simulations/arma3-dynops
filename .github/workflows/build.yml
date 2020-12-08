@@ -20,6 +20,8 @@ jobs:
     name: Build extension (Windows x64)
     runs-on: windows-latest
     steps:
+      - uses: actions/checkout@master
+        
       - uses: actions-rs/toolchain@v1
         with:
             toolchain: stable
@@ -27,8 +29,6 @@ jobs:
       - uses: Swatinem/rust-cache@v1
         with:
           working-directory: extensions/dynops
-
-      - uses: actions/checkout@master
       
       - name: Test
         working-directory: extensions/dynops
@@ -50,6 +50,8 @@ jobs:
     name: Build extension (Linux x64)
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@master
+      
       - name: Install Rust stable
         uses: actions-rs/toolchain@v1
         with:
@@ -59,8 +61,6 @@ jobs:
         with:
           working-directory: extensions/dynops
           
-      - uses: actions/checkout@master
-      
       - name: Test
         working-directory: extensions/dynops
         run: cargo test
