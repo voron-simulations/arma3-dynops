@@ -15,10 +15,6 @@ libc = "*"
 nalgebra = "*"
 serde_json = "*"
 uuid = { version = "*", features = ["v4"] }
-serde = { version = "*", features = ["derive"] }
-
-[dev-dependencies]
-csv = "*"
 
 [profile.dev]
 panic = "unwind"

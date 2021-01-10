@@ -10,3 +10,4 @@ if (isNil QGVARMAIN(FactionData)) then {
 	private _factionData = _x call EFUNC(factions,getFactionData);
 	[GVARMAIN(FactionData), _x, _factionData] call CBA_fnc_hashSet;
 } forEach _factions;
+

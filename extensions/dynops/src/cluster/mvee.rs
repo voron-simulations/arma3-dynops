@@ -1,4 +1,4 @@
-use crate::cluster::{Area, Position2d};
+use crate::cluster::{distance, Area, Position2d};
 use nalgebra::{DMatrix, DVector};
 use std::f64::consts::*;
 
@@ -17,7 +17,11 @@ pub fn get_mvee(coords: &[Position2d], tolerance: f64) -> Area {
 
     loop {
         let weighted_coords = &q * DMatrix::from_diagonal(&u) * &q_t;
-        let deviations = (&q_t * weighted_coords.try_inverse().unwrap() * &q).diagonal();
+        let inverse = weighted_coords.try_inverse();
+        if inverse.is_none() {
+            break;
+        }
+        let deviations = (&q_t * inverse.unwrap() * &q).diagonal();
         let (max_i, max_v) = deviations.argmax();
         let df = (d + 1) as f64;
         let step_size = (max_v - df) / df / (max_v - 1.);
@@ -56,7 +60,7 @@ pub fn get_mvee(coords: &[Position2d], tolerance: f64) -> Area {
         angle: (angle * 180. / PI),
     }
 }
-/*
+
 #[cfg(test)]
 mod tests {
     use crate::cluster::get_mvee;
@@ -137,14 +141,16 @@ mod tests {
             Position2d { x: 3., y: -3. },
             Position2d { x: 3., y: 3. },
         ];
-        assert_eq!(
-            Area {
-                center: Position2d { x: 0., y: 0. },
-                a: 3. * SQRT_2,
-                b: 3. * SQRT_2,
-                angle: 0.0
-            },
-            get_mvee(&input, 0.1)
+        assert!(
+            crate::cluster::distance(
+                Area {
+                    center: Position2d { x: 0., y: 0. },
+                    a: 3. * SQRT_2,
+                    b: 3. * SQRT_2,
+                    angle: 0.0
+                },
+                get_mvee(&input, 0.1)
+            ) < 0.01
         );
     }
 
@@ -194,14 +200,16 @@ mod tests {
             Position2d { x: 5., y: 0. },
             Position2d { x: 6., y: 1. },
         ];
-        assert_eq!(
-            Area {
-                center: Position2d { x: 3., y: 3. },
-                a: 1.,
-                b: 5.,
-                angle: 45.0
-            },
-            get_mvee(&input, 0.1)
+        assert!(
+            crate::cluster::distance(
+                Area {
+                    center: Position2d { x: 3., y: 3. },
+                    a: 1.,
+                    b: 5.,
+                    angle: 45.0
+                },
+                get_mvee(&input, 0.1)
+            ) < 0.01
         );
     }
 
@@ -213,15 +221,16 @@ mod tests {
             Position2d { x: 5., y: 6. },
             Position2d { x: 6., y: 5. },
         ];
-        assert_eq!(
-            Area {
-                center: Position2d { x: 3., y: 3. },
-                a: 1.,
-                b: 5.,
-                angle: -45.0
-            },
-            get_mvee(&input, 0.1)
+        assert!(
+            crate::cluster::distance(
+                Area {
+                    center: Position2d { x: 3., y: 3. },
+                    a: 1.,
+                    b: 5.,
+                    angle: -45.0
+                },
+                get_mvee(&input, 0.1)
+            ) < 0.01
         );
     }
 }
-*/

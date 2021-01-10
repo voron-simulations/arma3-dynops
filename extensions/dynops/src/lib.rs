@@ -10,9 +10,9 @@ use std::result::Result;
 use std::slice::from_raw_parts;
 
 // Write to C-string
+// TODO: better error handling
 fn write_output(value: &str, output: *mut c_char, output_size: c_int) {
-    let data = CString::new(value)
-        .unwrap_or(CString::new("ERROR: Failed to pass output to game").unwrap());
+    let data = CString::new(value).unwrap_or(CString::new("Failed to allocate string").unwrap());
     unsafe {
         strncpy(output, data.as_ptr(), output_size as usize);
     }
@@ -21,18 +21,15 @@ fn write_output(value: &str, output: *mut c_char, output_size: c_int) {
 fn exec_function(function: &str, args: &[String]) -> Result<String, String> {
     let result = catch_unwind(|| {
         return match function {
-            "cluster" => cluster::entrypoint(args),
-            "datetime" => misc::get_current_datetime(),
-            "echo" => misc::echo(args),
-            "uuid" => misc::uuid(),
+            "cluster" => Ok(cluster::entrypoint(&args[0])),
+            "datetime" => Ok(misc::get_current_datetime()),
+            "echo" => Ok(misc::echo(args)),
+            "uuid" => Ok(misc::uuid()),
             "panic" => panic!("Test panic"),
-            _ => format!("ERROR: Unknown function: {}", function).to_owned(),
+            _ => Err(format!("Unknown function: {}", function).to_owned()),
         };
     });
-    match result {
-        Ok(value) => Ok(value),
-        Err(_) => Err("Library panicked".to_owned()),
-    }
+    result.unwrap_or(Err("Library panicked".to_owned()))
 }
 
 #[no_mangle]
@@ -85,13 +82,13 @@ pub extern "C" fn RVExtensionVersion(output: *mut c_char, output_size: c_int) {
 mod tests {
 
     #[test]
-    fn test_success() {
+    fn test_echo() {
         let args: Vec<String> = vec!["A".to_owned(), "B".to_owned()];
         assert_eq!("echo(A, B)", crate::exec_function("echo", &args).unwrap());
     }
 
     #[test]
-    fn test_failure() {
+    fn test_panic() {
         let args: Vec<String> = Vec::new();
         assert!(crate::exec_function("panic", &args).is_err());
     }

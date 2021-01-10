@@ -4,7 +4,7 @@
             "name": "(Windows) Launch",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/target/debug/deps/dynops-8af628befdf47e69.exe",
+            "program": "${workspaceFolder}/target/debug/deps/dynops-51f6ac2f3e825cc6.exe",
             "args": [
                 "--test-threads",
                 "1",

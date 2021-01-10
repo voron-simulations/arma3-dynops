@@ -1,12 +1,12 @@
 /* Finds locations on map and sets relevant variables in mission namespace
  Output variables: 
-	CivilianLocations
-	MilitaryLocations
-	AirportLocations
-    StrategicLocations (all of the above)
+	GVAR(CivilianLocations)
+	GVAR(MilitaryLocations)
+	GVAR(AirportLocations)
+    GVAR(StrategicLocations) (all of the above)
 */
 
-params ["_area"];
+#include "script_component.hpp"
 
 private _radius = worldSize / (sqrt 2);
 private _center = [worldSize/2, worldSize/2, 0];

@@ -1,6 +1,6 @@
 mod coord;
+mod kdtree;
 mod mvee;
-// mod kdtree;
 
 use coord::Position2d;
 use mvee::get_mvee;
@@ -11,30 +11,25 @@ use std::marker::PhantomData;
 const EPSILON: f64 = 75.0;
 const MIN_POINTS: usize = 4;
 
-impl fmt::Display for Position2d {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-        write!(f, "[{}, {}]", self.x, self.y)
-    }
-}
-
-impl std::ops::Index<usize> for Position2d {
-    type Output = f64;
-
-    fn index(&self, i: usize) -> &Self::Output {
-        match i {
-            0 => &self.x,
-            1 => &self.y,
-            _ => &0.,
-        }
-    }
-}
-
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Area {
     pub center: Position2d,
     pub a: f64,
     pub b: f64,
     pub angle: f64,
+}
+
+fn sqr(f: f64) -> f64 {
+    f * f
+}
+
+pub fn distance(a1: Area, a2: Area) -> f64 {
+    let d = sqr(a1.center.x - a2.center.x)
+        + sqr(a1.center.y - a2.center.y)
+        + sqr(a1.a - a2.a)
+        + sqr(a1.b - a2.b)
+        + sqr(a1.angle - a2.angle);
+    d.sqrt()
 }
 
 impl fmt::Display for Area {
@@ -57,18 +52,6 @@ impl Distance for Position2d {
     }
 }
 
-fn parse_points(data: &[String]) -> Vec<Position2d> {
-    data.iter()
-        .map(|line| -> Position2d {
-            let coord: [f64; 2] = serde_json::from_str(line).unwrap();
-            Position2d {
-                x: coord[0],
-                y: coord[1],
-            }
-        })
-        .collect()
-}
-
 fn format_area(area: &Area) -> String {
     format!(
         "[[{:.2},{:.2}],{:.2},{:.2},{:.2}]",
@@ -76,8 +59,18 @@ fn format_area(area: &Area) -> String {
     )
 }
 
-pub fn entrypoint(data: &[String]) -> String {
-    let points: Vec<Position2d> = parse_points(data);
+pub fn entrypoint(data: &String) -> String {
+    let lines: Vec<&str> = data.lines().collect();
+    let points: Vec<Position2d> = lines
+        .iter()
+        .map(|line| -> Position2d {
+            let coord: [f64; 2] = serde_json::from_str(line).unwrap();
+            Position2d {
+                x: coord[0],
+                y: coord[1],
+            }
+        })
+        .collect();
     let classifications = cluster(EPSILON, MIN_POINTS, &points);
 
     let mut clusters: HashMap<usize, Vec<Position2d>> = HashMap::new();
@@ -261,25 +254,14 @@ where
     }
 }
 
-/*
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn nine_point_center() {
-        let args: Vec<String> = vec![
-            "[0,0]".to_owned(),
-            "[1,0]".to_owned(),
-            "[2,0]".to_owned(),
-            "[0,1]".to_owned(),
-            "[1,1]".to_owned(),
-            "[2,1]".to_owned(),
-            "[0,2]".to_owned(),
-            "[1,2]".to_owned(),
-            "[2,2]".to_owned(),
-        ];
-        assert_eq!("[1, 1]", entrypoint(&args));
+        let data = "[0,0]\n[1,0]\n[2,0]\n[0,1]\n[1,1]\n[2,1]\n[0,2]\n[1,2]\n[2,2]".to_owned();
+        entrypoint(&data);
     }
 
     #[test]
@@ -310,66 +292,9 @@ mod tests {
             cluster(5., 3, &args)
         );
     }
-    use serde::Deserialize;
-
-    #[derive(Debug, Deserialize)]
-    struct Record {
-        Type: String,
-        X: f64,
-        Y: f64,
-    }
-
-    fn test_cluster_csv(data: &str, exp_clusters: usize) {
-        let mut rdr = csv::ReaderBuilder::new()
-            .delimiter(b';')
-            .from_reader(data.as_bytes());
-
-        let mut coords: Vec<Position2d> = Vec::new();
-        coords.reserve(1000);
-        for result in rdr.deserialize() {
-            let record: Record = result.unwrap();
-            coords.push(Position2d {
-                x: record.X,
-                y: record.Y,
-            });
-        }
-
-        let cluster_indexes = cluster(EPSILON, MIN_POINTS, &coords);
-
-        let mut max: usize = 0;
-        for index in cluster_indexes {
-            match index {
-                Core(i) => max = std::cmp::max(max, i),
-                Edge(i) => max = std::cmp::max(max, i),
-                Noise => {}
-            };
-        }
-        assert_eq!(exp_clusters, max + 1);
-    }
 
     #[test]
-    fn test_cluster_altis() {
-        test_cluster_csv(include_str!("data/buildings.Altis.csv"), 354);
-    }
-
-    #[test]
-    fn test_cluster_stratis() {
-        test_cluster_csv(include_str!("data/buildings.Stratis.csv"), 20);
-    }
-
-    #[test]
-    fn test_cluster_livonia() {
-        test_cluster_csv(include_str!("data/buildings.Enoch.csv"), 110);
-    }
-
-    #[test]
-    fn test_cluster_malden() {
-        test_cluster_csv(include_str!("data/buildings.Malden.csv"), 121);
-    }
-
-    #[test]
-    fn test_cluster_tanoa() {
-        test_cluster_csv(include_str!("data/buildings.Tanoa.csv"), 228);
+    fn test_entrypoint_altis() {
+        entrypoint(&include_str!("data/coordinates.Altis.txt").to_owned());
     }
 }
-*/

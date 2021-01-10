@@ -2,7 +2,7 @@ use chrono::Utc;
 use uuid::Uuid;
 
 pub fn get_current_datetime() -> String {
-    Utc::now().format("%Y-%m-%d %H:%M:%S").to_string()
+    Utc::now().format("[%Y, %m, %d, %H, %M, %S]").to_string()
 }
 
 pub fn echo(args: &[String]) -> std::string::String {
