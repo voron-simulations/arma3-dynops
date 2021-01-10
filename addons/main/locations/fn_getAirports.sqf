@@ -1,7 +1,7 @@
 private _configItems = "true" configClasses (configFile >> "cfgWorlds" >> worldName >> "SecondaryAirports");
 _configItems pushBack (configFile >> "cfgWorlds" >> worldName);
 
-_airfields = [];
+private _airfields = [];
 
 //_cnt = 0;
 
@@ -29,9 +29,9 @@ _airfields = [];
 		//_marker setMarkerType "mil_dot";
 	};
 
-	_pos_x = (_max_x + _min_x) / 2;
-	_pos_y = (_max_y + _min_y) / 2;
-	_size = (_max_x - _min_x) max (_max_y - _min_y);
+	private _pos_x = (_max_x + _min_x) / 2;
+	private _pos_y = (_max_y + _min_y) / 2;
+	private _size = (_max_x - _min_x) max (_max_y - _min_y);
 
 	_airfields pushBack [[_pos_x,_pos_y],[_size * 1.2, _size * 1.2]];
 } forEach _configItems;

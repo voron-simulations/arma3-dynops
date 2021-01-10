@@ -1,9 +1,9 @@
 private _id = 0;
 {
 	_id = _id + 1;
-	_size = selectMax size _x; // diameter
+	private _size = selectMax size _x; // diameter
 	
-	_marker = createMarker ["location_marker_" + str _id, locationPosition _x];
+	private _marker = createMarker ["location_marker_" + str _id, locationPosition _x];
 	if (rectangular _x) then { _marker setMarkerShape "RECTANGLE"; } else { _marker setMarkerShape "ELLIPSE" };
 	_marker setMarkerDir direction _x;
 	_marker setMarkerSize [_size / 2, _size / 2];

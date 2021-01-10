@@ -4,7 +4,7 @@ if (!isMultiplayer || isServer) then
 {
 	// If server, perform the addition and publish result
 	if (isNil "IntelPoints") then { IntelPoints = 0; };
-	IntelPoints = IntelPoints + 1;
+	IntelPoints = IntelPoints + _points;
 	publicVariable "IntelPoints";
 }
 else 

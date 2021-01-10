@@ -11,8 +11,8 @@ private _houses = (locationPosition _location) nearObjects ["House", _radius] in
 { _buildingPositions append (_x buildingPos -1); } forEach _houses;
 
 for "_i" from (count _buildingPositions) to 10 step -30 do {
-	private _garrison = [locationPosition _x, _side, selectRandom _groups] call BIS_fnc_spawnGroup;
-	[_garrison, locationPosition _x, _radius, [], true, false, -1] call lambs_wp_fnc_taskGarrison;
+	private _garrison = [locationPosition _location, _side, selectRandom _groups] call BIS_fnc_spawnGroup;
+	[_garrison, locationPosition _location, _radius, [], true, false, -1] call lambs_wp_fnc_taskGarrison;
 };
 
 for "_i" from random 3 to 0 step -1 do {

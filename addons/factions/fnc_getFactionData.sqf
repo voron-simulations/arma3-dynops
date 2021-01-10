@@ -16,7 +16,7 @@ private _factionUnits = _faction call EFUNC(factions,getFactionUnits);
 // Populate units/objects
 {
 	private _types = (configName _x) call BIS_fnc_objectType;
-	private _key = _types # 0 + "_" + _types # 1; // See https://community.bistudio.com/wiki/BIS_fnc_objectType
+	private _key = (_types # 0) + "_" + (_types # 1); // See https://community.bistudio.com/wiki/BIS_fnc_objectType
 	private _list = [_factionData, _key] call CBA_fnc_hashGet;
 	_list pushBackUnique _x;
 	[_factionData, _key, _list] call CBA_fnc_hashSet;

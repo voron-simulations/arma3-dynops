@@ -14,7 +14,7 @@ fnc_shouldBeManagedDynamically = {
 	if (_group getVariable ["DynSimExclude", false]) exitWith { false; };
 	if ( { _x call fnc_entityExcludedFromDynSim; } count (_units + _vehicles) > 0 ) exitWith { false; };
 
-	(_x call DW_fnc_getCurrentWaypointRange) < _activationDistance;
+	(_group call DW_fnc_getCurrentWaypointRange) < _activationDistance;
 };
 
 // Enable dynamic simulation for all groups at once to ease startup
