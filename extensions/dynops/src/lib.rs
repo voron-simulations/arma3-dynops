@@ -74,7 +74,7 @@ pub extern "C" fn RVExtensionArgs(
 
 #[no_mangle]
 pub extern "C" fn RVExtensionVersion(output: *mut c_char, output_size: c_int) {
-    let version = "Test Extension 0.0.1";
+    let version = "Dynamic Operations v0.1";
     write_output(version, output, output_size);
 }
 

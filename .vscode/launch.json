@@ -10,6 +10,7 @@
                 "-noSplash",
                 "-showScriptErrors",
                 "-noLogs",
+                "-window",
                 "-mod=G:\\Steam\\steamapps\\common\\Arma 3\\!Workshop\\@CBA_A3",
                 "-mod=${workspaceFolder}",
                 "C:\\Users\\Oleg\\Documents\\Arma 3 - Other Profiles\\Kozak\\mpmissions\\Dynamic_Operations.Altis\\mission.sqm"

@@ -4,6 +4,9 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "dependsOn": [
+                "Build Extension"
+            ],
             "label": "HEMTT Build",
             "type": "shell",
             "command": "${workspaceFolder}/hemtt",
@@ -33,6 +36,37 @@
             },
             "problemMatcher": [],
             "group": "build"
-        }
+        },
+        {
+            "label": "Build Extension",
+            "args": [
+                "build",
+                "-v"
+            ],
+            "command": "cargo",
+            "group": "build",
+            "options": {
+                "cwd": "${workspaceFolder}/extensions/dynops"
+            },
+            "problemMatcher": [
+                {
+                    "owner": "rust",
+                    "fileLocation": [
+                        "relative",
+                        "${workspaceRoot}"
+                    ],
+                    "pattern": {
+                        "regexp": "^(.*):(\\d+):(\\d+):\\s+(\\d+):(\\d+)\\s+(warning|error):\\s+(.*)$",
+                        "file": 1,
+                        "line": 2,
+                        "column": 3,
+                        "endLine": 4,
+                        "endColumn": 5,
+                        "severity": 6,
+                        "message": 7
+                    }
+                }
+            ]
+        },
     ]
 }
