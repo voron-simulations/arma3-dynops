@@ -1,9 +1,5 @@
 /* Finds locations on map and sets relevant variables in mission namespace
  Output variables: 
-	GVAR(CivilianLocations)
-	GVAR(MilitaryLocations)
-	GVAR(AirportLocations)
-    GVAR(StrategicLocations) (all of the above)
 */
 
 #include "script_component.hpp"
@@ -19,6 +15,15 @@ _enterables = _enterables apply {
 	[_pos # 0, _pos # 1];
 };
 
-_input = _enterables joinString endl;
+private _input = _enterables joinString endl;
 
-["cluster", [_input]] call EFUNC(extension,callExtension);
+private _clusters = parseSimpleArray (["cluster", [_input]] call EFUNC(extension,callExtension));
+
+{
+	private _uuid = call EFUNC(extension,uuid);
+	createMarker [_uuid, _x # 0];
+	_uuid setMarkerSize [ 2 * _x # 1, 2 * _x # 2];
+	_uuid setMarkerDir ( _x # 3 );
+	_uuid setMarkerShape "ELLIPSE";
+	_uuid setMarkerColor "ColorRed";
+} forEach _clusters;
