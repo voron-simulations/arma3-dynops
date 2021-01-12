@@ -28,3 +28,5 @@ class CfgMods
         description = "Issue Tracker: https://github.com/DarkWanderer/DynamicOperations/issues";
     };
 };
+
+#include "CfgFunctions.hpp"

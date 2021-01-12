@@ -1,5 +1,6 @@
 #include "script_component.hpp"
 
+diag_log "DynOps: Initializing factions";
 /****** STAGE 0: Preparation ******/
 // Get all faction configs
 private _factions = "true" configClasses (configFile >> "CfgFactionClasses");
@@ -11,6 +12,7 @@ _factions = _factions select {
 };
 
 private _factionNames = _factions apply { configName _x; };
+diag_log ["DynOps: Detected factions: %1", _factionNames];
 
 // Create the root hashset
 if (isNil QGVARMAIN(FactionData)) then {
@@ -41,19 +43,15 @@ _cfgVehicles = _cfgVehicles select { getText (_x >> "faction") in _factionNames 
 
 	// Fill weapons/items/magazines while we're at it
 	if ((configName _x) isKindOf "Man") then {
-		private _magazines = [_factionData, "Magazines"] call CBA_fnc_hashGet;
-		private _weapons = [_factionData, "Weapons"] call CBA_fnc_hashGet;
-		private _items = [_factionData, "Items"] call CBA_fnc_hashGet;
-
-		_magazines append getArray (_x >> "magazines");
-		_weapons append getArray (_x >> "weapons");
-		_items append getArray (_x >> "linkedItems");
-
-		[_factionData, "Magazines", _magazines] call CBA_fnc_hashSet;
-		[_factionData, "Weapons", _weapons] call CBA_fnc_hashSet;
-		[_factionData, "Items", _items] call CBA_fnc_hashSet;
+		[_factionData, "Backpacks", getText (_x >> "backpack")] call EFUNC(main,hashAdd);
+        [_factionData, "Items", getArray (_x >> "linkeditems")] call EFUNC(main,hashAdd);
+        [_factionData, "Magazines", getArray (_x >> "magazines")] call EFUNC(main,hashAdd);
+        [_factionData, "Uniforms", getText (_x >> "uniformClass")] call EFUNC(main,hashAdd);
+        [_factionData, "Weapons", getArray (_x >> "weapons")] call EFUNC(main,hashAdd);
 	};
 } forEach _cfgVehicles;
+
+diag_log ["DynOps: Processed %1 unit configs", count _cfgVehicles];
 
 /****** STAGE 2: Groups data ******/
 // Enumerate "group side" classes
@@ -83,5 +81,14 @@ _groupFactions = _groupFactions select { configName _x in _factionNames; };
 	} forEach ("true" configClasses (_x));
 } forEach _groupFactions;
 
+/****** STAGE 3: Generic data ******/
+{
+	private _sideId = getNumber (_x >> "side");
+	private _side = _sideId call BIS_fnc_sideType;
+	private _displayName = getText (_x >> "displayName");
 
-/****** STAGE 5: Cleanup ******/
+	private _factionData = [GVARMAIN(FactionData), configName _x] call CBA_fnc_hashGet;
+	[_factionData, "Side", _side] call CBA_fnc_hashSet;
+	[_factionData, "SideId", _sideId] call CBA_fnc_hashSet;
+	[_factionData, "DisplayName", _displayName] call CBA_fnc_hashSet;
+} forEach _factions;
