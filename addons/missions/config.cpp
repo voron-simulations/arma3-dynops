@@ -15,7 +15,7 @@ class CfgPatches {
 class CfgMissions {
     class MPMissions {
         class MP_COOP_Dynops_Altis_CTRG_Freeroam {
-            directory = "z\dynops\addons\missions\MPMissions\CTRG_Freeroam.altis";
+            directory = "z\dynops\addons\missions\MPMissions\CTRG_Freeroam.Altis";
             briefingName = "DynOps | Altis CTRG Freeroam";
             author = "Dynamic Operations Team";
         };
