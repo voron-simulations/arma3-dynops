@@ -12,10 +12,10 @@ class EditorData
 	};
 	class Camera
 	{
-		pos[]={13841.483,5.0016513,14997.58};
-		dir[]={-0.77896059,-0.3341853,0.53071874};
-		up[]={-0.27623186,0.94247311,0.18820149};
-		aside[]={0.56309247,6.7171641e-007,0.82647949};
+		pos[]={13852.142,10.48066,14986.682};
+		dir[]={-0.80153143,-0.46734759,0.37317321};
+		up[]={-0.42372638,0.88403505,0.19727656};
+		aside[]={0.42210191,4.2608008e-007,0.90662819};
 	};
 };
 binarizationWanted=0;
@@ -132,11 +132,64 @@ randomSeed=8033165;
 class ScenarioData
 {
 	author="Kozak";
+	disabledAI=1;
+	class Header
+	{
+		gameType="Coop";
+		minPlayers=1;
+		maxPlayers=4;
+	};
+};
+class CustomAttributes
+{
+	class Category0
+	{
+		name="Multiplayer";
+		class Attribute0
+		{
+			property="SharedObjectives";
+			expression="if (isMultiplayer) then {[_value] spawn bis_fnc_sharedObjectives;};";
+			class Value
+			{
+				class data
+				{
+					class type
+					{
+						type[]=
+						{
+							"SCALAR"
+						};
+					};
+					value=2;
+				};
+			};
+		};
+		class Attribute1
+		{
+			property="RespawnTemplates";
+			expression="true";
+			class Value
+			{
+				class data
+				{
+					class type
+					{
+						type[]=
+						{
+							"ARRAY"
+						};
+					};
+				};
+			};
+		};
+		nAttributes=2;
+	};
 };
 class Mission
 {
 	class Intel
 	{
+		overviewText="DynOps | Altis CTRG Freeroam";
 		timeOfChanges=1800.0002;
 		startWeather=0.30000001;
 		startWind=0.1;
@@ -255,6 +308,7 @@ class Mission
 			};
 			id=4;
 			type="Land_DeskChair_01_sand_F";
+			atlOffset=0.00015854836;
 		};
 		class Item4
 		{
@@ -280,7 +334,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={13837.125,4.5223026,14998};
-				angles[]={-0,4.4505897,0};
+				angles[]={0,4.4505897,0};
 			};
 			side="Empty";
 			flags=4;
@@ -297,7 +351,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={13837.125,4.3820729,14997.125};
-				angles[]={-0,4.1015239,0};
+				angles[]={0,4.1015239,0};
 			};
 			side="Empty";
 			flags=4;
@@ -460,7 +514,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={13837.25,4.3531237,14999.125};
-				angles[]={-0,1.8325957,0};
+				angles[]={0,1.8325957,0};
 			};
 			side="Empty";
 			flags=4;
@@ -507,16 +561,16 @@ class Mission
 			class PositionInfo
 			{
 				position[]={13842.377,3.5785503,15001.123};
-				angles[]={-0,4.712389,0};
+				angles[]={0,4.712389,0};
 			};
 			side="Empty";
-			flags=4;
 			class Attributes
 			{
 				createAsSimpleObject=1;
 			};
 			id=22;
 			type="Land_Sleeping_bag_folded_F";
+			atlOffset=0.24332571;
 		};
 		class Item14
 		{
@@ -524,7 +578,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={13842.125,3.5785842,15001.125};
-				angles[]={-0,4.712389,0};
+				angles[]={0,4.712389,0};
 			};
 			side="Empty";
 			flags=4;
@@ -541,16 +595,16 @@ class Mission
 			class PositionInfo
 			{
 				position[]={13840.502,3.5895405,15001.248};
-				angles[]={-0,4.3633232,0};
+				angles[]={0,4.3633232,0};
 			};
 			side="Empty";
-			flags=4;
 			class Attributes
 			{
 				createAsSimpleObject=1;
 			};
 			id=24;
 			type="Land_WaterBottle_01_pack_F";
+			atlOffset=0.20649648;
 		};
 		class Item16
 		{
@@ -558,7 +612,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={13840.75,3.5895772,15001.375};
-				angles[]={-0,3.4033923,0};
+				angles[]={0,3.4033923,0};
 			};
 			side="Empty";
 			flags=4;
@@ -575,7 +629,7 @@ class Mission
 			class PositionInfo
 			{
 				position[]={13836.875,4.4851789,14998.25};
-				angles[]={-0,4.625123,0};
+				angles[]={0,4.625123,0};
 			};
 			side="Empty";
 			flags=4;

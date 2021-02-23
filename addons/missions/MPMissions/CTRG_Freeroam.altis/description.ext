@@ -1,0 +1,10 @@
+author = Dynamic Operations Team;
+onLoadIntroTime = 1;
+onLoadMissionTime = 1;
+onLoadName = DynOps | Altis CTRG Freeroam;
+
+aiKills = 0;
+briefing = 1;
+debriefing = 1;
+enableDebugConsole = 1;
+allowFunctionsRecompile = 1;
