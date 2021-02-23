@@ -2,4 +2,4 @@
 
 call FUNC(initFactions);
 
-INFO("Factions module initialized");
+INFO("PreInit finished");

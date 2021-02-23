@@ -8,4 +8,4 @@ if (hasInterface && isMultiplayer) then
 };
 
 ["Civilian", "Killed", FUNC(onCivilianKilled)] call CBA_fnc_addClassEventHandler;
-INFO("DynOps Civilian Module Initialized");
+INFO("PostInit finished");

@@ -1,6 +1,5 @@
 #include "script_component.hpp"
 
-INFO("Initializing factions module");
 /****** STAGE 0: Preparation ******/
 // Get all faction configs
 private _factions = "true" configClasses (configFile >> "CfgFactionClasses");
@@ -51,7 +50,7 @@ _cfgVehicles = _cfgVehicles select { getText (_x >> "faction") in _factionNames 
 	};
 } forEach _cfgVehicles;
 
-INFO_1("Processed [%1] unit configs", count _cfgVehicles);
+INFO_1("Processed %1 CfgVehicle configs", count _cfgVehicles);
 
 /****** STAGE 2: Groups data ******/
 // Enumerate "group side" classes
