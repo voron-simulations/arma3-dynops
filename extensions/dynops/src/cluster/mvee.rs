@@ -1,4 +1,4 @@
-use crate::cluster::{distance, Area, Position2d};
+use crate::cluster::{Area, Position2d};
 use nalgebra::{DMatrix, DVector};
 use std::f64::consts::*;
 
@@ -54,10 +54,12 @@ pub fn get_mvee(coords: &[Position2d], tolerance: f64) -> Area {
     let angle = a11.atan2(a01);
 
     Area {
-        center: Position2d { x: c[0], y: c[1] },
+        x: c[0],
+        y: c[1],
         a: svd.singular_values[0].sqrt(),
         b: svd.singular_values[1].sqrt(),
-        angle: (angle * 180. / PI),
+        angle: angle,
+        is_ellipse: true,
     }
 }
 
@@ -69,10 +71,10 @@ mod tests {
 
     // #[test]
     // fn mvee_one_point() {
-    //     let input = vec![Position2d { x: 0., y: 0. }];
+    //     let input = vec![Position2d::new( 0., y: 0. }];
     //     assert_eq!(
     //         Area {
-    //             center: Position2d { x: 0., y: 0. },
+    //             x:  0., y: 0. },
     //             a: 0.,
     //             b: 0.,
     //             angle: 0.
@@ -83,10 +85,10 @@ mod tests {
 
     // #[test]
     // fn mvee_two_points() {
-    //     let input = vec![Position2d { x: -1., y: 0. }, Position2d { x: 1., y: 0. }];
+    //     let input = vec![Position2d::new( -1., y: 0. }, Position2d::new( 1., y: 0. }];
     //     assert_eq!(
     //         Area {
-    //             center: Position2d { x: 0., y: 0. },
+    //             x:  0., y: 0. },
     //             a: 1.,
     //             b: 0.,
     //             angle: 0.
@@ -98,17 +100,19 @@ mod tests {
     #[test]
     fn mvee_four_points_circle_center() {
         let input = vec![
-            Position2d { x: -1., y: -1. },
-            Position2d { x: -1., y: 1. },
-            Position2d { x: 1., y: -1. },
-            Position2d { x: 1., y: 1. },
+            Position2d::new(-1., -1.),
+            Position2d::new(-1., 1.),
+            Position2d::new(1., -1.),
+            Position2d::new(1., 1.),
         ];
         assert_eq!(
             Area {
-                center: Position2d { x: 0., y: 0. },
+                x: 0.,
+                y: 0.,
                 a: SQRT_2,
                 b: SQRT_2,
-                angle: 0.0
+                angle: 0.0,
+                is_ellipse: true
             },
             get_mvee(&input, 0.1)
         );
@@ -117,17 +121,19 @@ mod tests {
     #[test]
     fn mvee_four_points_circle_shifted() {
         let input = vec![
-            Position2d { x: 4., y: 7. },
-            Position2d { x: 6., y: 9. },
-            Position2d { x: 4., y: 9. },
-            Position2d { x: 6., y: 7. },
+            Position2d::new(4., 7.),
+            Position2d::new(6., 9.),
+            Position2d::new(4., 9.),
+            Position2d::new(6., 7.),
         ];
         assert_eq!(
             Area {
-                center: Position2d { x: 5., y: 8. },
+                x: 5.,
+                y: 8.,
                 a: SQRT_2,
                 b: SQRT_2,
-                angle: 0.0
+                angle: 0.0,
+                is_ellipse: true
             },
             get_mvee(&input, 0.1)
         );
@@ -136,38 +142,40 @@ mod tests {
     #[test]
     fn mvee_four_points_circle_3() {
         let input = vec![
-            Position2d { x: -3., y: -3. },
-            Position2d { x: -3., y: 3. },
-            Position2d { x: 3., y: -3. },
-            Position2d { x: 3., y: 3. },
+            Position2d::new(-3., -3.),
+            Position2d::new(-3., 3.),
+            Position2d::new(3., -3.),
+            Position2d::new(3., 3.),
         ];
-        assert!(
-            crate::cluster::distance(
-                Area {
-                    center: Position2d { x: 0., y: 0. },
-                    a: 3. * SQRT_2,
-                    b: 3. * SQRT_2,
-                    angle: 0.0
-                },
-                get_mvee(&input, 0.1)
-            ) < 0.01
+        assert_eq!(
+            Area {
+                x: 0.,
+                y: 0.,
+                a: 3. * SQRT_2,
+                b: 3. * SQRT_2,
+                angle: 0.0,
+                is_ellipse: true
+            },
+            get_mvee(&input, 0.1)
         );
     }
 
     #[test]
     fn mvee_four_points_horizontal() {
         let input = vec![
-            Position2d { x: -2., y: -1. },
-            Position2d { x: -2., y: 1. },
-            Position2d { x: 2., y: -1. },
-            Position2d { x: 2., y: 1. },
+            Position2d::new(-2., -1.),
+            Position2d::new(-2., 1.),
+            Position2d::new(2., -1.),
+            Position2d::new(2., 1.),
         ];
         assert_eq!(
             Area {
-                center: Position2d { x: 0., y: 0. },
+                x: 0.,
+                y: 0.,
                 a: 2. * SQRT_2,
                 b: SQRT_2,
-                angle: 0.0
+                angle: 0.0,
+                is_ellipse: true
             },
             get_mvee(&input, 0.1)
         );
@@ -176,17 +184,19 @@ mod tests {
     #[test]
     fn mvee_four_points_vertical() {
         let input = vec![
-            Position2d { x: -1., y: -2. },
-            Position2d { x: -1., y: 2. },
-            Position2d { x: 1., y: -2. },
-            Position2d { x: 1., y: 2. },
+            Position2d::new(-1., -2.),
+            Position2d::new(-1., 2.),
+            Position2d::new(1., -2.),
+            Position2d::new(1., 2.),
         ];
         assert_eq!(
             Area {
-                center: Position2d { x: 0., y: 0. },
+                x: 0.,
+                y: 0.,
                 a: SQRT_2,
                 b: 2. * SQRT_2,
-                angle: 0.0
+                angle: 0.0,
+                is_ellipse: true
             },
             get_mvee(&input, 0.1)
         );
@@ -195,42 +205,42 @@ mod tests {
     #[test]
     fn mvee_four_points_diagonal1() {
         let input = vec![
-            Position2d { x: 0., y: 5. },
-            Position2d { x: 1., y: 6. },
-            Position2d { x: 5., y: 0. },
-            Position2d { x: 6., y: 1. },
+            Position2d::new(0., 5.),
+            Position2d::new(1., 6.),
+            Position2d::new(5., 0.),
+            Position2d::new(6., 1.),
         ];
-        assert!(
-            crate::cluster::distance(
-                Area {
-                    center: Position2d { x: 3., y: 3. },
-                    a: 1.,
-                    b: 5.,
-                    angle: 45.0
-                },
-                get_mvee(&input, 0.1)
-            ) < 0.01
+        assert_eq!(
+            Area {
+                x: 3.,
+                y: 3.,
+                a: 1.,
+                b: 5.,
+                angle: std::f64::consts::FRAC_PI_4,
+                is_ellipse: true
+            },
+            get_mvee(&input, 0.1)
         );
     }
 
     #[test]
     fn mvee_four_points_diagonal2() {
         let input = vec![
-            Position2d { x: 1., y: 0. },
-            Position2d { x: 0., y: 1. },
-            Position2d { x: 5., y: 6. },
-            Position2d { x: 6., y: 5. },
+            Position2d::new(1., 0.),
+            Position2d::new(0., 1.),
+            Position2d::new(5., 6.),
+            Position2d::new(6., 5.),
         ];
-        assert!(
-            crate::cluster::distance(
-                Area {
-                    center: Position2d { x: 3., y: 3. },
-                    a: 1.,
-                    b: 5.,
-                    angle: -45.0
-                },
-                get_mvee(&input, 0.1)
-            ) < 0.01
+        assert_eq!(
+            Area {
+                x: 3.,
+                y: 3.,
+                a: 1.,
+                b: 5.,
+                angle: std::f64::consts::FRAC_PI_4,
+                is_ellipse: true
+            },
+            get_mvee(&input, 0.1)
         );
     }
 }

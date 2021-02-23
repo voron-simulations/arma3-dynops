@@ -1,5 +1,4 @@
-use crate::cluster::coord::{HasPosition2d};
-use std::clone::Clone;
+use crate::cluster::HasPosition;
 
 const dimension: usize = 2;
 
@@ -7,14 +6,14 @@ pub struct KdTree<T> {
     arena: Vec<KdTreeNode<T>>,
 }
 
-pub fn construct_kdtree<T: HasPosition2d+Copy>(items: &Vec<T>) -> KdTree<T> {
+pub fn construct_kdtree<T: HasPosition + Copy>(items: &Vec<T>) -> KdTree<T> {
     let mut tree = KdTree { arena: Vec::new() };
     tree.arena.reserve(items.len());
     fill_kdtree(items, &mut tree.arena, 0);
     tree
 }
 
-fn fill_kdtree<T: HasPosition2d+Copy>(
+fn fill_kdtree<T: HasPosition + Copy>(
     items: &[T],
     arena: &mut Vec<KdTreeNode<T>>,
     depth: usize,
@@ -26,13 +25,13 @@ fn fill_kdtree<T: HasPosition2d+Copy>(
     let axis = depth % dimension;
 
     let mut items_copy = items.to_vec();
-    items_copy.sort_by(|a,b|{ 
-        let apos = a.get_position_2d();
-        let bpos = b.get_position_2d();
+    items_copy.sort_by(|a, b| {
+        let apos = a.get_position();
+        let bpos = b.get_position();
         (apos[axis]).partial_cmp(&bpos[axis]).unwrap()
     });
 
-    let middle = items_copy.len()/2;
+    let middle = items_copy.len() / 2;
     let items_left = &items_copy[..middle];
     let items_right = &items_copy[middle..];
 

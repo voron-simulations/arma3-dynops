@@ -1,74 +1,59 @@
-mod coord;
 mod kdtree;
 mod mvee;
+mod types;
 
-use coord::Position2d;
 use mvee::get_mvee;
+use nalgebra::Vector2;
 use std::collections::HashMap;
-use std::fmt;
 use std::marker::PhantomData;
+use types::{Area, Distance, HasPosition, Position2d};
 
-const EPSILON: f64 = 75.0;
-const MIN_POINTS: usize = 4;
-
-#[derive(Debug, Copy, Clone, PartialEq)]
-pub struct Area {
-    pub center: Position2d,
-    pub a: f64,
-    pub b: f64,
-    pub angle: f64,
-}
-
-fn sqr(f: f64) -> f64 {
-    f * f
-}
-
-pub fn distance(a1: Area, a2: Area) -> f64 {
-    let d = sqr(a1.center.x - a2.center.x)
-        + sqr(a1.center.y - a2.center.y)
-        + sqr(a1.a - a2.a)
-        + sqr(a1.b - a2.b)
-        + sqr(a1.angle - a2.angle);
-    d.sqrt()
-}
-
-impl fmt::Display for Area {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-        write!(
-            f,
-            "[{}, {}, {}, {}]",
-            self.center, self.a, self.b, self.angle
-        )
-    }
-}
-
-trait Distance {
-    fn get_distance(&self, other: &Self) -> f64;
-}
-
-impl Distance for Position2d {
-    fn get_distance(&self, neighbor: &Position2d) -> f64 {
-        ((self.x - neighbor.x).powi(2) + (self.y - neighbor.y).powi(2)).sqrt()
-    }
-}
+const EPSILON: f64 = 100.0;
+const MIN_POINTS: usize = 6;
 
 fn format_area(area: &Area) -> String {
     format!(
         "[[{:.2},{:.2}],{:.2},{:.2},{:.2}]",
-        area.center.x, area.center.y, area.a, area.b, area.angle
+        area.x, area.y, area.a, area.b, area.angle
     )
 }
 
+fn bounding_rec(coords: &[Vector2<f64>]) -> Area {
+    let mut xmin: f64 = f64::MAX;
+    let mut xmax: f64 = f64::MIN;
+    let mut ymin: f64 = f64::MAX;
+    let mut ymax: f64 = f64::MIN;
+
+    for point in coords {
+        xmin = xmin.min(point.x);
+        xmax = xmax.max(point.x);
+        ymin = ymin.min(point.y);
+        ymax = ymax.max(point.y);
+    }
+
+    Area {
+        x: (xmax + xmin) / 2.0,
+        y: (ymax + ymin) / 2.0,
+        a: (xmax - xmin) / 2.0,
+        b: (ymax - ymin) / 2.0,
+        angle: 0.,
+        is_ellipse: false,
+    }
+}
+
 pub fn entrypoint(data: &String) -> String {
-    let lines: Vec<&str> = data.lines().collect();
+    let data_cropped = data
+        .strip_prefix("\"")
+        .unwrap_or(data)
+        .strip_suffix("\"")
+        .unwrap_or(data);
+
+    let lines: Vec<&str> = data_cropped.lines().collect();
     let points: Vec<Position2d> = lines
         .iter()
         .map(|line| -> Position2d {
-            let coord: [f64; 2] = serde_json::from_str(line).unwrap();
-            Position2d {
-                x: coord[0],
-                y: coord[1],
-            }
+            let coord: (String, f64, f64) = serde_json::from_str(line).unwrap();
+            Position2d::new(coord.1, coord.2)
         })
         .collect();
     let classifications = cluster(EPSILON, MIN_POINTS, &points);
@@ -83,12 +68,19 @@ pub fn entrypoint(data: &String) -> String {
                     clusters.insert(*i, vec![coord]);
                 }
             }
+            Edge(i) => {
+                if clusters.contains_key(i) {
+                    clusters.get_mut(i).unwrap().push(coord);
+                } else {
+                    clusters.insert(*i, vec![coord]);
+                }
+            }
             _ => {}
         }
     }
     let centers: Vec<String> = clusters
         .iter()
-        .map(|(_, cluster_points)| get_mvee(cluster_points, 1.0))
+        .map(|(_, cluster_points)| bounding_rec(cluster_points))
         .map(|area| format_area(&area))
         .collect();
     format!("[\n{}\n]", centers.join(",\n"))
@@ -260,22 +252,22 @@ mod tests {
 
     #[test]
     fn nine_point_center() {
-        let data = "[0,0]\n[1,0]\n[2,0]\n[0,1]\n[1,1]\n[2,1]\n[0,2]\n[1,2]\n[2,2]".to_owned();
+        let data = "[\"\",0,0]\n[\"\",1,0]\n[\"\",2,0]\n[\"\",0,1]\n[\"\",1,1]\n[\"\",2,1]\n[\"\",0,2]\n[\"\",1,2]\n[\"\",2,2]".to_owned();
         entrypoint(&data);
     }
 
     #[test]
     fn cluster_nine_points() {
         let args: Vec<Position2d> = vec![
-            Position2d { x: 0., y: 0. },
-            Position2d { x: 1., y: 0. },
-            Position2d { x: 2., y: 0. },
-            Position2d { x: 0., y: 1. },
-            Position2d { x: 1., y: 1. },
-            Position2d { x: 2., y: 1. },
-            Position2d { x: 0., y: 2. },
-            Position2d { x: 1., y: 2. },
-            Position2d { x: 2., y: 2. },
+            Position2d::new(0., 0.),
+            Position2d::new(1., 0.),
+            Position2d::new(2., 0.),
+            Position2d::new(0., 1.),
+            Position2d::new(1., 1.),
+            Position2d::new(2., 1.),
+            Position2d::new(0., 2.),
+            Position2d::new(1., 2.),
+            Position2d::new(2., 2.),
         ];
         assert_eq!(
             vec![
@@ -293,8 +285,28 @@ mod tests {
         );
     }
 
+    fn test_map_data(data: &str) {
+        let result = entrypoint(&data.to_owned());
+        assert_eq!("...", result);
+    }
+
     #[test]
-    fn test_entrypoint_altis() {
-        entrypoint(&include_str!("data/coordinates.Altis.txt").to_owned());
+    fn test_map_altis() {
+        //test_map_data(&include_str!("testdata/objects.Altis.txt"));
+    }
+
+    #[test]
+    fn test_map_stratis() {
+        test_map_data(&include_str!("testdata/objects.Stratis.txt"));
+    }
+
+    #[test]
+    fn test_map_livonia() {
+        //test_map_data(&include_str!("testdata/objects.Livonia.txt"));
+    }
+
+    #[test]
+    fn test_map_tanoa() {
+        //test_map_data(&include_str!("testdata/objects.Tanoa.txt"));
     }
 }
