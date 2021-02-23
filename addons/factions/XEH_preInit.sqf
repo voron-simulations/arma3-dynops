@@ -2,4 +2,4 @@
 
 call FUNC(initFactions);
 
-diag_log "[DynOps] Factions Module Initialized";
+INFO("Factions module initialized");

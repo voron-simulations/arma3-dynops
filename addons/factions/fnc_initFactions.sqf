@@ -1,6 +1,6 @@
 #include "script_component.hpp"
 
-diag_log "[DynOps] Initializing factions";
+INFO("Initializing factions module");
 /****** STAGE 0: Preparation ******/
 // Get all faction configs
 private _factions = "true" configClasses (configFile >> "CfgFactionClasses");
@@ -12,7 +12,7 @@ _factions = _factions select {
 };
 
 private _factionNames = _factions apply { configName _x; };
-diag_log format ["[DynOps] Detected factions: %1", _factionNames];
+INFO_1("Detected factions: %1", _factionNames);
 
 // Create the root hashset
 if (isNil QGVARMAIN(FactionData)) then {
@@ -51,7 +51,7 @@ _cfgVehicles = _cfgVehicles select { getText (_x >> "faction") in _factionNames 
 	};
 } forEach _cfgVehicles;
 
-diag_log format ["[DynOps] Processed %1 unit configs", count _cfgVehicles];
+INFO_1("Processed [%1] unit configs", count _cfgVehicles);
 
 /****** STAGE 2: Groups data ******/
 // Enumerate "group side" classes

@@ -1,5 +1,5 @@
-/* Finds locations on map and sets relevant variables in mission namespace
- Output variables: 
+/* 
+  Finds locations on map and sets relevant variables in mission namespace
 */
 
 #include "script_component.hpp"
@@ -22,8 +22,8 @@ private _clusters = parseSimpleArray (["cluster", [_input]] call EFUNC(extension
 {
 	private _uuid = call EFUNC(extension,uuid);
 	createMarker [_uuid, _x # 0];
-	_uuid setMarkerSize [ 2 * _x # 1, 2 * _x # 2];
+	_uuid setMarkerSize [ _x # 1, _x # 2];
 	_uuid setMarkerDir ( _x # 3 );
-	_uuid setMarkerShape "ELLIPSE";
+	_uuid setMarkerShape "RECTANGLE";
 	_uuid setMarkerColor "ColorRed";
 } forEach _clusters;
