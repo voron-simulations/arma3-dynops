@@ -4,17 +4,19 @@
 
 #include "script_component.hpp"
 
+INFO("Started location detection");
 private _radius = worldSize / (sqrt 2);
 private _center = [worldSize/2, worldSize/2, 0];
-private _enterables = nearestTerrainObjects [_center, ["House"], _radius, false, true];
-_enterables = _enterables select { _x call BIS_fnc_isBuildingEnterable; };
 
-// Extract 2D position from pertinent objects
-_enterables = _enterables apply { 
-	private _pos = position _x; 
-	[_pos # 0, _pos # 1];
-};
+GVAR(Hospitals) = nearestTerrainObjects [_center, ["HOSPITAL"], _radius, false, true];
 
+// private _fences = nearestTerrainObjects [_center, ["WALL", "FENCE"], _radius, false, true];
+private _houses = nearestTerrainObjects [_center, ["HOUSE"], _radius, false, true];
+private _enterables = _houses select { _x call BIS_fnc_isBuildingEnterable; };
+GVAR(EnterableBuildings) = _enterables;
+
+/*
+INFO("Initializing cluster detection");
 private _input = _enterables joinString endl;
 
 private _clusters = parseSimpleArray (["cluster", [_input]] call EFUNC(extension,callExtension));
@@ -27,3 +29,5 @@ private _clusters = parseSimpleArray (["cluster", [_input]] call EFUNC(extension
 	_uuid setMarkerShape "RECTANGLE";
 	_uuid setMarkerColor "ColorRed";
 } forEach _clusters;
+*/
+INFO("Locations initialized");

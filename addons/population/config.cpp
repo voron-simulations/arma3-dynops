@@ -6,10 +6,10 @@ class CfgPatches {
         units[] = {};
         weapons[] = {};
         requiredVersion = REQUIRED_VERSION;
-        requiredAddons[] = {"dynops_main", "dynops_factions", "cba_main"};
+        requiredAddons[] = {"dynops_main", "dynops_factions", "dynops_civilians", "cba_main"};
         author = ECSTRING(main,Team);
         VERSION_CONFIG;
     };
 };
 
-// #include "CfgFunctions.hpp"
+#include "CfgFunctions.hpp"
