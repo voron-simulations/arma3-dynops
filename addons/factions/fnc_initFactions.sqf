@@ -18,10 +18,13 @@ if (isNil QGVARMAIN(FactionData)) then {
 	GVARMAIN(FactionData) = [[], []] call CBA_fnc_hashCreate;
 };
 
-// Create empty hashset for every faction
+// Create base hashset for every faction
 {
-	private _emptySet = [[],[]] call CBA_fnc_hashCreate;
-	[GVARMAIN(FactionData), _x, _emptySet] call CBA_fnc_hashSet;
+	private _baseSet = [[],[]] call CBA_fnc_hashCreate;
+	// Pre-fill items which are available for any faction
+	[_baseSet, "Items", ["ItemGPS","FirstAidKit","ItemWatch","ItemCompass","ItemRadio","ItemMap","MineDetector","Medikit","ToolKit"]] call EFUNC(main,hashAdd);
+
+	[GVARMAIN(FactionData), _x, _baseSet] call CBA_fnc_hashSet;	
 } forEach _factionNames;
 
 /****** STAGE 1: Units data ******/
@@ -39,14 +42,25 @@ _cfgVehicles = _cfgVehicles select { getText (_x >> "faction") in _factionNames 
 	private _list = [_factionData, _key] call CBA_fnc_hashGet;
 	_list pushBackUnique configName _x;
 	[_factionData, _key, _list] call CBA_fnc_hashSet;
-
+	
 	// Fill weapons/items/magazines while we're at it
 	if ((configName _x) isKindOf "Man") then {
-		[_factionData, "Backpacks", getText (_x >> "backpack")] call EFUNC(main,hashAdd);
-        [_factionData, "Items", getArray (_x >> "linkeditems")] call EFUNC(main,hashAdd);
-        [_factionData, "Magazines", getArray (_x >> "magazines")] call EFUNC(main,hashAdd);
-        [_factionData, "Uniforms", getText (_x >> "uniformClass")] call EFUNC(main,hashAdd);
-        [_factionData, "Weapons", getArray (_x >> "weapons")] call EFUNC(main,hashAdd);
+		// Get person's equipment from config
+		private _backpack = getText (_x >> "backpack");
+		private _items = getArray (_x >> "linkeditems");
+		private _magazines = getArray (_x >> "magazines");
+		private _uniform = getText (_x >> "uniformClass");
+		private _weapons = getArray (_x >> "weapons");
+
+		// Backpacks/weapons on units are customized - find 'empty' base class for them
+		_backpack = [_backpack, "CfgVehicles"] call CBA_fnc_getNonPresetClass;
+		_weapons = _weapons apply { [_x] call CBA_fnc_getNonPresetClass; };
+
+		[_factionData, "Backpacks", _backpack] call EFUNC(main,hashAdd);
+        [_factionData, "Items", _items] call EFUNC(main,hashAdd);
+        [_factionData, "Magazines", _magazines] call EFUNC(main,hashAdd);
+        [_factionData, "Uniforms", _uniform] call EFUNC(main,hashAdd);
+        [_factionData, "Weapons", _weapons] call EFUNC(main,hashAdd);
 	};
 } forEach _cfgVehicles;
 
@@ -91,3 +105,6 @@ _groupFactions = _groupFactions select { configName _x in _factionNames; };
 	[_factionData, "SideId", _sideId] call CBA_fnc_hashSet;
 	[_factionData, "DisplayName", _displayName] call CBA_fnc_hashSet;
 } forEach _factions;
+
+/****** STAGE 4: Canned data ******/
+call FUNC(factionStaticData);
