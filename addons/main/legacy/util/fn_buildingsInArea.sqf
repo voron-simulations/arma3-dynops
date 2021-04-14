@@ -1,6 +1,6 @@
 // 'Location' is the only input parameter.
 // Can be Location, Marker, Trigger, Area array
-private _area = _this call DW_fnc_toArea;
+private _area = _this call CBA_fnc_getArea;
 
 (_area # 0) params ["_size_x", "_size_y"];
 _radius = [0, 0, 0] vectorDistance [_size_x, _size_y, 0];
