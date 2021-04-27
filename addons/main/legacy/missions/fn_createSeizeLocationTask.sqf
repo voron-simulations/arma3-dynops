@@ -10,7 +10,7 @@ private _taskId = "seize" + str random 999999999;
 ] call BIS_fnc_taskCreate;
 
 private _trigger = createTrigger ["EmptyDetector", _pos, true];
-_trigger setTriggerArea (_location call CBA_fnc_getArea);
+_trigger setTriggerArea (_location call BIS_fnc_getArea);
 _trigger setTriggerTimeout [20, 30, 60, true];
 _trigger setTriggerActivation ["WEST SEIZED", "PRESENT", true];
 _trigger setTriggerStatements [

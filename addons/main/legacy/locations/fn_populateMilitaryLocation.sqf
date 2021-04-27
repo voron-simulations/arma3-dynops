@@ -1,9 +1,9 @@
 // Generic military location population script
 params ["_location", "_faction"];
 
-private _factionData = [FactionData, _faction] call CBA_fnc_hashGet;
-private _side = [_factionData, "Side"] call CBA_fnc_hashGet;
-private _groups = [_factionData, "Group_Infantry"] call CBA_fnc_hashGet;
+private _factionData = GVAR(FactionData) get _faction;
+private _side = _factionData get "Side";
+private _groups = _factionData get "Group_Infantry";
 
 private _radius = (selectMax size _location) / 2;
 private _buildingPositions = [];
@@ -24,7 +24,7 @@ private _helipads = [_location, "HeliH"] call DW_fnc_getObjectsInLocation;
 { _x call DW_fnc_placeHelipadClutter; } forEach _helipads;
 
 if (count _helipads > 0 && random 10 < 5) then {
-	private _helicopters = [_factionData, "Vehicle_Helicopter"] call CBA_fnc_hashGet;
+	private _helicopters = _factionData get "Vehicle_Helicopter";
 	private _pad = selectRandom _helipads;
 	private _vehicle = createVehicle [configName (selectRandom _helicopters), getPos _pad, [], 0];
 	private _group = createVehicleCrew _vehicle;
