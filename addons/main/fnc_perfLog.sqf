@@ -9,6 +9,6 @@ while { true; } do {
 	private _activeGroups = count allGroups;
 	private _activeUnits = { simulationEnabled _x } count allUnits;
 	private _totalUnits = count allUnits;
-	INFO_5("FPS: %1, scripts spawn/VM/exec/FSM: %2, groups: %3, units active/total: %4/%5",
+	INFO_5("FPS: %1, scripts spawn/execVM/SQS/FSM: %2, groups: %3, units active/total: %4/%5",
 		_fps, _activeScripts, _activeGroups, _activeUnits, _totalUnits);
 };
