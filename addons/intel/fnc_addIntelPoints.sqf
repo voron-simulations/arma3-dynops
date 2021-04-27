@@ -2,9 +2,9 @@
 
 params ["_side", "_addedPoints"];
 
+// If SP or MP server, perform the addition and publish result
 if (!isMultiplayer || isServer) then
 {
-	// If SP or MP server, perform the addition and publish result
 	if (isNil QGVAR(SideIntel)) then {
 		GVAR(SideIntel) = createHashMap;
 	};
@@ -15,6 +15,6 @@ if (!isMultiplayer || isServer) then
 }
 else 
 {
-	// Defer execution to server
+	// Otherwise, defer execution to server
 	_this remoteExec [FUNC(addIntelPoints), 2, false];
 };

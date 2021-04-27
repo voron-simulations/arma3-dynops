@@ -49,9 +49,8 @@ _cfgVehicles = _cfgVehicles select { getText (_x >> "faction") in _factionNames 
 		private _uniform = getText (_x >> "uniformClass");
 		private _weapons = getArray (_x >> "weapons");
 
-		// Backpacks/weapons on units are customized - find 'empty' base class for them
+		// Backpacks on units are customized - find 'empty' base class for them
 		_backpack = [_backpack, "CfgVehicles"] call CBA_fnc_getNonPresetClass;
-		_weapons = _weapons apply { [_x] call CBA_fnc_getNonPresetClass; };
 
 		[_factionData, "Backpacks", _backpack] call EFUNC(main,hashAdd);
         [_factionData, "Items", _items] call EFUNC(main,hashAdd);
@@ -101,5 +100,5 @@ _groupFactions = _groupFactions select { configName _x in _factionNames; };
 	_factionData set ["DisplayName", _displayName];
 } forEach _factions;
 
-/****** STAGE 4: Canned data ******/
+/****** STAGE 4: Add canned data ******/
 call FUNC(factionStaticData);
