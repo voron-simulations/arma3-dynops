@@ -11,3 +11,4 @@ hemtt.exe
 # Built libraries
 *.dll
 *.so
+.vscode/launch.json
