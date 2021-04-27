@@ -6,11 +6,11 @@ if (!isMultiplayer || isServer) then
 {
 	// If SP or MP server, perform the addition and publish result
 	if (isNil QGVAR(SideIntel)) then {
-		GVAR(SideIntel) = [[], 0] call CBA_fnc_hashCreate;
+		GVAR(SideIntel) = createHashMap;
 	};
-	private _points = [GVAR(SideIntel), _side] call CBA_fnc_hashGet;
+	private _points = GVAR(SideIntel) get _side;
 	_points = _points + _addedPoints;
-	[GVAR(SideIntel), _side, _points] call CBA_fnc_hashSet;
+	GVAR(SideIntel) set [_side, _points];
 	publicVariable QGVAR(SideIntel);
 }
 else 

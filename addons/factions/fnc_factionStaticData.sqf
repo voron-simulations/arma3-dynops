@@ -1,11 +1,11 @@
 #include "script_component.hpp"
 /* ----------------------------------------------------------------------------
   Fills faction data structures with items/vehicles which are omitted in 
-  CfgUnits config
+  CfgVehicles units definitions
 ---------------------------------------------------------------------------- */
 
 // CTRG
-private _factionData = [GVARMAIN(FactionData), "BLU_CTRG_F"] call CBA_fnc_hashGet;
+private _factionData = GVARMAIN(FactionData) get "BLU_CTRG_F";
 private _items = [
 	"H_HelmetB_TI_tna_F",
 	"H_HelmetB_TI_arid_F",

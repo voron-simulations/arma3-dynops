@@ -2,4 +2,4 @@
 
 params ["_side"];
 
-[GVAR(SideIntel), _side] call CBA_fnc_hashGet;
+GVAR(SideIntel) get _side;

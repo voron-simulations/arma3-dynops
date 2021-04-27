@@ -1,8 +1,7 @@
 #include "script_component.hpp"
 
 params ["_hash", "_key", "_value"];
-
-private _list = [_hash, _key] call CBA_fnc_hashGet;
+private _list = _hash getOrDefault [_key, []];
 
 if (typeName _value == "ARRAY") then {
 	_list append _value;
@@ -11,4 +10,4 @@ if (typeName _value == "ARRAY") then {
 	_list pushBackUnique _value;
 };
 
-[_hash, _key, _list] call CBA_fnc_hashSet;
+_hash set [_key, _list];

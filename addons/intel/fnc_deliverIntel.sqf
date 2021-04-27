@@ -24,19 +24,18 @@ private _intelItemCosts =
 	["Wallet_ID", 50]
 ];
 
-private _intelItemsHashSet = [_intelItemCosts, 0] call CBA_fnc_hashCreate;
+private _intelItemsHashSet = createHashMapFromArray _intelItemCosts;
 
 private _magazines = magazines player;
 private _side = side player;
-private _keys = [_intelItemsHashSet] call CBA_fnc_hashKeys;
 private _points = 0;
 
 // Cycle through "magazines" player has 
 // and determine if any of them are intel items
 // if it's an intel item, record points value and remove from inventory
 {
-	if ([_intelItemsHashSet, _x] call CBA_fnc_hashHasKey) then {
-		_points = _points + ([_intelItemsHashSet, _x] call CBA_fnc_hashGet);
+	if (_x in _intelItemsHashSet) then {
+		_points = _points + (_intelItemsHashSet get _x);
 		player removeMagazineGlobal _x;
 	}
 } forEach _magazines;

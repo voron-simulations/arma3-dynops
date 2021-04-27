@@ -14,17 +14,16 @@ private _factionNames = _factions apply { configName _x; };
 INFO_1("Detected factions: %1", _factionNames);
 
 // Create the root hashset
-if (isNil QGVARMAIN(FactionData)) then {
-	GVARMAIN(FactionData) = [[], []] call CBA_fnc_hashCreate;
-};
+GVARMAIN(FactionData) = createHashMap;
 
 // Create base hashset for every faction
 {
-	private _baseSet = [[],[]] call CBA_fnc_hashCreate;
-	// Pre-fill items which are available for any faction
-	[_baseSet, "Items", ["ItemGPS","FirstAidKit","ItemWatch","ItemCompass","ItemRadio","ItemMap","MineDetector","Medikit","ToolKit"]] call EFUNC(main,hashAdd);
+	private _baseSet = createHashMap;
 
-	[GVARMAIN(FactionData), _x, _baseSet] call CBA_fnc_hashSet;	
+	// Pre-fill arsenal items which are available for any faction
+	[_baseSet, "Items", ["FirstAidKit","ItemWatch","ItemCompass","ItemRadio","ItemMap","Medikit","ToolKit"]] call EFUNC(main,hashAdd);
+
+	GVARMAIN(FactionData) set [_x, _baseSet];
 } forEach _factionNames;
 
 /****** STAGE 1: Units data ******/
@@ -38,10 +37,8 @@ _cfgVehicles = _cfgVehicles select { getText (_x >> "faction") in _factionNames 
 	private _faction = getText (_x >> "faction");
 	private _tags = (configName _x) call BIS_fnc_objectType;
 	private _key = (_tags # 0) + "_" + (_tags # 1); // See https://community.bistudio.com/wiki/BIS_fnc_objectType
-	private _factionData = [GVARMAIN(FactionData), _faction] call CBA_fnc_hashGet;
-	private _list = [_factionData, _key] call CBA_fnc_hashGet;
-	_list pushBackUnique configName _x;
-	[_factionData, _key, _list] call CBA_fnc_hashSet;
+	private _factionData = GVARMAIN(FactionData) get _faction;
+	[_factionData, _key, configName _x] call EFUNC(main,hashAdd);
 	
 	// Fill weapons/items/magazines while we're at it
 	if ((configName _x) isKindOf "Man") then {
@@ -79,7 +76,7 @@ _groupFactions = _groupFactions select { configName _x in _factionNames; };
 // Faction loop
 {
 	private _faction = configName (_x);
-	private _factionData = [GVARMAIN(FactionData), _faction] call CBA_fnc_hashGet;
+	private _factionData = GVARMAIN(FactionData) get _faction;
 	// Group type loop
 	{
 		private _groupType = configName (_x);
@@ -87,9 +84,7 @@ _groupFactions = _groupFactions select { configName _x in _factionNames; };
 		{
 			private _groupName = configName (_x);
 			private _key = "Group_" + _groupType;
-			private _list = [_factionData, _key] call CBA_fnc_hashGet;
-			_list pushBackUnique _groupName;
-			[_factionData, _key, _list] call CBA_fnc_hashSet;
+			[_factionData, _key, _groupName] call EFUNC(main,hashAdd);
 		} forEach ("true" configClasses (_x));
 	} forEach ("true" configClasses (_x));
 } forEach _groupFactions;
@@ -100,10 +95,10 @@ _groupFactions = _groupFactions select { configName _x in _factionNames; };
 	private _side = _sideId call BIS_fnc_sideType;
 	private _displayName = getText (_x >> "displayName");
 
-	private _factionData = [GVARMAIN(FactionData), configName _x] call CBA_fnc_hashGet;
-	[_factionData, "Side", _side] call CBA_fnc_hashSet;
-	[_factionData, "SideId", _sideId] call CBA_fnc_hashSet;
-	[_factionData, "DisplayName", _displayName] call CBA_fnc_hashSet;
+	private _factionData = GVARMAIN(FactionData) get (configName _x);
+	_factionData set ["Side", _side];
+	_factionData set ["SideId", _sideId];
+	_factionData set ["DisplayName", _displayName];
 } forEach _factions;
 
 /****** STAGE 4: Canned data ******/

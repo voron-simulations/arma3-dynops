@@ -4,13 +4,13 @@ params ["_box", "_faction"];
 
 ["AmmoboxInit", _box] spawn BIS_fnc_arsenal;
 
-private _factionData = [GVARMAIN(FactionData), _faction] call CBA_fnc_hashGet;
+private _factionData = GVARMAIN(FactionData) get _faction;
 
-private _weapons = [_factionData, "Weapons"] call CBA_fnc_hashGet;
-private _magazines = [_factionData, "Magazines"] call CBA_fnc_hashGet;
-private _items = [_factionData, "Items"] call CBA_fnc_hashGet;
-private _backpacks = [_factionData, "Backpacks"] call CBA_fnc_hashGet;
-private _uniforms = [_factionData, "Uniforms"] call CBA_fnc_hashGet;
+private _weapons = _factionData get "Weapons";
+private _magazines = _factionData get "Magazines";
+private _items = _factionData get "Items";
+private _backpacks = _factionData get "Backpacks";
+private _uniforms = _factionData get "Uniforms";
 
 [_box, _backpacks, true] call BIS_fnc_addVirtualBackpackCargo;
 [_box, _items, true] call BIS_fnc_addVirtualItemCargo;
