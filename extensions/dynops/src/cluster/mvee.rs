@@ -54,8 +54,7 @@ pub fn get_mvee(coords: &[Position2d], tolerance: f64) -> Area {
     let angle = a11.atan2(a01);
 
     Area {
-        x: c[0],
-        y: c[1],
+        center: c,
         a: svd.singular_values[0].sqrt(),
         b: svd.singular_values[1].sqrt(),
         angle: angle,

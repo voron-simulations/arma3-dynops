@@ -6,19 +6,17 @@ pub type Position2d = Vector2<f64>;
 #[derive(Debug, Clone, PartialEq)]
 pub struct MapObject {
     pub name: String,
-    pub x: f64,
-    pub y: f64,
+    pub position: Position2d,
 }
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Area {
     // Center position
-    pub x: f64,
-    pub y: f64,
+    pub center: Position2d,
     // half-size along x/y axes
     pub a: f64,
     pub b: f64,
-    // Rotation angle in radians
+    // Counterclockwise rotation in radians
     pub angle: f64,
     // Is ellipse or rectangle
     pub is_ellipse: bool,
@@ -43,13 +41,13 @@ pub trait HasPosition {
 
 impl HasPosition for MapObject {
     fn get_position(&self) -> Position2d {
-        Vector2::new(self.x, self.y)
+        self.position
     }
 }
 
 impl HasPosition for Area {
     fn get_position(&self) -> Position2d {
-        Vector2::new(self.x, self.y)
+        self.center
     }
 }
 
