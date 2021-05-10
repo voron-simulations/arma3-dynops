@@ -2,6 +2,7 @@
 
 mod cluster;
 mod misc;
+mod types;
 
 use libc::{c_char, c_int, strncpy};
 use std::ffi::{CStr, CString};

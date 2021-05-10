@@ -1,4 +1,4 @@
-use crate::cluster::HasPosition;
+use crate::types::HasPosition;
 
 const dimension: usize = 2;
 

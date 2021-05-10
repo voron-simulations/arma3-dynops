@@ -1,4 +1,4 @@
-use crate::cluster::{Area, Position2d};
+use crate::types::{Area, AreaKind, Position2d};
 use nalgebra::{DMatrix, DVector};
 use std::f64::consts::*;
 
@@ -54,19 +54,19 @@ pub fn get_mvee(coords: &[Position2d], tolerance: f64) -> Area {
     let angle = a11.atan2(a01);
 
     Area {
-        center: c,
-        a: svd.singular_values[0].sqrt(),
-        b: svd.singular_values[1].sqrt(),
+        center: Position2d::new(c[0], c[1]),
+        xsize: svd.singular_values[0].sqrt(),
+        ysize: svd.singular_values[1].sqrt(),
         angle: angle,
-        is_ellipse: true,
+        kind: AreaKind::Ellipse,
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::cluster::get_mvee;
-    use crate::cluster::{Area, Position2d};
-    use std::f64::consts::*;
+    use crate::cluster::mvee::get_mvee;
+    use crate::types::{distance, Area, AreaKind, Position2d};
+    use std::f64::consts::{FRAC_PI_4, SQRT_2};
 
     // #[test]
     // fn mvee_one_point() {
@@ -96,6 +96,35 @@ mod tests {
     //     );
     // }
 
+    fn run_mvee_test(points: &[Position2d], tolerance: f64, expected: Area) {
+        let actual = get_mvee(&points, tolerance);
+
+        for point in points {
+            assert!(
+                expected.contains_tolerance(point, 1e-5),
+                format!(
+                    "Precondition failed: input point must be in expected area: {}",
+                    point
+                )
+            )
+        }
+
+        assert!(
+            distance(expected, actual) < 1e-5,
+            format!("Expected result: {}, got: {}", expected, actual)
+        );
+
+        for point in points {
+            assert!(
+                actual.contains_tolerance(point, 1e-5),
+                format!(
+                    "Result check failed: input point must be in calculated area: {}",
+                    point
+                )
+            )
+        }
+    }
+
     #[test]
     fn mvee_four_points_circle_center() {
         let input = vec![
@@ -104,16 +133,16 @@ mod tests {
             Position2d::new(1., -1.),
             Position2d::new(1., 1.),
         ];
-        assert_eq!(
+        run_mvee_test(
+            &input,
+            0.1,
             Area {
-                x: 0.,
-                y: 0.,
-                a: SQRT_2,
-                b: SQRT_2,
-                angle: 0.0,
-                is_ellipse: true
+                center: Position2d::new(0., 0.),
+                xsize: SQRT_2,
+                ysize: SQRT_2,
+                kind: AreaKind::Ellipse,
+                angle: 0.,
             },
-            get_mvee(&input, 0.1)
         );
     }
 
@@ -125,16 +154,16 @@ mod tests {
             Position2d::new(4., 9.),
             Position2d::new(6., 7.),
         ];
-        assert_eq!(
+        run_mvee_test(
+            &input,
+            0.1,
             Area {
-                x: 5.,
-                y: 8.,
-                a: SQRT_2,
-                b: SQRT_2,
-                angle: 0.0,
-                is_ellipse: true
+                center: Position2d::new(5., 8.),
+                xsize: SQRT_2,
+                ysize: SQRT_2,
+                kind: AreaKind::Ellipse,
+                angle: 0.,
             },
-            get_mvee(&input, 0.1)
         );
     }
 
@@ -146,16 +175,16 @@ mod tests {
             Position2d::new(3., -3.),
             Position2d::new(3., 3.),
         ];
-        assert_eq!(
+        run_mvee_test(
+            &input,
+            0.1,
             Area {
-                x: 0.,
-                y: 0.,
-                a: 3. * SQRT_2,
-                b: 3. * SQRT_2,
-                angle: 0.0,
-                is_ellipse: true
+                center: Position2d::new(0., 0.),
+                xsize: 3. * SQRT_2,
+                ysize: 3. * SQRT_2,
+                kind: AreaKind::Ellipse,
+                angle: 0.,
             },
-            get_mvee(&input, 0.1)
         );
     }
 
@@ -167,16 +196,16 @@ mod tests {
             Position2d::new(2., -1.),
             Position2d::new(2., 1.),
         ];
-        assert_eq!(
+        run_mvee_test(
+            &input,
+            0.1,
             Area {
-                x: 0.,
-                y: 0.,
-                a: 2. * SQRT_2,
-                b: SQRT_2,
-                angle: 0.0,
-                is_ellipse: true
+                center: Position2d::new(0., 0.),
+                xsize: 2. * SQRT_2,
+                ysize: SQRT_2,
+                kind: AreaKind::Ellipse,
+                angle: 0.,
             },
-            get_mvee(&input, 0.1)
         );
     }
 
@@ -188,16 +217,16 @@ mod tests {
             Position2d::new(1., -2.),
             Position2d::new(1., 2.),
         ];
-        assert_eq!(
+        run_mvee_test(
+            &input,
+            0.1,
             Area {
-                x: 0.,
-                y: 0.,
-                a: SQRT_2,
-                b: 2. * SQRT_2,
-                angle: 0.0,
-                is_ellipse: true
+                center: Position2d::new(0., 0.),
+                xsize: SQRT_2,
+                ysize: 2. * SQRT_2,
+                kind: AreaKind::Ellipse,
+                angle: 0.,
             },
-            get_mvee(&input, 0.1)
         );
     }
 
@@ -209,16 +238,16 @@ mod tests {
             Position2d::new(5., 0.),
             Position2d::new(6., 1.),
         ];
-        assert_eq!(
+        run_mvee_test(
+            &input,
+            0.1,
             Area {
-                x: 3.,
-                y: 3.,
-                a: 1.,
-                b: 5.,
-                angle: std::f64::consts::FRAC_PI_4,
-                is_ellipse: true
+                center: Position2d::new(3., 3.),
+                xsize: 1.,
+                ysize: 5.,
+                kind: AreaKind::Ellipse,
+                angle: FRAC_PI_4,
             },
-            get_mvee(&input, 0.1)
         );
     }
 
@@ -230,16 +259,16 @@ mod tests {
             Position2d::new(5., 6.),
             Position2d::new(6., 5.),
         ];
-        assert_eq!(
+        run_mvee_test(
+            &input,
+            0.1,
             Area {
-                x: 3.,
-                y: 3.,
-                a: 1.,
-                b: 5.,
-                angle: std::f64::consts::FRAC_PI_4,
-                is_ellipse: true
+                center: Position2d::new(3., 3.),
+                xsize: 1.,
+                ysize: 5.,
+                kind: AreaKind::Ellipse,
+                angle: -FRAC_PI_4,
             },
-            get_mvee(&input, 0.1)
         );
     }
 }

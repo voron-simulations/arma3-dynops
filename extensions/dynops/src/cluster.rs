@@ -1,12 +1,10 @@
 mod kdtree;
 mod mvee;
-mod types;
 
-use mvee::get_mvee;
 use nalgebra::Vector2;
 use std::collections::HashMap;
 use std::marker::PhantomData;
-use types::{Area, Distance, HasPosition, Position2d};
+use crate::types::{Area, AreaKind, Distance, Position2d};
 
 const EPSILON: f64 = 100.0;
 const MIN_POINTS: usize = 6;
@@ -14,7 +12,7 @@ const MIN_POINTS: usize = 6;
 fn format_area(area: &Area) -> String {
     format!(
         "[[{:.2},{:.2}],{:.2},{:.2},{:.2}]",
-        area.x, area.y, area.a, area.b, area.angle
+        area.center.x, area.center.y, area.xsize, area.ysize, area.angle
     )
 }
 
@@ -30,14 +28,15 @@ fn bounding_rec(coords: &[Vector2<f64>]) -> Area {
         ymin = ymin.min(point.y);
         ymax = ymax.max(point.y);
     }
+    let x = (xmax + xmin) / 2.0;
+    let y = (ymax + ymin) / 2.0;
 
     Area {
-        x: (xmax + xmin) / 2.0,
-        y: (ymax + ymin) / 2.0,
-        a: (xmax - xmin) / 2.0,
-        b: (ymax - ymin) / 2.0,
+        center: Position2d::new(x,y),
+        xsize: (xmax - xmin) / 2.0,
+        ysize: (ymax - ymin) / 2.0,
         angle: 0.,
-        is_ellipse: false,
+        kind: AreaKind::Rectangle
     }
 }
 
