@@ -40,10 +40,15 @@ jobs:
         run: cargo test
       
       - name: Build release
+        uses: actions-rs/cargo@v1
+        with:
+          working-directory: extensions/dynops
+          command: build
+          args: --release
+      
+      - name: Copy library
         working-directory: extensions/dynops
-        run: |
-          cargo build --release
-          move target/release/dynops.dll ../../dynops_x64.dll
+        run: move target/release/dynops.dll ../../dynops_x64.dll
           
       - name: Upload artifact
         uses: actions/upload-artifact@v2
@@ -74,10 +79,15 @@ jobs:
         run: cargo test
       
       - name: Build release
+        uses: actions-rs/cargo@v1
+        with:
+          working-directory: extensions/dynops
+          command: build
+          args: --release
+      
+      - name: Copy library
         working-directory: extensions/dynops
-        run: |
-          cargo build --release
-          mv target/release/libdynops.so ../../dynops_x64.so
+        run: mv target/release/libdynops.so ../../dynops_x64.so
 
       - name: Strip binary
         run: strip --strip-unneeded --keep-file-symbols dynops_x64.so
