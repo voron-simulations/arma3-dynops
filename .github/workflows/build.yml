@@ -128,5 +128,5 @@ jobs:
     - name: Upload Artifact
       uses: actions/upload-artifact@v2-preview
       with:
-        name: dynops-${{ github.sha }}-nobin
+        name: DynamicOperations-nobin
         path: releases/dynops_*.zip
