@@ -36,8 +36,10 @@ jobs:
           working-directory: extensions/dynops
       
       - name: Test
-        working-directory: extensions/dynops
-        run: cargo test
+        uses: actions-rs/cargo@v1
+        with:
+          working-directory: extensions/dynops
+          command: test
       
       - name: Build release
         uses: actions-rs/cargo@v1
@@ -75,8 +77,10 @@ jobs:
           working-directory: extensions/dynops
           
       - name: Test
-        working-directory: extensions/dynops
-        run: cargo test
+        uses: actions-rs/cargo@v1
+        with:
+          working-directory: extensions/dynops
+          command: test
       
       - name: Build release
         uses: actions-rs/cargo@v1
