@@ -25,6 +25,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@master
         
+      - run: echo "::add-matcher::.github/matchers/rust.json"
+        
       - name: Install Rust stable
         uses: actions-rs/toolchain@v1
         with:
@@ -41,9 +43,10 @@ jobs:
       
       - name: Build release
         working-directory: extensions/dynops
-        run: |
-          cargo build --release
-          move target/release/dynops.dll ../../dynops_x64.dll
+        run: cargo build --release
+       
+      - working-directory: extensions/dynops
+        run: move target/release/dynops.dll ../../dynops_x64.dll
           
       - name: Upload artifact
         uses: actions/upload-artifact@v2
@@ -59,6 +62,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@master
       
+      - run: echo "::add-matcher::.github/matchers/rust.json"
+        
       - name: Install Rust stable
         uses: actions-rs/toolchain@v1
         with:
@@ -75,9 +80,10 @@ jobs:
       
       - name: Build release
         working-directory: extensions/dynops
-        run: |
-          cargo build --release
-          mv target/release/libdynops.so ../../dynops_x64.so
+        run: cargo build --release
+          
+      - working-directory: extensions/dynops
+        run: mv target/release/libdynops.so ../../dynops_x64.so
 
       - name: Strip binary
         run: strip --strip-unneeded --keep-file-symbols dynops_x64.so
@@ -89,7 +95,7 @@ jobs:
           path: dynops_x64.so
 
   build:
-    name: Build
+    name: Build addon
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs:
