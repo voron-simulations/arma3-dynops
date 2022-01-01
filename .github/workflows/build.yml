@@ -37,14 +37,14 @@ jobs:
         with:
           working-directory: extensions/dynops
       
-      - name: Test
-        working-directory: extensions/dynops
-        run: cargo test
-      
-      - name: Build release
+      - name: Build
         working-directory: extensions/dynops
         run: cargo build --release
        
+      - name: Test
+        working-directory: extensions/dynops
+        run: cargo test --release
+      
       - working-directory: extensions/dynops
         run: move target/release/dynops.dll ../../dynops_x64.dll
           
@@ -74,14 +74,14 @@ jobs:
         with:
           working-directory: extensions/dynops
           
-      - name: Test
-        working-directory: extensions/dynops
-        run: cargo test
-      
-      - name: Build release
+      - name: Build
         working-directory: extensions/dynops
         run: cargo build --release
           
+      - name: Test
+        working-directory: extensions/dynops
+        run: cargo test --release
+      
       - working-directory: extensions/dynops
         run: mv target/release/libdynops.so ../../dynops_x64.so
 
