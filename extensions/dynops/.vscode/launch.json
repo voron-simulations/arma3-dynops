@@ -1,10 +1,10 @@
 {
     "configurations": [
         {
-            "name": "(Windows) Launch",
+            "name": "Run test app",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/target/debug/deps/dynops-ea096182d35f3f53.exe",
+            "program": "${workspaceFolder}/target/debug/dynops.exe",
             "args": [
                 "--test-threads",
                 "1",
