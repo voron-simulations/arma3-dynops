@@ -14,7 +14,8 @@ jobs:
     - name: Checkout
       uses: actions/checkout@master
       
-    - run: echo "::add-matcher::.github/matchers/sqf.json"
+    - name: Enable problem matcher
+      run: echo "::add-matcher::.github/matchers/sqf.json"
     
     - name: SQFLint
       uses: arma-actions/sqflint@master
@@ -28,7 +29,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@master
         
-      - run: echo "::add-matcher::.github/matchers/rust.json"
+      - name: Enable problem matcher
+        run: echo "::add-matcher::.github/matchers/rust.json"
         
       - name: Install Rust stable
         uses: actions-rs/toolchain@v1
@@ -48,8 +50,8 @@ jobs:
         working-directory: extensions/dynops
         run: cargo test --release
       
-      - working-directory: extensions/dynops
-        run: move target/release/dynops.dll ../../dynops_x64.dll
+      - name: Move output library
+        run: move extensions/dynops/target/release/dynops.dll dynops_x64.dll
           
       - name: Upload artifact
         uses: actions/upload-artifact@v2
@@ -65,7 +67,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@master
       
-      - run: echo "::add-matcher::.github/matchers/rust.json"
+      - name: Enable problem matcher
+        run: echo "::add-matcher::.github/matchers/rust.json"
         
       - name: Install Rust stable
         uses: actions-rs/toolchain@v1
@@ -85,8 +88,8 @@ jobs:
         working-directory: extensions/dynops
         run: cargo test --release
       
-      - working-directory: extensions/dynops
-        run: mv target/release/libdynops.so ../../dynops_x64.so
+      - name: Move output library
+        run: mv extensions/dynops/target/release/libdynops.so dynops_x64.so
 
       - name: Strip binary
         run: strip --strip-unneeded --keep-file-symbols dynops_x64.so
