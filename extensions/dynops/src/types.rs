@@ -3,6 +3,44 @@ use std::fmt;
 
 pub type Position2d = Vector2<f64>;
 
+#[derive(Debug, Copy, Clone, PartialEq)]
+pub enum MarkerShape {
+    Icon,
+    Rectangle,
+    Ellipse,
+    Hexagon,
+    Polyline,
+}
+
+pub struct Marker {
+    pub Pos: Vector2<f64>,
+    pub Size: Vector2<f64>,
+    pub Dir: f32,
+    pub Alpha: f32,
+
+    pub Name: String,
+    pub Color: String,
+    pub Shape: MarkerShape,
+}
+
+impl fmt::Display for Marker {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let shape = match self.Shape {
+            Rectangle => "RECTANGLE",
+            Ellipse => "ELLIPSE",
+            Hexagon => "ELLIPSE",
+        };
+
+        let pos = if self.Shape == MarkerShape::Hexagon {
+            -self.Pos
+        } else {
+            self.Pos
+        };
+
+        write!(f, "|{}|[{},{}]||", self.Name, pos[0], pos[1],)
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct MapObject {
     pub name: String,
@@ -30,30 +68,22 @@ pub struct Area {
 
 impl Area {
     pub fn contains(&self, point: &Position2d) -> bool {
-        let axis_aligned_relative_pos = point - self.center;
-        let rotation = Rotation2::new(-self.angle);
-        let relative_position = rotation * axis_aligned_relative_pos;
-        return match self.kind {
-            AreaKind::Rectangle => {
-                relative_position.x.abs() <= self.xsize && relative_position.y.abs() <= self.ysize
-            }
-            AreaKind::Ellipse => {
-                sqr(relative_position.x / self.xsize) + sqr(relative_position.y / self.ysize) <= 1.
-            }
-            AreaKind::Hexagon => panic!("Not implemented"),
-        };
+        return self.contains_tolerance(point, 0.);
     }
 
     pub fn contains_tolerance(&self, point: &Position2d, tolerance: f64) -> bool {
         let axis_aligned_relative_pos = point - self.center;
         let rotation = Rotation2::new(-self.angle);
         let relative_position = rotation * axis_aligned_relative_pos;
+        let tolerance_quotient = 1. + tolerance.abs();
         return match self.kind {
             AreaKind::Rectangle => {
-                relative_position.x.abs() <= (self.xsize + tolerance) && relative_position.y.abs() <= (self.ysize + tolerance)
+                relative_position.x.abs() <= self.xsize * tolerance_quotient
+                    && relative_position.y.abs() <= self.ysize * tolerance_quotient
             }
             AreaKind::Ellipse => {
-                sqr(relative_position.x / self.xsize) + sqr(relative_position.y / self.ysize) <= (1. + tolerance)
+                sqr(relative_position.x / self.xsize) + sqr(relative_position.y / self.ysize)
+                    <= tolerance_quotient
             }
             AreaKind::Hexagon => panic!("Not implemented"),
         };
@@ -95,11 +125,7 @@ impl fmt::Display for Area {
         write!(
             f,
             "[[{}, {}], {}, {}, {}]",
-            self.center.x,
-            self.center.y,
-            self.xsize,
-            self.ysize,
-            self.angle * 180. / std::f64::consts::PI
+            self.center.x, self.center.y, self.xsize, self.ysize, self.angle
         )
     }
 }

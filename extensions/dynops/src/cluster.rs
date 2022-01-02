@@ -1,10 +1,12 @@
 mod kdtree;
 mod mvee;
 
+use crate::types::{Area, AreaKind, Distance, Position2d};
+use mvee::get_mvee;
 use nalgebra::Vector2;
 use std::collections::HashMap;
+use std::f64::consts::PI;
 use std::marker::PhantomData;
-use crate::types::{Area, AreaKind, Distance, Position2d};
 
 const EPSILON: f64 = 100.0;
 const MIN_POINTS: usize = 6;
@@ -12,7 +14,11 @@ const MIN_POINTS: usize = 6;
 fn format_area(area: &Area) -> String {
     format!(
         "[[{:.2},{:.2}],{:.2},{:.2},{:.2}]",
-        area.center.x, area.center.y, area.xsize, area.ysize, area.angle
+        area.center.x,
+        area.center.y,
+        area.xsize,
+        area.ysize,
+        -area.angle * 180. / PI
     )
 }
 
@@ -32,11 +38,11 @@ fn bounding_rec(coords: &[Vector2<f64>]) -> Area {
     let y = (ymax + ymin) / 2.0;
 
     Area {
-        center: Position2d::new(x,y),
+        center: Position2d::new(x, y),
         xsize: (xmax - xmin) / 2.0,
         ysize: (ymax - ymin) / 2.0,
         angle: 0.,
-        kind: AreaKind::Rectangle
+        kind: AreaKind::Rectangle,
     }
 }
 
@@ -79,7 +85,7 @@ pub fn entrypoint(data: &String) -> String {
     }
     let centers: Vec<String> = clusters
         .iter()
-        .map(|(_, cluster_points)| bounding_rec(cluster_points))
+        .map(|(_, cluster_points)| get_mvee(cluster_points, 0.1))
         .map(|area| format_area(&area))
         .collect();
     format!("[\n{}\n]", centers.join(",\n"))
@@ -185,46 +191,6 @@ where
             .collect()
     }
 
-    /// Run the DBSCAN algorithm on a given population of datapoints.
-    ///
-    /// A vector of [`Classification`] enums is returned, where each element
-    /// corresponds to a row in the input matrix.
-    ///
-    /// # Arguments
-    /// * `population` - a matrix of datapoints, organized by rows
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// use dbscan::Classification::*;
-    /// use dbscan::Model;
-    ///
-    /// let model = Model::new(1.0, 3);
-    /// let inputs = vec![
-    ///     vec![1.5, 2.2],
-    ///     vec![1.0, 1.1],
-    ///     vec![1.2, 1.4],
-    ///     vec![0.8, 1.0],
-    ///     vec![3.7, 4.0],
-    ///     vec![3.9, 3.9],
-    ///     vec![3.6, 4.1],
-    ///     vec![10.0, 10.0],
-    /// ];
-    /// let output = model.run(&inputs);
-    /// assert_eq!(
-    ///     output,
-    ///     vec![
-    ///         Edge(0),
-    ///         Core(0),
-    ///         Core(0),
-    ///         Core(0),
-    ///         Core(1),
-    ///         Core(1),
-    ///         Core(1),
-    ///         Noise
-    ///     ]
-    /// );
-    /// ```
     pub fn run(mut self, population: &Vec<T>) -> Vec<Classification> {
         self.c = (0..population.len()).map(|_| Noise).collect();
         self.v = (0..population.len()).map(|_| false).collect();
@@ -282,30 +248,5 @@ mod tests {
             ],
             cluster(5., 3, &args)
         );
-    }
-
-    fn test_map_data(data: &str) {
-        let result = entrypoint(&data.to_owned());
-        assert_eq!("...", result);
-    }
-
-    #[test]
-    fn test_map_altis() {
-        //test_map_data(&include_str!("testdata/objects.Altis.txt"));
-    }
-
-    #[test]
-    fn test_map_stratis() {
-        //test_map_data(&include_str!("testdata/objects.Stratis.txt"));
-    }
-
-    #[test]
-    fn test_map_livonia() {
-        //test_map_data(&include_str!("testdata/objects.Livonia.txt"));
-    }
-
-    #[test]
-    fn test_map_tanoa() {
-        //test_map_data(&include_str!("testdata/objects.Tanoa.txt"));
     }
 }

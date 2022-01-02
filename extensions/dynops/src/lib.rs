@@ -81,7 +81,6 @@ pub extern "C" fn RVExtensionVersion(output: *mut c_char, output_size: c_int) {
 
 #[cfg(test)]
 mod tests {
-
     #[test]
     fn test_echo() {
         let args: Vec<String> = vec!["A".to_owned(), "B".to_owned()];
