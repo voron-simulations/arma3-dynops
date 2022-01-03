@@ -68,5 +68,27 @@
                 }
             ]
         },
+        {
+            "label": "Populate CfgFunctions",
+            "command": "${workspaceFolder}/scripts/PopulateCfgFunctions.ps1",
+            "type": "shell",
+            "args": [
+                "-Directory",
+                "${workspaceFolder}/addons"
+            ],
+            "options": {
+                "shell": {
+                    "executable": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                    "args": [
+                        "-NoProfile",
+                        "-ExecutionPolicy",
+                        "Bypass",
+                        "-Command"
+                    ]
+                }
+            },
+            "group": "none",
+            "problemMatcher": [],
+        },
     ]
 }
