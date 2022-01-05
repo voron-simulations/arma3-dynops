@@ -74,7 +74,7 @@
             "type": "shell",
             "args": [
                 "-Directory",
-                "${workspaceFolder}/addons"
+                "${workspaceFolder}\\addons"
             ],
             "options": {
                 "shell": {

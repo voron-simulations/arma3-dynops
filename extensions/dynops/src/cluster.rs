@@ -1,4 +1,3 @@
-mod kdtree;
 mod mvee;
 
 use crate::types::{Area, AreaKind, Distance, Position2d};

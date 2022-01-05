@@ -1,19 +1,61 @@
 {
     "configurations": [
         {
-            "name": "Run test app",
+            "name": "Cluster Test Stratis",
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/target/debug/dynops.exe",
-            "args": [
-                "--test-threads",
-                "1",
-                "--nocapture"
-            ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
-            "environment": [],
-            "externalConsole": true
+            "args":[
+                "${workspaceFolder}\\data\\objects.Stratis.txt"
+            ],
+            "environment": [
+                {
+                    "name": "RUST_BACKTRACE",
+                    "value": "1"
+                }
+            ],
+            "console": "integratedTerminal",
+            "preLaunchTask": "build"
+        },
+        {
+            "name": "Cluster Test Altis",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/target/debug/dynops.exe",
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "args":[
+                "${workspaceFolder}\\data\\objects.Altis.txt"
+            ],
+            "environment": [
+                {
+                    "name": "RUST_BACKTRACE",
+                    "value": "1"
+                }
+            ],
+            "console": "integratedTerminal",
+            "preLaunchTask": "build"
+        },
+        {
+            "name": "Cluster Test Livonia",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/target/debug/dynops.exe",
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "args":[
+                "${workspaceFolder}\\data\\objects.Livonia.txt"
+            ],
+            "environment": [
+                {
+                    "name": "RUST_BACKTRACE",
+                    "value": "1"
+                }
+            ],
+            "console": "integratedTerminal",
+            "preLaunchTask": "build"
         }
     ]
 }
