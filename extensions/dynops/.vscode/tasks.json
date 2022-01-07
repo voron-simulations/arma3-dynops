@@ -73,7 +73,12 @@
                         "message": 7
                     }
                 }
-            ]
+            ],
+            "options": {
+                "env": {
+                    "RUST_BACKTRACE": "1"
+                }
+            },
         },
         {
             "label": "clean",

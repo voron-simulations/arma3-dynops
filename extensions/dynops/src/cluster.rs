@@ -45,21 +45,25 @@ fn bounding_rec(coords: &[Vector2<f64>]) -> Area {
     }
 }
 
-pub fn entrypoint(data: &String) -> String {
-    let data_cropped = data
-        .strip_prefix("\"")
-        .unwrap_or(data)
-        .strip_suffix("\"")
-        .unwrap_or(data);
+pub fn entrypoint(data: &String) -> Result<String, String> {
+    let mut points: Vec<Position2d> = Vec::new();
+    points.reserve(1000);
 
-    let lines: Vec<&str> = data_cropped.lines().collect();
-    let points: Vec<Position2d> = lines
-        .iter()
-        .map(|line| -> Position2d {
-            let coord: (String, f64, f64) = serde_json::from_str(line).unwrap();
-            Position2d::new(coord.1, coord.2)
-        })
-        .collect();
+    for line in data.lines() {
+        let parts = line
+            .split_once(',')
+            .ok_or("Expected two comma-delimited values")?;
+        let x: f64 = parts
+            .0
+            .parse::<f64>()
+            .or_else(|_| Err(format!("Failed to parse value {}", parts.0)))?;
+        let y: f64 = parts
+            .1
+            .parse::<f64>()
+            .or_else(|_| Err(format!("Failed to parse value {}", parts.1)))?;
+        points.push(Position2d::new(x, y));
+    }
+
     let classifications = cluster(EPSILON, MIN_POINTS, &points);
 
     let mut clusters: HashMap<usize, Vec<Position2d>> = HashMap::new();
@@ -87,7 +91,7 @@ pub fn entrypoint(data: &String) -> String {
         .map(|(_, cluster_points)| get_mvee(cluster_points, 0.1))
         .map(|area| format_area(&area))
         .collect();
-    format!("[\n{}\n]", centers.join(",\n"))
+    Ok(format!("[\n{}\n]", centers.join(",\n")))
 }
 
 // https://github.com/lazear/dbscan/blob/master/src/lib.rs

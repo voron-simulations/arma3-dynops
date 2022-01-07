@@ -22,7 +22,7 @@ fn write_output(value: &str, output: *mut c_char, output_size: c_int) {
 fn exec_function(function: &str, args: &[String]) -> Result<String, String> {
     let result = catch_unwind(|| {
         return match function {
-            "cluster" => Ok(cluster::entrypoint(&args[0])),
+            "cluster" => cluster::entrypoint(&args[0]),
             "datetime" => Ok(misc::get_current_datetime()),
             "echo" => Ok(misc::echo(args)),
             "uuid" => Ok(misc::uuid()),
@@ -30,7 +30,21 @@ fn exec_function(function: &str, args: &[String]) -> Result<String, String> {
             _ => Err(format!("Unknown function: {}", function).to_owned()),
         };
     });
-    result.unwrap_or(Err("Library panicked".to_owned()))
+
+    // Panic handling
+    match result {
+        Ok(result) => return result, // return value is already a Result
+        Err(reason) => { // Try to extract error message
+            match reason.downcast::<String>() {
+                Ok(panic_msg) => {
+                    return Err(format!("Panic: {}", panic_msg));
+                }
+                Err(_) => {
+                    return Err(format!("Panic: unknown"));
+                }
+            }    
+        }
+    }
 }
 
 #[no_mangle]

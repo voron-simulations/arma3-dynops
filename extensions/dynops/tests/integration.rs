@@ -51,7 +51,7 @@ mod integration {
             .map(|str| -> *const c_char { str.as_ptr() })
             .collect();
 
-        dynops::RVExtensionArgs(
+        let retval = dynops::RVExtensionArgs(
             c_chars.as_mut_ptr(),
             c_chars.len() as i32,
             function.as_ptr(),
@@ -59,15 +59,16 @@ mod integration {
             args.len() as i32,
         );
         let result = unsafe { CStr::from_ptr(c_chars.as_ptr()).to_str().unwrap() };
+        assert_eq!(0, retval);
         assert_eq!("echo(A, B, C)", result)
     }
 
     fn test_map_data(data: &str) {
-        let mut c_chars = vec![i8::from(0); 1024*128];
+        let mut c_chars = vec![i8::from(0); 1024 * 128];
         let function = CString::new("cluster").unwrap();
         let args: Vec<*const c_char> = vec![data.as_ptr() as *const i8];
 
-        dynops::RVExtensionArgs(
+        let retval = dynops::RVExtensionArgs(
             c_chars.as_mut_ptr(),
             c_chars.len() as i32,
             function.as_ptr(),
@@ -75,6 +76,7 @@ mod integration {
             args.len() as i32,
         );
         let result = unsafe { CStr::from_ptr(c_chars.as_ptr()).to_str().unwrap() };
+        assert_eq!(0, retval);
         assert!(result.len() > 0);
     }
 

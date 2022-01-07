@@ -8,18 +8,19 @@ fn main() {
     let data = fs::read_to_string(input).expect("Something went wrong reading the file");
 
     let lines: Vec<&str> = data.lines().collect();
-    let points: Vec<(String, f64, f64)> = lines
-        .iter()
-        .map(|line| -> (String, f64, f64) {
-            let coord: (String, f64, f64) = serde_json::from_str(line).unwrap();
-            coord
-        })
-        .collect();
+    let mut points: Vec<(f64, f64)> = Vec::new();
+    points.reserve_exact(lines.len());
+    for line in lines {
+        let parts = line.split_once(',').unwrap();
+        let x: f64 = parts.0.parse::<f64>().unwrap();
+        let y: f64 = parts.1.parse::<f64>().unwrap();
+        points.push((x, y));
+    }
 
-    let min_x = points.iter().map(|p| -> i32 { p.1 as i32 }).min().unwrap();
-    let max_x = points.iter().map(|p| -> i32 { p.1 as i32 }).max().unwrap();
-    let min_y = points.iter().map(|p| -> i32 { p.2 as i32 }).min().unwrap();
-    let max_y = points.iter().map(|p| -> i32 { p.2 as i32 }).max().unwrap();
+    let min_x = points.iter().map(|p| -> i32 { p.0 as i32 }).min().unwrap();
+    let max_x = points.iter().map(|p| -> i32 { p.0 as i32 }).max().unwrap();
+    let min_y = points.iter().map(|p| -> i32 { p.1 as i32 }).min().unwrap();
+    let max_y = points.iter().map(|p| -> i32 { p.1 as i32 }).max().unwrap();
     let delta_x = max_x - min_x;
     let delta_y = max_y - min_y;
 
@@ -35,8 +36,8 @@ fn main() {
     let mut image = RgbaImage::new(size_x, size_y);
 
     for p in points.iter() {
-        let x = ((p.1 - min_x as f64) * scale) as u32;
-        let y = ((max_y as f64 - p.2) * scale) as u32;
+        let x = ((p.0 - min_x as f64) * scale) as u32;
+        let y = ((max_y as f64 - p.1) * scale) as u32;
 
         assert!(x < size_x);
         assert!(y < size_y);

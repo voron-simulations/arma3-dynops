@@ -27,4 +27,5 @@ ForEach ($addon in $addons) {
 	};
 };"
     $cfgFunctions | Out-File -FilePath $directory\$addon\CfgFunctions.hpp -Encoding ascii
+    Write-Host "Saved $directory\$addon\CfgFunctions.hpp"
 }
