@@ -220,8 +220,8 @@ mod tests {
 
     #[test]
     fn nine_point_center() {
-        let data = "[\"\",0,0]\n[\"\",1,0]\n[\"\",2,0]\n[\"\",0,1]\n[\"\",1,1]\n[\"\",2,1]\n[\"\",0,2]\n[\"\",1,2]\n[\"\",2,2]".to_owned();
-        entrypoint(&data);
+        let data = "0,0\n1,0\n2,0\n0,1\n1,1\n2,1\n0,2\n1,2\n2,2".to_owned();
+        entrypoint(&data).unwrap();
     }
 
     #[test]

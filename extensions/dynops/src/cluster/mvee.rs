@@ -66,7 +66,7 @@ pub fn get_mvee(coords: &[Position2d], tolerance: f64) -> Area {
 mod tests {
     use crate::cluster::mvee::get_mvee;
     use crate::types::{distance, Area, AreaKind, Position2d};
-    use std::f64::consts::{FRAC_PI_4, SQRT_2};
+    use std::f64::consts::{FRAC_PI_4, FRAC_PI_2, SQRT_2};
 
     fn run_mvee_test(points: &[Position2d], tolerance: f64, expected: Area) {
         let actual = get_mvee(&points, tolerance);
@@ -206,10 +206,10 @@ mod tests {
             0.1,
             Area {
                 center: Position2d::new(0., 0.),
-                xsize: SQRT_2,
-                ysize: 2. * SQRT_2,
+                xsize: 2. * SQRT_2,
+                ysize: SQRT_2,
                 kind: AreaKind::Ellipse,
-                angle: 0.,
+                angle: FRAC_PI_2,
             },
         );
     }
@@ -227,10 +227,10 @@ mod tests {
             0.1,
             Area {
                 center: Position2d::new(3., 3.),
-                xsize: 1.,
-                ysize: 5.,
+                xsize: 5.,
+                ysize: 1.,
                 kind: AreaKind::Ellipse,
-                angle: FRAC_PI_4,
+                angle: -FRAC_PI_4,
             },
         );
     }
@@ -248,10 +248,10 @@ mod tests {
             0.1,
             Area {
                 center: Position2d::new(3., 3.),
-                xsize: 1.,
-                ysize: 5.,
+                xsize: 5.,
+                ysize: 1.,
                 kind: AreaKind::Ellipse,
-                angle: -FRAC_PI_4,
+                angle: FRAC_PI_4,
             },
         );
     }

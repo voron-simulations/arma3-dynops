@@ -38,6 +38,19 @@ mod integration {
     }
 
     #[test]
+    fn panic() {
+        let mut c_chars = vec![i8::from(0); 1024];
+        let function = CString::new("panic").unwrap();
+        dynops::RVExtension(
+            c_chars.as_mut_ptr(),
+            c_chars.len() as i32,
+            function.as_ptr(),
+        );
+        let result = unsafe { CStr::from_ptr(c_chars.as_ptr()).to_str().unwrap() };
+        assert_eq!("Panic: Test panic", result);
+    }
+
+    #[test]
     fn echo() {
         let mut c_chars = vec![i8::from(0); 1024];
         let function = CString::new("echo").unwrap();
@@ -76,8 +89,8 @@ mod integration {
             args.len() as i32,
         );
         let result = unsafe { CStr::from_ptr(c_chars.as_ptr()).to_str().unwrap() };
+        assert_ne!(result, "");
         assert_eq!(0, retval);
-        assert!(result.len() > 0);
     }
 
     #[test]

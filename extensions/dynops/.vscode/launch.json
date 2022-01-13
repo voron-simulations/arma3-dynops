@@ -7,7 +7,7 @@
             "program": "${workspaceFolder}/target/debug/dynops.exe",
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
-            "args":[
+            "args": [
                 "${workspaceFolder}\\data\\objects.Stratis.txt"
             ],
             "environment": [
@@ -26,7 +26,7 @@
             "program": "${workspaceFolder}/target/debug/dynops.exe",
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
-            "args":[
+            "args": [
                 "${workspaceFolder}\\data\\objects.Altis.txt"
             ],
             "environment": [
@@ -45,8 +45,27 @@
             "program": "${workspaceFolder}/target/debug/dynops.exe",
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
-            "args":[
+            "args": [
                 "${workspaceFolder}\\data\\objects.Livonia.txt"
+            ],
+            "environment": [
+                {
+                    "name": "RUST_BACKTRACE",
+                    "value": "1"
+                }
+            ],
+            "console": "integratedTerminal",
+            "preLaunchTask": "build"
+        },
+        {
+            "name": "Cluster Test Malden",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/target/debug/dynops.exe",
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "args":[
+                "${workspaceFolder}\\data\\objects.Malden.txt"
             ],
             "environment": [
                 {
@@ -64,6 +83,6 @@
             "processName": "arma3_x64.exe",
             "stopAtEntry": false,
             "console": "integratedTerminal",
-        }
+        },
     ]
 }

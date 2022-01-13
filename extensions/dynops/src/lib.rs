@@ -35,7 +35,7 @@ fn exec_function(function: &str, args: &[String]) -> Result<String, String> {
     match result {
         Ok(result) => return result, // return value is already a Result
         Err(reason) => { // Try to extract error message
-            match reason.downcast::<String>() {
+            match reason.downcast::<&str>() {
                 Ok(panic_msg) => {
                     return Err(format!("Panic: {}", panic_msg));
                 }
