@@ -2,6 +2,7 @@
 mod integration {
     use libc::c_char;
     use std::ffi::{CStr, CString};
+    use std::io;
 
     #[test]
     fn version() {
@@ -89,8 +90,10 @@ mod integration {
             args.len() as i32,
         );
         let result = unsafe { CStr::from_ptr(c_chars.as_ptr()).to_str().unwrap() };
-        assert_ne!(result, "");
-        assert_eq!(0, retval);
+        if retval != 0 {
+            println!("{}", result);
+            assert!(false);
+        }
     }
 
     #[test]
