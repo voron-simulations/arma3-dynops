@@ -50,9 +50,13 @@ pub fn entrypoint(data: &String) -> Result<String, String> {
     points.reserve(1000);
 
     for line in data.lines() {
-        let parts = line
-            .split_once(',')
-            .ok_or(format!("Expected two comma-delimited coordinates, got {}", line))?;
+        if line.len() == 0 {
+            continue;
+        }
+        let parts = line.split_once(',').ok_or(format!(
+            "Expected two comma-delimited coordinates, got {}",
+            line
+        ))?;
         let x: f64 = parts
             .0
             .parse::<f64>()
