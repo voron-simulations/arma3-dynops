@@ -2,7 +2,6 @@
 mod integration {
     use libc::c_char;
     use std::ffi::{CStr, CString};
-    use std::io;
 
     #[test]
     fn version() {

@@ -52,7 +52,7 @@ pub fn entrypoint(data: &String) -> Result<String, String> {
     for line in data.lines() {
         let parts = line
             .split_once(',')
-            .ok_or("Expected two comma-delimited values")?;
+            .ok_or(format!("Expected two comma-delimited coordinates, got {}", line))?;
         let x: f64 = parts
             .0
             .parse::<f64>()
