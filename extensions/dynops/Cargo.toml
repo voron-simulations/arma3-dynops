@@ -1,19 +1,21 @@
 [package]
-authors = ["DarkWanderer <elquentaro@gmail.com>"]
+authors = ["DarkWanderer <elquentaro@gmail.com>"] 
 edition = "2018"
-name = "dynops"
-version = "0.1.0"
+# name of test executable, main library defined in next section
+name = "dynops-test"
+version = "0.1.0" 
 
 [lib]
 bench = false
 crate-type = ["cdylib", "rlib"]
+name = "dynops"
 
 [dependencies]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 chrono = "*"
+image = "*"
 libc = "*"
 nalgebra = "*"
-image = "*"
 uuid = {version = "*", features = ["v4"]}
 
 [profile.dev]

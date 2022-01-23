@@ -4,7 +4,7 @@
             "name": "Cluster Test Stratis",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/target/debug/dynops.exe",
+            "program": "${workspaceFolder}/target/debug/dynops-test.exe",
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "args": [
@@ -23,7 +23,7 @@
             "name": "Cluster Test Altis",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/target/debug/dynops.exe",
+            "program": "${workspaceFolder}/target/debug/dynops-test.exe",
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "args": [
@@ -42,7 +42,7 @@
             "name": "Cluster Test Livonia",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/target/debug/dynops.exe",
+            "program": "${workspaceFolder}/target/debug/dynops-test.exe",
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "args": [
@@ -61,7 +61,7 @@
             "name": "Cluster Test Malden",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/target/debug/dynops.exe",
+            "program": "${workspaceFolder}/target/debug/dynops-test.exe",
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "args":[
