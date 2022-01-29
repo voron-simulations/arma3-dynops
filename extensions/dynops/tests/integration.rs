@@ -79,7 +79,8 @@ mod integration {
     fn test_map_data(data: &str) {
         let mut c_chars = vec![i8::from(0); 1024 * 128];
         let function = CString::new("cluster").unwrap();
-        let args: Vec<*const c_char> = vec![data.as_ptr() as *const i8];
+        let input = CString::new(data).unwrap();
+        let args: Vec<*const c_char> = vec![input.as_ptr()];
 
         let retval = dynops::RVExtensionArgs(
             c_chars.as_mut_ptr(),
