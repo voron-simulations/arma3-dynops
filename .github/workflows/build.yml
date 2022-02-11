@@ -16,14 +16,27 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@master
-      
+
     - name: Enable problem matcher
       run: echo "::add-matcher::.github/matchers/sqf.json"
     
     - name: SQFLint
       uses: arma-actions/sqflint@master
       continue-on-error: true # No failure due to many false-positives:
- 
+
+  parse:
+    name: Run SQF parse test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+          
+    - name: SQLVM parse test
+      uses: darkwanderer/sqfvm-action@master
+      continue-on-error: true # No failure, experimental run
+      with:
+        command: --input-sqf addons/factions/fnc_initFactions.sqf
+
   build-extension-windows-x64:
     name: Build extension (Windows x64)
     runs-on: windows-latest
