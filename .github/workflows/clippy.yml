@@ -35,6 +35,11 @@ jobs:
           components: clippy
           override: true
 
+      - name: Init Cargo cache
+        uses: Swatinem/rust-cache@v1
+        with:
+          working-directory: extensions/dynops
+
       - name: Install required cargo
         run: cargo install clippy-sarif sarif-fmt
 
