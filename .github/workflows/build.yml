@@ -70,7 +70,7 @@ jobs:
         run: move extensions/dynops/target/release/dynops.dll dynops_x64.dll
           
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: extension-x64-windows
           path: dynops_x64.dll
@@ -111,7 +111,7 @@ jobs:
         run: strip --strip-unneeded --keep-file-symbols dynops_x64.so
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: extension-x64-linux
           path: dynops_x64.so
@@ -145,7 +145,7 @@ jobs:
         command: build --release --ci
     
     - name: Upload Artifact
-      uses: actions/upload-artifact@v2-preview
+      uses: actions/upload-artifact@v3
       with:
         name: DynamicOperations-nobin
         path: releases/dynops_*.zip
