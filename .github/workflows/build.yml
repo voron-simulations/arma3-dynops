@@ -60,19 +60,15 @@ jobs:
           
       - name: Init Cargo cache
         uses: Swatinem/rust-cache@v1
-        with:
-          working-directory: extensions/dynops
       
       - name: Build
-        working-directory: extensions/dynops
         run: cargo build --release
        
       - name: Test
-        working-directory: extensions/dynops
         run: cargo test --release
       
       - name: Move output library
-        run: move extensions/dynops/target/release/dynops.dll dynops_x64.dll
+        run: move target/release/dynops.dll dynops_x64.dll
           
       - name: Upload artifact
         uses: actions/upload-artifact@v3
@@ -98,19 +94,15 @@ jobs:
           
       - name: Init Cargo cache
         uses: Swatinem/rust-cache@v1
-        with:
-          working-directory: extensions/dynops
           
       - name: Build
-        working-directory: extensions/dynops
         run: cargo build --release
           
       - name: Test
-        working-directory: extensions/dynops
         run: cargo test --release
       
       - name: Move output library
-        run: mv extensions/dynops/target/release/libdynops.so dynops_x64.so
+        run: mv target/release/libdynops.so dynops_x64.so
 
       - name: Strip binary
         run: strip --strip-unneeded --keep-file-symbols dynops_x64.so
