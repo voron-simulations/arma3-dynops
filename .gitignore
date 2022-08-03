@@ -12,3 +12,6 @@ hemtt.exe
 *.dll
 *.so
 .vscode/launch.json
+
+# Rust
+/target
