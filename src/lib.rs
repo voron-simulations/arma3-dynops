@@ -33,7 +33,7 @@ fn exec_function(function: &str, args: &[String]) -> Result<String, String> {
 
     // Panic handling
     match result {
-        Ok(result) => return result, // return value is already a Result
+        Ok(result) => result, // return value is already a Result
         Err(reason) => { // Try to extract error message
             match reason.downcast::<&str>() {
                 Ok(panic_msg) => {
@@ -84,7 +84,7 @@ pub extern "C" fn RVExtensionArgs(
     let retval = result.is_err() as i32; // return 1 if error
     let outstr = result.unwrap_or_else(|err| err);
     write_output(outstr.as_str(), output, output_size);
-    return retval;
+    retval
 }
 
 #[no_mangle]
