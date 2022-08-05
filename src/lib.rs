@@ -40,7 +40,7 @@ fn exec_function(function: &str, args: &[String]) -> Result<String, String> {
                     return Err(format!("Panic: {}", panic_msg));
                 }
                 Err(_) => {
-                    return Err(format!("Panic: unknown"));
+                    return Err("Panic: unknown".to_string());
                 }
             }    
         }

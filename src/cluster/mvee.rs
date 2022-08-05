@@ -1,6 +1,5 @@
 use crate::types::{Area, AreaKind, Position2d};
 use nalgebra::{DMatrix, DVector};
-use std::f64::consts::*;
 
 // Sourced from https://stackoverflow.com/a/1768440/1732138
 pub fn get_mvee(coords: &[Position2d], tolerance: f64) -> Area {

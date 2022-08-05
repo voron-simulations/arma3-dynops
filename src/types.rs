@@ -13,28 +13,30 @@ pub enum MarkerShape {
 }
 
 pub struct Marker {
-    pub Pos: Vector2<f64>,
+    pub pos: Vector2<f64>,
     pub Size: Vector2<f64>,
     pub Dir: f32,
     pub Alpha: f32,
 
     pub Name: String,
     pub Color: String,
-    pub Shape: MarkerShape,
+    pub shape: MarkerShape,
 }
 
 impl fmt::Display for Marker {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let shape = match self.Shape {
-            Rectangle => "RECTANGLE",
-            Ellipse => "ELLIPSE",
-            Hexagon => "ELLIPSE",
+        let shape = match self.shape {
+            MarkerShape::Rectangle => "RECTANGLE",
+            MarkerShape::Ellipse => "ELLIPSE",
+            MarkerShape::Hexagon => "ELLIPSE",
+            MarkerShape::Icon => "ICON",
+            MarkerShape::Polyline => "PolyLine",
         };
 
-        let pos = if self.Shape == MarkerShape::Hexagon {
-            -self.Pos
+        let pos = if self.shape == MarkerShape::Hexagon {
+            -self.pos
         } else {
-            self.Pos
+            self.pos
         };
 
         write!(f, "|{}|[{},{}]||", self.Name, pos[0], pos[1],)
