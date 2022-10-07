@@ -5,13 +5,14 @@
     "tasks": [
         {
             "dependsOn": [
-                "Build Extension"
+                "Copy Extension"
             ],
             "label": "HEMTT Build",
             "type": "shell",
             "command": "${workspaceFolder}/hemtt",
             "args": [
-                "build"
+                "build",
+                "--no-progress"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -28,6 +29,7 @@
             "command": "${workspaceFolder}/hemtt",
             "args": [
                 "build",
+                "--no-progress",
                 "--release",
                 "--force-release"
             ],
@@ -38,14 +40,21 @@
             "group": "build"
         },
         {
-            "label": "Build Extension",
-            "args": [
-                "build",
-                "-v"
+            "label": "Copy Extension",
+            "dependsOn": [
+                "Build Extension"
             ],
-            "command": "cargo",
-            "group": "build",
-            "problemMatcher": [ "$rustc" ]
+            "type": "shell",
+            "args": [
+                "${workspaceFolder}\\target\\debug\\dynops.dll",
+                "${workspaceFolder}\\dynops_x64.dll"
+            ],
+            "command": "copy",
+        },
+        {
+            "label": "Build Extension",
+            "type": "cargo",
+            "command": "build"
         },
         {
             "label": "Populate CfgFunctions",
@@ -78,7 +87,9 @@
             ],
             "command": "cargo",
             "group": "build",
-            "problemMatcher": [ "$rustc" ],
+            "problemMatcher": [
+                "$rustc"
+            ],
             "options": {
                 "env": {
                     "RUST_BACKTRACE": "1"
@@ -109,7 +120,9 @@
                 "reveal": "always"
             },
             "group": "build",
-            "problemMatcher": [ "$rustc" ]
+            "problemMatcher": [
+                "$rustc"
+            ]
         },
         {
             "type": "process",
@@ -126,7 +139,9 @@
                 "kind": "test",
                 "isDefault": true
             },
-            "problemMatcher": [ "$rustc" ]
+            "problemMatcher": [
+                "$rustc"
+            ]
         },
         {
             "label": "bench",
@@ -138,7 +153,9 @@
                 "reveal": "always"
             },
             "group": "test",
-            "problemMatcher": [ "$rustc" ]
+            "problemMatcher": [
+                "$rustc"
+            ]
         }
     ]
 }
