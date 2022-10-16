@@ -9,7 +9,7 @@ if (!isMultiplayer || isServer) then
 		GVAR(SideIntel) = createHashMap;
 	};
 	private _points = GVAR(SideIntel) get _side;
-	_points = _points + _addedPoints;
+	_points = if (isNil "_points") then { _addedPoints; } else { _points + _addedPoints; };
 	GVAR(SideIntel) set [_side, _points];
 	publicVariable QGVAR(SideIntel);
 }

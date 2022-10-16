@@ -18,9 +18,8 @@ GVARMAIN(FactionData) = createHashMap;
 
 // Create base hashset for every faction
 {
-	private _baseSet = createHashMap;
-
 	// Pre-fill arsenal items which are available for any faction
+	private _baseSet = createHashMap;
 	[_baseSet, "Items", ["FirstAidKit","ItemWatch","ItemCompass","ItemRadio","ItemMap","Medikit","ToolKit"]] call EFUNC(main,hashAdd);
 
 	GVARMAIN(FactionData) set [_x, _baseSet];

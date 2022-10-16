@@ -14,3 +14,4 @@ class CfgPatches {
 
 #include "CfgFunctions.hpp"
 #include "CfgNotifications.hpp"
+#include "CfgEventHandlers.hpp"
