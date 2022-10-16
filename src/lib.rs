@@ -3,6 +3,7 @@
 mod cluster;
 mod misc;
 mod types;
+mod kdtree;
 
 use libc::{c_char, c_int, strncpy};
 use std::ffi::{CStr, CString};
@@ -48,7 +49,7 @@ fn exec_function(function: &str, args: &[String]) -> Result<String, String> {
 }
 
 #[no_mangle]
-pub extern "C" fn RVExtension(output: *mut c_char, output_size: c_int, function: *const c_char) {
+pub unsafe extern "C" fn RVExtension(output: *mut c_char, output_size: c_int, function: *const c_char) {
     let fun = unsafe { CStr::from_ptr(function).to_str().unwrap_or_default() };
     let args: Vec<String> = Vec::new();
 
@@ -58,7 +59,7 @@ pub extern "C" fn RVExtension(output: *mut c_char, output_size: c_int, function:
 }
 
 #[no_mangle]
-pub extern "C" fn RVExtensionArgs(
+pub unsafe extern "C" fn RVExtensionArgs(
     output: *mut c_char,
     output_size: c_int,
     function: *const c_char,
@@ -88,7 +89,7 @@ pub extern "C" fn RVExtensionArgs(
 }
 
 #[no_mangle]
-pub extern "C" fn RVExtensionVersion(output: *mut c_char, output_size: c_int) {
+pub unsafe extern "C" fn RVExtensionVersion(output: *mut c_char, output_size: c_int) {
     let version = "Dynamic Operations v0.1";
     write_output(version, output, output_size);
 }

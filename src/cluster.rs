@@ -22,7 +22,7 @@ fn format_area(area: &Area) -> String {
 }
 
 fn bounding_rec(coords: &[Vector2<f64>]) -> Area {
-    let mut xmin: f64 = f64::MAX;
+let mut xmin: f64 = f64::MAX;
     let mut xmax: f64 = f64::MIN;
     let mut ymin: f64 = f64::MAX;
     let mut ymax: f64 = f64::MIN;

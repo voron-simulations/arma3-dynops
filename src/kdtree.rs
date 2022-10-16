@@ -50,3 +50,14 @@ struct KdTreeNode<T> {
     pub left: Option<usize>,  // Index of right node in arena
     pub right: Option<usize>, // Index of left node in arena
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn empty_tree() {
+        // let tree = construct_kdtree();
+    }
+}

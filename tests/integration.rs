@@ -6,7 +6,7 @@ mod integration {
     #[test]
     fn version() {
         let mut c_chars = vec![i8::from(0); 1024];
-        dynops::RVExtensionVersion(c_chars.as_mut_ptr(), c_chars.len() as i32);
+        unsafe { dynops::RVExtensionVersion(c_chars.as_mut_ptr(), c_chars.len() as i32) };
         let result = unsafe { CStr::from_ptr(c_chars.as_ptr()).to_str().unwrap() };
         assert!(result.starts_with("Dynamic Operations"));
     }
@@ -15,11 +15,13 @@ mod integration {
     fn datetime() {
         let mut c_chars = vec![i8::from(0); 1024];
         let function = CString::new("datetime").unwrap();
-        dynops::RVExtension(
-            c_chars.as_mut_ptr(),
-            c_chars.len() as i32,
-            function.as_ptr(),
-        );
+        unsafe {
+            dynops::RVExtension(
+                c_chars.as_mut_ptr(),
+                c_chars.len() as i32,
+                function.as_ptr(),
+            );
+        }
         let result = unsafe { CStr::from_ptr(c_chars.as_ptr()).to_str().unwrap() };
         assert!(result.len() > 5);
     }
@@ -28,11 +30,13 @@ mod integration {
     fn uuid() {
         let mut c_chars = vec![i8::from(0); 1024];
         let function = CString::new("uuid").unwrap();
-        dynops::RVExtension(
-            c_chars.as_mut_ptr(),
-            c_chars.len() as i32,
-            function.as_ptr(),
-        );
+        unsafe {
+            dynops::RVExtension(
+                c_chars.as_mut_ptr(),
+                c_chars.len() as i32,
+                function.as_ptr(),
+            );
+        }
         let result = unsafe { CStr::from_ptr(c_chars.as_ptr()).to_str().unwrap() };
         assert!(result.len() > 5);
     }
@@ -41,11 +45,13 @@ mod integration {
     fn panic() {
         let mut c_chars = vec![i8::from(0); 1024];
         let function = CString::new("panic").unwrap();
-        dynops::RVExtension(
-            c_chars.as_mut_ptr(),
-            c_chars.len() as i32,
-            function.as_ptr(),
-        );
+        unsafe {
+            dynops::RVExtension(
+                c_chars.as_mut_ptr(),
+                c_chars.len() as i32,
+                function.as_ptr(),
+            );
+        }
         let result = unsafe { CStr::from_ptr(c_chars.as_ptr()).to_str().unwrap() };
         assert_eq!("Panic: Test panic", result);
     }
@@ -64,13 +70,15 @@ mod integration {
             .map(|str| -> *const c_char { str.as_ptr() })
             .collect();
 
-        let retval = dynops::RVExtensionArgs(
-            c_chars.as_mut_ptr(),
-            c_chars.len() as i32,
-            function.as_ptr(),
-            args.as_ptr(),
-            args.len() as i32,
-        );
+        let retval = unsafe {
+            dynops::RVExtensionArgs(
+                c_chars.as_mut_ptr(),
+                c_chars.len() as i32,
+                function.as_ptr(),
+                args.as_ptr(),
+                args.len() as i32,
+            )
+        };
         let result = unsafe { CStr::from_ptr(c_chars.as_ptr()).to_str().unwrap() };
         assert_eq!(0, retval);
         assert_eq!("echo(A, B, C)", result)
@@ -82,13 +90,15 @@ mod integration {
         let input = CString::new(data).unwrap();
         let args: Vec<*const c_char> = vec![input.as_ptr()];
 
-        let retval = dynops::RVExtensionArgs(
-            c_chars.as_mut_ptr(),
-            c_chars.len() as i32,
-            function.as_ptr(),
-            args.as_ptr(),
-            args.len() as i32,
-        );
+        let retval = unsafe {
+            dynops::RVExtensionArgs(
+                c_chars.as_mut_ptr(),
+                c_chars.len() as i32,
+                function.as_ptr(),
+                args.as_ptr(),
+                args.len() as i32,
+            )
+        };
         let result = unsafe { CStr::from_ptr(c_chars.as_ptr()).to_str().unwrap() };
         if retval != 0 {
             println!("{}", result);
