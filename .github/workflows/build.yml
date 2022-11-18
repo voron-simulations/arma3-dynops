@@ -56,7 +56,7 @@ jobs:
             toolchain: stable
           
       - name: Init Cargo cache
-        uses: Swatinem/rust-cache@v1
+        uses: Swatinem/rust-cache@v2
       
       - name: Build
         uses: actions-rs/cargo@v1
@@ -90,7 +90,7 @@ jobs:
             toolchain: stable
           
       - name: Init Cargo cache
-        uses: Swatinem/rust-cache@v1
+        uses: Swatinem/rust-cache@v2
           
       - name: Build
         uses: actions-rs/cargo@v1
