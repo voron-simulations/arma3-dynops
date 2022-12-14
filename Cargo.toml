@@ -1,9 +1,9 @@
 [package]
-authors = ["DarkWanderer <elquentaro@gmail.com>"] 
+authors = ["DarkWanderer <elquentaro@gmail.com>"]
 edition = "2018"
 # name of test executable, main library defined in next section
 name = "dynops-test"
-version = "0.1.0" 
+version = "0.1.0"
 
 [lib]
 bench = false
@@ -12,7 +12,7 @@ name = "dynops"
 
 [dependencies]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-chrono = "*"
+chrono = {git = "https://github.com/chronotope/chrono", branch = "main"}
 image = "*"
 libc = "*"
 nalgebra = "*"
