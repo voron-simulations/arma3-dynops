@@ -65,7 +65,10 @@ jobs:
           args: --release
        
       - name: Test
-        run: cargo test --release
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --release
       
       - name: Move output library
         run: move target/release/dynops.dll dynops_x64.dll
@@ -99,7 +102,10 @@ jobs:
           args: --release
           
       - name: Test
-        run: cargo test --release
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --release
       
       - name: Move output library
         run: mv target/release/libdynops.so dynops_x64.so
