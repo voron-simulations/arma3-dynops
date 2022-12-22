@@ -6,9 +6,6 @@ on:
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [ "master" ]
-  schedule:
-    - cron: '0 0 * * *'
-  workflow_dispatch: {}
 
 jobs:
   rust-clippy-analyze:
@@ -61,7 +58,7 @@ jobs:
         with: 
           commit-message: "[clippy] Automatic changes by cargo clippy --fix"
           title: "[clippy] Automatic changes by cargo clippy --fix"
-          body: "Automated changes proposed by [rust-clippy](https://github.com/rust-lang/rust-clippy)"
+          body: "Automated changes proposed by [rust-clippy](https://github.com/rust-lang/rust-clippy)\n\nClose and reopen this PR to trigger GitHub Actions"
           branch: "clippy/fixes"
           delete-branch: true
           labels: "rust,clippy"
