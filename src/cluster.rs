@@ -50,7 +50,7 @@ pub fn entrypoint(data: &String) -> Result<String, String> {
     points.reserve(1000);
 
     for line in data.lines() {
-        if line.len() == 0 {
+        if line.is_empty() {
             continue;
         }
         let parts = line.split_once(',').ok_or(format!(
@@ -59,12 +59,10 @@ pub fn entrypoint(data: &String) -> Result<String, String> {
         ))?;
         let x: f64 = parts
             .0
-            .parse::<f64>()
-            .or_else(|_| Err(format!("Failed to parse value {}", parts.0)))?;
+            .parse::<f64>().map_err(|_| format!("Failed to parse value {}", parts.0))?;
         let y: f64 = parts
             .1
-            .parse::<f64>()
-            .or_else(|_| Err(format!("Failed to parse value {}", parts.1)))?;
+            .parse::<f64>().map_err(|_| format!("Failed to parse value {}", parts.1))?;
         points.push(Position2d::new(x, y));
     }
 
@@ -90,9 +88,7 @@ pub fn entrypoint(data: &String) -> Result<String, String> {
             _ => {}
         }
     }
-    let centers: Vec<String> = clusters
-        .iter()
-        .map(|(_, cluster_points)| get_mvee(cluster_points, 0.1))
+    let centers: Vec<String> = clusters.values().map(|cluster_points| get_mvee(cluster_points, 0.1))
         .map(|area| format_area(&area))
         .collect();
     Ok(format!("[\n{}\n]", centers.join(",\n")))

@@ -25,7 +25,7 @@ pub struct Marker {
 
 impl fmt::Display for Marker {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let shape = match self.shape {
+        let _shape = match self.shape {
             MarkerShape::Rectangle => "RECTANGLE",
             MarkerShape::Ellipse => "ELLIPSE",
             MarkerShape::Hexagon => "ELLIPSE",
@@ -70,7 +70,7 @@ pub struct Area {
 
 impl Area {
     pub fn contains(&self, point: &Position2d) -> bool {
-        return self.contains_tolerance(point, 0.);
+        self.contains_tolerance(point, 0.)
     }
 
     pub fn contains_tolerance(&self, point: &Position2d, tolerance: f64) -> bool {
@@ -78,7 +78,7 @@ impl Area {
         let rotation = Rotation2::new(-self.angle);
         let relative_position = rotation * axis_aligned_relative_pos;
         let tolerance_quotient = 1. + tolerance.abs();
-        return match self.kind {
+        match self.kind {
             AreaKind::Rectangle => {
                 relative_position.x.abs() <= self.xsize * tolerance_quotient
                     && relative_position.y.abs() <= self.ysize * tolerance_quotient
@@ -88,7 +88,7 @@ impl Area {
                     <= tolerance_quotient
             }
             AreaKind::Hexagon => panic!("Not implemented"),
-        };
+        }
     }
 }
 

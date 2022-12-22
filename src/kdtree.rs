@@ -18,7 +18,7 @@ fn fill_kdtree<T: HasPosition + Copy>(
     arena: &mut Vec<KdTreeNode<T>>,
     depth: usize,
 ) -> Option<usize> {
-    if items.len() == 0 {
+    if items.is_empty() {
         return None;
     }
 
@@ -54,7 +54,7 @@ struct KdTreeNode<T> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    
 
     #[test]
     fn empty_tree() {
