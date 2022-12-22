@@ -5,7 +5,7 @@ mod integration {
 
     #[test]
     fn version() {
-        let mut c_chars = vec![i8::from(0); 1024];
+        let mut c_chars = vec![0; 1024];
         unsafe { dynops::RVExtensionVersion(c_chars.as_mut_ptr(), c_chars.len() as i32) };
         let result = unsafe { CStr::from_ptr(c_chars.as_ptr()).to_str().unwrap() };
         assert!(result.starts_with("Dynamic Operations"));
@@ -13,7 +13,7 @@ mod integration {
 
     #[test]
     fn datetime() {
-        let mut c_chars = vec![i8::from(0); 1024];
+        let mut c_chars = vec![0; 1024];
         let function = CString::new("datetime").unwrap();
         unsafe {
             dynops::RVExtension(
@@ -28,7 +28,7 @@ mod integration {
 
     #[test]
     fn uuid() {
-        let mut c_chars = vec![i8::from(0); 1024];
+        let mut c_chars = vec![0; 1024];
         let function = CString::new("uuid").unwrap();
         unsafe {
             dynops::RVExtension(
@@ -43,7 +43,7 @@ mod integration {
 
     #[test]
     fn panic() {
-        let mut c_chars = vec![i8::from(0); 1024];
+        let mut c_chars = vec![0; 1024];
         let function = CString::new("panic").unwrap();
         unsafe {
             dynops::RVExtension(
@@ -58,7 +58,7 @@ mod integration {
 
     #[test]
     fn echo() {
-        let mut c_chars = vec![i8::from(0); 1024];
+        let mut c_chars = vec![0; 1024];
         let function = CString::new("echo").unwrap();
         let inputs = vec![
             CString::new("A").unwrap(),
@@ -85,7 +85,7 @@ mod integration {
     }
 
     fn test_map_data(data: &str) {
-        let mut c_chars = vec![i8::from(0); 1024 * 128];
+        let mut c_chars = vec![0; 1024 * 128];
         let function = CString::new("cluster").unwrap();
         let input = CString::new(data).unwrap();
         let args: Vec<*const c_char> = vec![input.as_ptr()];
@@ -108,31 +108,31 @@ mod integration {
 
     #[test]
     fn test_map_altis() {
-        test_map_data(&include_str!("../data/objects.Altis.txt"));
+        test_map_data(include_str!("../data/objects.Altis.txt"));
     }
 
     #[test]
     fn test_map_stratis() {
-        test_map_data(&include_str!("../data/objects.Stratis.txt"));
+        test_map_data(include_str!("../data/objects.Stratis.txt"));
     }
 
     #[test]
     fn test_map_livonia() {
-        test_map_data(&include_str!("../data/objects.Livonia.txt"));
+        test_map_data(include_str!("../data/objects.Livonia.txt"));
     }
 
     #[test]
     fn test_map_tanoa() {
-        test_map_data(&include_str!("../data/objects.Tanoa.txt"));
+        test_map_data(include_str!("../data/objects.Tanoa.txt"));
     }
 
     #[test]
     fn test_map_malden() {
-        test_map_data(&include_str!("../data/objects.Malden.txt"));
+        test_map_data(include_str!("../data/objects.Malden.txt"));
     }
 
     #[test]
     fn test_map_chernarus() {
-        test_map_data(&include_str!("../data/objects.Chernarus2020.txt"));
+        test_map_data(include_str!("../data/objects.Chernarus2020.txt"));
     }
 }
