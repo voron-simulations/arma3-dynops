@@ -56,7 +56,9 @@ jobs:
         if: ${{ github.event_name != 'pull_request' }}
         uses: peter-evans/create-pull-request@v4
         with: 
-          commit-message: "Automated fixes by Clippy"
+          commit-message: "[clippy] Automatic changes by cargo clippy --fix"
+          title: "[clippy] Automatic changes by cargo clippy --fix"
+          body: "Automated changes proposed by [rust-clippy](https://github.com/rust-lang/rust-clippy)"
+          branch: "clippy/fixes"
           delete-branch: true
-          title: "[clippy] Suggested Clippy fixes"
           labels: "rust,clippy"
