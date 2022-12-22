@@ -25,7 +25,7 @@ pub fn get_mvee(coords: &[Position2d], tolerance: f64) -> Area {
         let df = (d + 1) as f64;
         let step_size = (max_v - df) / df / (max_v - 1.);
         let mut new_u = &u * (1. - step_size);
-        new_u[max_i] = new_u[max_i] + step_size;
+        new_u[max_i] += step_size;
 
         let err = (&new_u - &u).norm();
         u = new_u;
@@ -56,7 +56,7 @@ pub fn get_mvee(coords: &[Position2d], tolerance: f64) -> Area {
         center: Position2d::new(c[0], c[1]),
         xsize: svd.singular_values[0].sqrt(),
         ysize: svd.singular_values[1].sqrt(),
-        angle: angle,
+        angle,
         kind: AreaKind::Ellipse,
     }
 }
@@ -68,7 +68,7 @@ mod tests {
     use std::f64::consts::{FRAC_PI_4, FRAC_PI_2, SQRT_2};
 
     fn run_mvee_test(points: &[Position2d], tolerance: f64, expected: Area) {
-        let actual = get_mvee(&points, tolerance);
+        let actual = get_mvee(points, tolerance);
 
         for point in points {
             assert!(
