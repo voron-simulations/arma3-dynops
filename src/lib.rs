@@ -28,7 +28,7 @@ fn exec_function(function: &str, args: &[String]) -> Result<String, String> {
             "echo" => Ok(misc::echo(args)),
             "uuid" => Ok(misc::uuid()),
             "panic" => panic!("Test panic"),
-            _ => Err(format!("Unknown function: {}", function).to_owned()),
+            _ => Err(format!("Unknown function: {}", function)),
         };
     });
 
@@ -41,7 +41,7 @@ fn exec_function(function: &str, args: &[String]) -> Result<String, String> {
                     return Err(format!("Panic: {}", panic_msg));
                 }
                 Err(_) => {
-                    return Err("Panic: unknown".to_string());
+                    Err("Panic: unknown".to_string())
                 }
             }    
         }
