@@ -15,3 +15,6 @@ hemtt.exe
 
 # Rust
 /target
+
+# Code scanning results
+*.sarif
