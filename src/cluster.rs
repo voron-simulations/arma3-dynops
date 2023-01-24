@@ -1,7 +1,7 @@
-use crate::{bounding::bounding_ellipse, shape::Rectangle};
+use crate::{bounding::bounding_ellipse};
 use nalgebra::Vector2;
 use std::collections::HashMap;
-use std::f64::consts::PI;
+
 use std::marker::PhantomData;
 
 const EPSILON: f64 = 100.0;
@@ -66,7 +66,7 @@ pub fn entrypoint(data: &String) -> Result<String, String> {
     Ok(format!("[\n{}\n]", centers.join(",\n")))
 }
 
-fn format_area(area: &crate::shape::Ellipse) -> String {
+fn format_area(_area: &crate::shape::Ellipse) -> String {
     todo!()
 }
 
