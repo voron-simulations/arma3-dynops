@@ -1,5 +1,5 @@
 use image::{ImageFormat, Rgba, RgbaImage};
-use std::fs;
+use std::{fs, env};
 use std::path::Path;
 
 fn main() {
@@ -44,6 +44,6 @@ fn main() {
 
         image.put_pixel(x, y, Rgba([0, 255, 0, 255]));
     }
-    let path = Path::new("C:\\Users\\Oleg\\AppData\\Local\\Temp\\output.png");
+    let path = Path::new(&env::temp_dir()).join("output.png");
     image.save_with_format(&path, ImageFormat::Png).unwrap();
 }

@@ -1,7 +1,4 @@
-mod mvee;
-
-use crate::types::{Area, AreaKind, Distance, Position2d};
-use mvee::get_mvee;
+use crate::{bounding::bounding_ellipse, shape::Rectangle};
 use nalgebra::Vector2;
 use std::collections::HashMap;
 use std::f64::consts::PI;
@@ -10,43 +7,18 @@ use std::marker::PhantomData;
 const EPSILON: f64 = 100.0;
 const MIN_POINTS: usize = 6;
 
-fn format_area(area: &Area) -> String {
-    format!(
-        "[[{:.2},{:.2}],{:.2},{:.2},{:.2}]",
-        area.center.x,
-        area.center.y,
-        area.xsize,
-        area.ysize,
-        -area.angle * 180. / PI
-    )
+pub trait Distance {
+    fn get_distance(&self, other: &Self) -> f64;
 }
 
-fn bounding_rec(coords: &[Vector2<f64>]) -> Area {
-let mut xmin: f64 = f64::MAX;
-    let mut xmax: f64 = f64::MIN;
-    let mut ymin: f64 = f64::MAX;
-    let mut ymax: f64 = f64::MIN;
-
-    for point in coords {
-        xmin = xmin.min(point.x);
-        xmax = xmax.max(point.x);
-        ymin = ymin.min(point.y);
-        ymax = ymax.max(point.y);
-    }
-    let x = (xmax + xmin) / 2.0;
-    let y = (ymax + ymin) / 2.0;
-
-    Area {
-        center: Position2d::new(x, y),
-        xsize: (xmax - xmin) / 2.0,
-        ysize: (ymax - ymin) / 2.0,
-        angle: 0.,
-        kind: AreaKind::Rectangle,
+impl Distance for Vector2<f64> {
+    fn get_distance(&self, neighbor: &Vector2<f64>) -> f64 {
+        ((self.x - neighbor.x).powf(2.) + (self.y - neighbor.y).powf(2.)).sqrt()
     }
 }
 
 pub fn entrypoint(data: &String) -> Result<String, String> {
-    let mut points: Vec<Position2d> = Vec::new();
+    let mut points: Vec<Vector2<f64>> = Vec::new();
     points.reserve(1000);
 
     for line in data.lines() {
@@ -63,12 +35,12 @@ pub fn entrypoint(data: &String) -> Result<String, String> {
         let y: f64 = parts
             .1
             .parse::<f64>().map_err(|_| format!("Failed to parse value {}", parts.1))?;
-        points.push(Position2d::new(x, y));
+        points.push(Vector2::new(x, y));
     }
 
     let classifications = cluster(EPSILON, MIN_POINTS, &points);
 
-    let mut clusters: HashMap<usize, Vec<Position2d>> = HashMap::new();
+    let mut clusters: HashMap<usize, Vec<Vector2<f64>>> = HashMap::new();
     for (class, coord) in classifications.iter().zip(points) {
         match class {
             Core(i) => {
@@ -88,10 +60,14 @@ pub fn entrypoint(data: &String) -> Result<String, String> {
             _ => {}
         }
     }
-    let centers: Vec<String> = clusters.values().map(|cluster_points| get_mvee(cluster_points, 0.1))
+    let centers: Vec<String> = clusters.values().map(|cluster_points| bounding_ellipse(cluster_points, 0.1))
         .map(|area| format_area(&area))
         .collect();
     Ok(format!("[\n{}\n]", centers.join(",\n")))
+}
+
+fn format_area(area: &crate::shape::Ellipse) -> String {
+    todo!()
 }
 
 // https://github.com/lazear/dbscan/blob/master/src/lib.rs
@@ -226,16 +202,16 @@ mod tests {
 
     #[test]
     fn cluster_nine_points() {
-        let args: Vec<Position2d> = vec![
-            Position2d::new(0., 0.),
-            Position2d::new(1., 0.),
-            Position2d::new(2., 0.),
-            Position2d::new(0., 1.),
-            Position2d::new(1., 1.),
-            Position2d::new(2., 1.),
-            Position2d::new(0., 2.),
-            Position2d::new(1., 2.),
-            Position2d::new(2., 2.),
+        let args: Vec<Vector2<f64>> = vec![
+            Vector2::new(0., 0.),
+            Vector2::new(1., 0.),
+            Vector2::new(2., 0.),
+            Vector2::new(0., 1.),
+            Vector2::new(1., 1.),
+            Vector2::new(2., 1.),
+            Vector2::new(0., 2.),
+            Vector2::new(1., 2.),
+            Vector2::new(2., 2.),
         ];
         assert_eq!(
             vec![

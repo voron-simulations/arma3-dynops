@@ -1,9 +1,10 @@
 // This file contains wrappers interfacing with ArmA 3's RealVirtuality engine
 
 mod cluster;
+//mod kdtree;
 mod misc;
-mod types;
-mod kdtree;
+mod shape;
+mod bounding;
 
 use libc::{c_char, c_int, strncpy};
 use std::ffi::{CStr, CString};
@@ -35,21 +36,42 @@ fn exec_function(function: &str, args: &[String]) -> Result<String, String> {
     // Panic handling
     match result {
         Ok(result) => result, // return value is already a Result
-        Err(reason) => { // Try to extract error message
+        Err(reason) => {
+            // Try to extract error message
             match reason.downcast::<&str>() {
                 Ok(panic_msg) => {
                     return Err(format!("Panic: {}", panic_msg));
                 }
-                Err(_) => {
-                    Err("Panic: unknown".to_string())
-                }
-            }    
+                Err(_) => Err("Panic: unknown".to_string()),
+            }
         }
     }
 }
 
+/// # Examples
+/// ```
+/// use std::ffi::{CString,CStr};
+/// let mut c_chars = vec![0; 1024];
+/// let function = CString::new("uuid").unwrap();
+/// unsafe {
+///     dynops::RVExtension(
+///         c_chars.as_mut_ptr(),
+///         c_chars.len() as i32,
+///         function.as_ptr(),
+///     );
+/// }
+/// let result = unsafe { CStr::from_ptr(c_chars.as_ptr()).to_str().unwrap() };
+/// ```
+///
+/// # Safety
+///
+/// This function uses raw string pointers and so relies on passed buffers being correctly formed
 #[no_mangle]
-pub unsafe extern "C" fn RVExtension(output: *mut c_char, output_size: c_int, function: *const c_char) {
+pub unsafe extern "C" fn RVExtension(
+    output: *mut c_char,
+    output_size: c_int,
+    function: *const c_char,
+) {
     let fun = unsafe { CStr::from_ptr(function).to_str().unwrap_or_default() };
     let args: Vec<String> = Vec::new();
 
@@ -58,6 +80,9 @@ pub unsafe extern "C" fn RVExtension(output: *mut c_char, output_size: c_int, fu
     write_output(outstr.as_str(), output, output_size);
 }
 
+/// # Safety
+///
+/// This function uses raw string pointers and so relies on passed buffers being correctly formed
 #[no_mangle]
 pub unsafe extern "C" fn RVExtensionArgs(
     output: *mut c_char,
@@ -88,6 +113,19 @@ pub unsafe extern "C" fn RVExtensionArgs(
     retval
 }
 
+/// # Examples
+///
+/// ```
+/// use std::ffi::CStr;
+/// let mut c_chars = vec![0; 1024];
+/// unsafe { dynops::RVExtensionVersion(c_chars.as_mut_ptr(), c_chars.len() as i32) };
+/// let result = unsafe { CStr::from_ptr(c_chars.as_ptr()).to_str().unwrap() };
+/// assert!(result.starts_with("Dynamic Operations"));
+/// ```
+///
+/// # Safety
+///
+/// This function uses raw string pointers and so relies on passed buffers being correctly formed
 #[no_mangle]
 pub unsafe extern "C" fn RVExtensionVersion(output: *mut c_char, output_size: c_int) {
     let version = "Dynamic Operations v0.1";

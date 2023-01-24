@@ -1,5 +1,3 @@
-use crate::types::HasPosition;
-
 const dimension: usize = 2;
 
 pub struct KdTree<T> {
