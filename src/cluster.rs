@@ -26,8 +26,7 @@ pub fn entrypoint(data: &String) -> Result<String, String> {
             continue;
         }
         let parts = line.split_once(',').ok_or(format!(
-            "Expected two comma-delimited coordinates, got {}",
-            line
+            "Expected two comma-delimited coordinates, got {line}"
         ))?;
         let x: f64 = parts
             .0

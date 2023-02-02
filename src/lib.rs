@@ -29,7 +29,7 @@ fn exec_function(function: &str, args: &[String]) -> Result<String, String> {
             "echo" => Ok(misc::echo(args)),
             "uuid" => Ok(misc::uuid()),
             "panic" => panic!("Test panic"),
-            _ => Err(format!("Unknown function: {}", function)),
+            _ => Err(format!("Unknown function: {function}")),
         };
     });
 
@@ -40,7 +40,7 @@ fn exec_function(function: &str, args: &[String]) -> Result<String, String> {
             // Try to extract error message
             match reason.downcast::<&str>() {
                 Ok(panic_msg) => {
-                    return Err(format!("Panic: {}", panic_msg));
+                    return Err(format!("Panic: {panic_msg}"));
                 }
                 Err(_) => Err("Panic: unknown".to_string()),
             }
