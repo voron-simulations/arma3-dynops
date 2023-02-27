@@ -93,18 +93,18 @@ mod tests {
         for point in points {
             assert!(
                 expected.contains_vec(point),
-                "Precondition failed: input point {point} must be in expected area: {expected}"
+                "{}", "Precondition failed: input point {point} must be in expected area: {expected}"
             )
         }
         assert!(
             distance(&expected, &actual) < 1e-3,
-            "Expected: {expected}, got: {actual}"
+            "{}", "Expected: {expected}, got: {actual}"
         );
         let extended_actual = Ellipse {a: actual.a+tolerance, b: actual.b+tolerance, ..actual};
         for point in points {
             assert!(
                 extended_actual.contains_vec(point),
-                "Precondition failed: input point {point} must be in expected area: {actual}"
+                "{}", "Precondition failed: input point {point} must be in expected area: {actual}"
             )
         }
     }
