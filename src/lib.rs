@@ -11,7 +11,6 @@ use uuid::Uuid;
 fn init() -> Extension {
     Extension::build()
         // .command("cluster", cluster::entrypoint)
-        // .command("datetime", Utc::now)
         .command("ok", || -> Result<String, String> { Ok("OK".to_owned()) })
         .command("err", || -> Result<String, String> {
             Err("ERR".to_owned())

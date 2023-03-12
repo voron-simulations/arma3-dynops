@@ -52,8 +52,6 @@ struct KdTreeNode<T> {
 
 #[cfg(test)]
 mod tests {
-    
-
     #[test]
     fn empty_tree() {
         // let tree = construct_kdtree();

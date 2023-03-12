@@ -11,8 +11,7 @@ crate-type = ["cdylib", "rlib"]
 name = "dynops"
 
 [dependencies]
-arma-rs = {version = "*", features = ["chrono", "uuid"]}
-chrono = {git = "https://github.com/chronotope/chrono", branch = "main"}
+arma-rs = {version = "*", features = ["uuid"]}
 image = "*"
 libc = "*"
 nalgebra = "*"
