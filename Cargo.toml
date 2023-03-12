@@ -11,7 +11,7 @@ crate-type = ["cdylib", "rlib"]
 name = "dynops"
 
 [dependencies]
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+arma-rs = {version = "*", features = ["chrono", "uuid"]}
 chrono = {git = "https://github.com/chronotope/chrono", branch = "main"}
 image = "*"
 libc = "*"
