@@ -44,21 +44,3 @@ jobs:
         with:
           sarif_file: rust-clippy-results.sarif
           wait-for-processing: true
-
-      - name: Run clippy --fix
-        if: ${{ github.event_name != 'pull_request' }}
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: --fix
-
-      - name: Create Pull Request
-        if: ${{ github.event_name != 'pull_request' }}
-        uses: peter-evans/create-pull-request@v4
-        with: 
-          commit-message: "[clippy] Automatic changes by cargo clippy --fix"
-          title: "[clippy] Automatic changes by cargo clippy --fix"
-          body: "Automated changes proposed by [rust-clippy](https://github.com/rust-lang/rust-clippy)\n\nClose and reopen this PR to trigger GitHub Actions"
-          branch: "clippy/fixes"
-          delete-branch: true
-          labels: "rust,clippy"
