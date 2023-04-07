@@ -1,59 +1,117 @@
-const dimension: usize = 2;
-
-pub struct KdTree<T> {
-    arena: Vec<KdTreeNode<T>>,
+struct KdNode<T> {
+    point: Vec<T>,
+    left: Option<Box<KdNode<T>>>,
+    right: Option<Box<KdNode<T>>>,
 }
 
-pub fn construct_kdtree<T: HasPosition + Copy>(items: &Vec<T>) -> KdTree<T> {
-    let mut tree = KdTree { arena: Vec::new() };
-    tree.arena.reserve(items.len());
-    fill_kdtree(items, &mut tree.arena, 0);
-    tree
-}
-
-fn fill_kdtree<T: HasPosition + Copy>(
-    items: &[T],
-    arena: &mut Vec<KdTreeNode<T>>,
-    depth: usize,
-) -> Option<usize> {
-    if items.is_empty() {
-        return None;
+impl<T: PartialOrd + Copy> KdNode<T> {
+    fn new(point: Vec<T>) -> Self {
+        Self {
+            point,
+            left: None,
+            right: None,
+        }
     }
 
-    let axis = depth % dimension;
+    fn insert(&mut self, point: Vec<T>, depth: usize) {
+        let k = self.point.len();
+        let axis = depth % k;
 
-    let mut items_copy = items.to_vec();
-    items_copy.sort_by(|a, b| {
-        let apos = a.get_position();
-        let bpos = b.get_position();
-        (apos[axis]).partial_cmp(&bpos[axis]).unwrap()
-    });
+        if point[axis] < self.point[axis] {
+            if let Some(left) = self.left.as_mut() {
+                left.insert(point, depth + 1);
+            } else {
+                self.left = Some(Box::new(Self::new(point)));
+            }
+        } else {
+            if let Some(right) = self.right.as_mut() {
+                right.insert(point, depth + 1);
+            } else {
+                self.right = Some(Box::new(Self::new(point)));
+            }
+        }
+    }
 
-    let middle = items_copy.len() / 2;
-    let items_left = &items_copy[..middle];
-    let items_right = &items_copy[middle..];
+    fn search(&self, point: &[T], depth: usize) -> Option<&Vec<T>> {
+        let k = self.point.len();
+        let axis = depth % k;
 
-    let node = KdTreeNode {
-        item: items_copy[middle],
-        left: fill_kdtree(items_left, arena, depth + 1),
-        right: fill_kdtree(items_right, arena, depth + 1),
-    };
-    arena.push(node);
-    Some(arena.len())
+        if self.point == point {
+            return Some(&self.point);
+        }
+
+        if point[axis] < self.point[axis] {
+            if let Some(left) = self.left.as_ref() {
+                left.search(point, depth + 1)
+            } else {
+                None
+            }
+        } else {
+            if let Some(right) = self.right.as_ref() {
+                right.search(point, depth + 1)
+            } else {
+                None
+            }
+        }
+    }
 }
 
-#[derive(Default)]
-struct KdTreeNode<T> {
-    pub item: T,
-    pub left: Option<usize>,  // Index of right node in arena
-    pub right: Option<usize>, // Index of left node in arena
+struct KdTree<T> {
+    root: Option<Box<KdNode<T>>>,
+}
+
+impl<T: PartialOrd + Copy> KdTree<T> {
+    fn new() -> Self {
+        Self { root: None }
+    }
+
+    fn insert(&mut self, point: Vec<T>) {
+        if let Some(root) = self.root.as_mut() {
+            root.insert(point, 0);
+        } else {
+            self.root = Some(Box::new(KdNode::new(point)));
+        }
+    }
+
+    fn search(&self, point: &[T]) -> Option<&Vec<T>> {
+        if let Some(root) = self.root.as_ref() {
+            root.search(point, 0)
+        } else {
+            None
+        }
+    }
 }
 
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+
     #[test]
-    fn empty_tree() {
-        // let tree = construct_kdtree();
+    fn test_insert() {
+        let mut tree = KdTree::new();
+        tree.insert(vec![1, 2]);
+        tree.insert(vec![3, 4]);
+        tree.insert(vec![5, 6]);
+        tree.insert(vec![7, 8]);
+        assert_eq!(tree.search(&[1, 2]), Some(&vec![1, 2]));
+        assert_eq!(tree.search(&[3, 4]), Some(&vec![3, 4]));
+        assert_eq!(tree.search(&[5, 6]), Some(&vec![5, 6]));
+        assert_eq!(tree.search(&[7, 8]), Some(&vec![7, 8]));
+    }
+
+
+    #[test]
+    fn test_search() {
+        let mut tree = KdTree::new();
+        tree.insert(vec![1, 2]);
+        tree.insert(vec![3, 4]);
+        tree.insert(vec![5, 6]);
+        tree.insert(vec![7, 8]);
+        assert_eq!(tree.search(&[1, 2]), Some(&vec![1, 2]));
+        assert_eq!(tree.search(&[3, 4]), Some(&vec![3, 4]));
+        assert_eq!(tree.search(&[5, 6]), Some(&vec![5, 6]));
+        assert_eq!(tree.search(&[7, 8]), Some(&vec![7, 8]));
+        assert_eq!(tree.search(&[9, 10]), None);
     }
 }

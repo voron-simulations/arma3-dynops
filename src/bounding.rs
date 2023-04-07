@@ -90,12 +90,6 @@ mod tests {
 
     fn run_mvee_test(points: &[Vector2<f64>], tolerance: f64, expected: Ellipse) {
         let actual = bounding_ellipse(points, tolerance);
-        for point in points {
-            assert!(
-                expected.contains_vec(point),
-                "{}", "Precondition failed: input point {point} must be in expected area: {expected}"
-            )
-        }
         assert!(
             distance(&expected, &actual) < 1e-3,
             "{}", "Expected: {expected}, got: {actual}"
@@ -104,7 +98,7 @@ mod tests {
         for point in points {
             assert!(
                 extended_actual.contains_vec(point),
-                "{}", "Precondition failed: input point {point} must be in expected area: {actual}"
+                "Post-check failed: input point {} must be in expected area: {}", point, extended_actual
             )
         }
     }

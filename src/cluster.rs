@@ -66,7 +66,7 @@ pub fn entrypoint(data: &String) -> Result<String, String> {
 }
 
 fn format_area(_area: &crate::shape::Ellipse) -> String {
-    todo!()
+    format!("[{},{},{},{},{}]", _area.x, _area.y, _area.a, _area.b, _area.r)
 }
 
 // https://github.com/lazear/dbscan/blob/master/src/lib.rs

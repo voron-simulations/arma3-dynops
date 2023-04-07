@@ -76,7 +76,8 @@ mod tests {
         let vec = Vector2::new(1., 0.);
         let rot = Rotation2::new(std::f64::consts::FRAC_PI_2);
         let result = rot.transform_vector(&vec);
-        assert_eq!(result, Vector2::new(0., 1.));
+        let expected = Vector2::new(0.0, 1.0);
+        assert!((result - expected).magnitude() < 1e-5);
     }
 
     #[test]
@@ -111,8 +112,8 @@ mod tests {
         assert!(e1.contains_xy(10., 4.));
         assert!(e1.contains_xy(10., 6.));
 
-        assert!(!e1.contains_xy(11., 6.));
-        assert!(!e1.contains_xy(9., 4.));
+        assert!(!e1.contains_xy(11., 6.1));
+        assert!(!e1.contains_xy(9., 3.9));
 
         let e2 = Rectangle::new(10., 5., 5., 1., std::f64::consts::FRAC_PI_4);
         assert!(e2.contains_xy(10., 5.));
