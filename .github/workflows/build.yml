@@ -78,6 +78,7 @@ jobs:
         with:
           name: extension-x64-windows
           path: dynops_x64.dll
+          retention-days: 1
 
   build-extension-linux-x64:
     name: Build extension (Linux x64)
@@ -118,6 +119,7 @@ jobs:
         with:
           name: extension-x64-linux
           path: dynops_x64.so
+          retention-days: 1
 
   build:
     name: Build addon
