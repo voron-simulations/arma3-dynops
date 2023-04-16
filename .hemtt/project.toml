@@ -2,13 +2,12 @@ name = "Dynamic Operations"
 prefix = "dynops"
 modname = "dynops"
 author = "DarkWanderer"
-files = [
+
+[files]
+include = [
     "*.dll",
     "*.so",
     "README.md",
-    "LICENSE",
-    "mod.cpp",
-    "meta.cpp"
 ]
 
 key_name = "{{prefix}}_{{version}}"

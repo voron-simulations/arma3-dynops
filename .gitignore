@@ -1,7 +1,7 @@
 # Transient files
 keys/*
 releases/*
-.hemtt/local
+.hemttout/*
 *.pbo
 
 # Utility files

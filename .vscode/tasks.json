@@ -9,10 +9,9 @@
             ],
             "label": "HEMTT Build",
             "type": "shell",
-            "command": "${workspaceFolder}/hemtt",
+            "command": "hemtt",
             "args": [
-                "build",
-                "--no-progress"
+                "build"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
