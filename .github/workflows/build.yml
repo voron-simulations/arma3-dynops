@@ -126,7 +126,7 @@ jobs:
     needs:
      - build-extension-windows-x64
      - build-extension-linux-x64
-    steps:     
+    steps:
     - name: Checkout
       uses: actions/checkout@v3
       
@@ -142,13 +142,15 @@ jobs:
         name: extension-x64-linux
         path: .
     
-    - name: Build using HEMTT
+    - name: Install HEMTT
       uses: arma-actions/hemtt@main
-      with:
-        command: build --release --ci
-    
+
+    - name: Run HEMTT build
+      run: hemtt release
+
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
         name: DynamicOperations-nobin
         path: releases/dynops_*.zip
+        if-no-files-found: error
