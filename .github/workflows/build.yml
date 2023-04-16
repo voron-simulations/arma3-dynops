@@ -152,5 +152,5 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: DynamicOperations-nobin
-        path: releases/dynops_*.zip
+        path: releases/dynops-*.zip
         if-no-files-found: error
