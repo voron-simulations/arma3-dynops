@@ -1,9 +1,9 @@
+mod bounding;
 mod cluster;
 mod kdtree;
-mod bounding;
 mod shape;
 
-use arma_rs::{arma, Extension, Context};
+use arma_rs::{arma, Context, Extension};
 use std::result::Result;
 use uuid::Uuid;
 
@@ -17,7 +17,7 @@ fn init() -> Extension {
         })
         .command("echo", echo)
         .command("hint", hint)
-        .command("uuid", Uuid::new_v4)
+        // .command("uuid", Uuid::new_v4)
         .finish()
 }
 
@@ -25,8 +25,8 @@ fn echo(input: Vec<String>) -> String {
     format!("echo({})", input.join(", "))
 }
 
-fn hint(context: Context, text: String) {
-    context.callback_data("dynops", "hint", text);
+fn hint(context: Context, input: String) {
+    context.callback_data("dynops", "hint", input);
 }
 
 #[cfg(test)]

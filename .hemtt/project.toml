@@ -1,7 +1,7 @@
 name = "Dynamic Operations"
 prefix = "dynops"
 modname = "dynops"
-author = "DarkWanderer"
+author = "Kozak"
 
 [files]
 include = [
