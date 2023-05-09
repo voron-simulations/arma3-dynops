@@ -17,7 +17,7 @@ fn init() -> Extension {
         })
         .command("echo", echo)
         .command("hint", hint)
-        // .command("uuid", Uuid::new_v4)
+        .command("uuid", Uuid::new_v4)
         .finish()
 }
 
