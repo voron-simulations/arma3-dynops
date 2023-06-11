@@ -156,3 +156,14 @@ jobs:
         name: DynamicOperations-nobin
         path: releases/dynops-*.zip
         if-no-files-found: error
+
+    - name: Update Nightly Release
+      uses: andelf/nightly-release@main
+      if: ${{ github.event_name == "push" && github.ref == github.event.repository.default_branch }}
+      with:
+        tag_name: nightly
+        name: 'Dynamic Operations nightly release'
+        prerelease: true
+        body: 'TODO: Add nightly release notes'
+        files: |
+          ./releases/dynops-*.zip
