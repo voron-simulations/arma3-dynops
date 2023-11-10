@@ -57,18 +57,12 @@ jobs:
         uses: Swatinem/rust-cache@v2
       
       - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release
-       
-      - name: Test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --release
+        run: cargo build --release
       
-      - name: Move output library
+      - name: Test
+        run: cargo test --release
+      
+      - name: Move library
         run: move target/release/dynops.dll dynops_x64.dll
           
       - name: Upload artifact
@@ -93,21 +87,15 @@ jobs:
         uses: Swatinem/rust-cache@v2
           
       - name: Build
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release
-          
-      - name: Test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --release
+        run: cargo build --release
       
-      - name: Move output library
+      - name: Test
+        run: cargo test --release
+      
+      - name: Move library
         run: mv target/release/libdynops.so dynops_x64.so
 
-      - name: Strip binary
+      - name: Strip library
         run: strip --strip-unneeded --keep-file-symbols dynops_x64.so
 
       - name: Upload artifact
