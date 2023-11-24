@@ -1,7 +1,7 @@
-use crate::{RUNTIME, CONTEXT};
+use crate::{CONTEXT, RUNTIME};
 use arma_rs::{Context, Group};
-use chatgpt::{converse::Conversation, prelude::{ChatGPT}, config::ModelConfigurationBuilder};
-use std::{collections::HashMap, env, time::Duration, sync::Arc};
+use chatgpt::{config::ModelConfigurationBuilder, converse::Conversation, prelude::ChatGPT};
+use std::{collections::HashMap, env, sync::Arc, time::Duration};
 use tokio::sync::{Mutex, RwLock};
 use tokio::time::sleep;
 
@@ -18,13 +18,18 @@ pub fn group() -> Group {
 
 fn init_chat_gpt() -> ChatGPT {
     let key = env::var("CHATGPT_KEY").unwrap();
-    let config = ModelConfigurationBuilder::default().timeout(Duration::from_secs(30)).build().unwrap();
+    let config = ModelConfigurationBuilder::default()
+        .timeout(Duration::from_secs(30))
+        .build()
+        .unwrap();
     ChatGPT::new_with_config(key, config).unwrap()
 }
 
 fn init(context: Context, uid: String, prompt: String) {
     let mut conversations = CONVERSATIONS.blocking_lock();
-    if conversations.contains_key(&uid) { return; }
+    if conversations.contains_key(&uid) {
+        return;
+    }
 
     let conversation = CLIENT.new_conversation_directed(prompt);
     conversations.insert(uid, Arc::new(Mutex::new(conversation)));
@@ -39,7 +44,11 @@ fn message(uid: String, message: String) {
             return;
         };
         sleep(Duration::from_millis(5)).await;
-        _ = context.callback_data("dynops", "systemChat", "The person heard you and is thinking of response");
+        _ = context.callback_data(
+            "dynops",
+            "systemChat",
+            "The person heard you and is thinking of response",
+        );
 
         let conversation_store = {
             let mut conversations = CONVERSATIONS.lock().await;

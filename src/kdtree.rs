@@ -82,7 +82,6 @@ impl<T: PartialOrd + Copy> KdTree<T> {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -99,7 +98,6 @@ mod tests {
         assert_eq!(tree.search(&[5, 6]), Some(&vec![5, 6]));
         assert_eq!(tree.search(&[7, 8]), Some(&vec![7, 8]));
     }
-
 
     #[test]
     fn test_search() {

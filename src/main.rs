@@ -1,6 +1,6 @@
 use image::{ImageFormat, Rgba, RgbaImage};
-use std::{fs, env};
 use std::path::Path;
+use std::{env, fs};
 
 fn main() {
     let input = std::env::args().nth(1).expect("No input file given");

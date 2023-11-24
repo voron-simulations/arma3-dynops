@@ -1,7 +1,5 @@
 #[cfg(test)]
 mod integration {
-    
-    
 
     // fn test_map_data(data: &str) {
     //     let mut c_chars = vec![0; 1024 * 128];

@@ -92,13 +92,20 @@ mod tests {
         let actual = bounding_ellipse(points, tolerance);
         assert!(
             distance(&expected, &actual) < 1e-3,
-            "{}", "Expected: {expected}, got: {actual}"
+            "{}",
+            "Expected: {expected}, got: {actual}"
         );
-        let extended_actual = Ellipse {a: actual.a+tolerance, b: actual.b+tolerance, ..actual};
+        let extended_actual = Ellipse {
+            a: actual.a + tolerance,
+            b: actual.b + tolerance,
+            ..actual
+        };
         for point in points {
             assert!(
                 extended_actual.contains_vec(point),
-                "Post-check failed: input point {} must be in expected area: {}", point, extended_actual
+                "Post-check failed: input point {} must be in expected area: {}",
+                point,
+                extended_actual
             )
         }
     }

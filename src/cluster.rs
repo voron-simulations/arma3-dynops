@@ -1,4 +1,4 @@
-use crate::{bounding::bounding_ellipse};
+use crate::bounding::bounding_ellipse;
 use nalgebra::Vector2;
 use std::collections::HashMap;
 
@@ -30,10 +30,12 @@ pub fn entrypoint(data: &String) -> Result<String, String> {
         ))?;
         let x: f64 = parts
             .0
-            .parse::<f64>().map_err(|_| format!("Failed to parse value {}", parts.0))?;
+            .parse::<f64>()
+            .map_err(|_| format!("Failed to parse value {}", parts.0))?;
         let y: f64 = parts
             .1
-            .parse::<f64>().map_err(|_| format!("Failed to parse value {}", parts.1))?;
+            .parse::<f64>()
+            .map_err(|_| format!("Failed to parse value {}", parts.1))?;
         points.push(Vector2::new(x, y));
     }
 
@@ -59,14 +61,19 @@ pub fn entrypoint(data: &String) -> Result<String, String> {
             _ => {}
         }
     }
-    let centers: Vec<String> = clusters.values().map(|cluster_points| bounding_ellipse(cluster_points, 0.1))
+    let centers: Vec<String> = clusters
+        .values()
+        .map(|cluster_points| bounding_ellipse(cluster_points, 0.1))
         .map(|area| format_area(&area))
         .collect();
     Ok(format!("[\n{}\n]", centers.join(",\n")))
 }
 
 fn format_area(_area: &crate::shape::Ellipse) -> String {
-    format!("[{},{},{},{},{}]", _area.x, _area.y, _area.a, _area.b, _area.r)
+    format!(
+        "[{},{},{},{},{}]",
+        _area.x, _area.y, _area.a, _area.b, _area.r
+    )
 }
 
 // https://github.com/lazear/dbscan/blob/master/src/lib.rs

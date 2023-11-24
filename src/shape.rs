@@ -17,7 +17,11 @@ pub struct Ellipse {
 
 impl fmt::Display for Ellipse {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "[{}±{}, {}±{}, α={}]", self.x, self.a, self.y, self.b, self.r)
+        write!(
+            f,
+            "[{}±{}, {}±{}, α={}]",
+            self.x, self.a, self.y, self.b, self.r
+        )
     }
 }
 

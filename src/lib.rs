@@ -1,14 +1,14 @@
 mod bounding;
+mod chat;
 mod cluster;
 mod kdtree;
 mod shape;
-mod chat;
 
 use arma_rs::{arma, Context, Extension};
-use tokio::sync::RwLock;
-use std::result::Result;
-use uuid::Uuid;
 use lazy_static;
+use std::result::Result;
+use tokio::sync::RwLock;
+use uuid::Uuid;
 
 lazy_static::lazy_static! {
     static ref RUNTIME: tokio::runtime::Runtime = tokio::runtime::Builder::new_multi_thread()
