@@ -11,11 +11,14 @@ crate-type = ["cdylib", "rlib"]
 name = "dynops"
 
 [dependencies]
-arma-rs = {version = "*", features = ["uuid"]}
+arma-rs = { version = "*", features = ["uuid"] }
+chatgpt_rs = "*"
 image = "*"
+lazy_static = "*"
 libc = "*"
 nalgebra = "*"
-uuid = {version = "*", features = ["v4"]}
+tokio = { version = "*", features = ["full"] }
+uuid = { version = "*", features = ["v4"] }
 
 [profile.dev]
 panic = "unwind"

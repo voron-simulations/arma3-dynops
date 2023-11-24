@@ -18,7 +18,7 @@ GVAR(EnterableBuildings) = _enterables;
 INFO_1("Detected %1 objects", count _enterables);
 private _input = _enterables joinString endl;
 
-private _clusters = parseSimpleArray (["cluster", [_input]] call EFUNC(extension,callExtension));
+private _clusters = parseSimpleArray (["cluster", [_input]] call EFUNC(extension,call));
 
 {
 	private _uuid = call EFUNC(extension,uuid);

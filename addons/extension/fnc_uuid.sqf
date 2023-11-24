@@ -1,3 +1,3 @@
 #include "script_component.hpp"
 
-["uuid"] call FUNC(callExtension);
+["uuid"] call FUNC(call);

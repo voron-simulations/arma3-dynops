@@ -5,7 +5,8 @@
     "tasks": [
         {
             "dependsOn": [
-                "Copy Extension"
+                "Copy Extension",
+                "Build Extension"
             ],
             "label": "HEMTT Build",
             "type": "shell",
@@ -25,12 +26,9 @@
         {
             "label": "HEMTT Release",
             "type": "shell",
-            "command": "${workspaceFolder}/hemtt",
+            "command": "hemtt",
             "args": [
-                "build",
-                "--no-progress",
-                "--release",
-                "--force-release"
+                "release"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"

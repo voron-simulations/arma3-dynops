@@ -1,7 +1,8 @@
 class CfgFunctions {
     class ADDON {
         class COMPONENT {
-            PATHTO_FNC(callExtension);
+            PATHTO_FNC(call);
+            PATHTO_FNC(callback);
             PATHTO_FNC(uuid);
         };
 	};
