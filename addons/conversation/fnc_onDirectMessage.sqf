@@ -4,6 +4,8 @@ params ["_channel", "_owner", "_from", "_text", "_person", "_name", "_strID", "_
 if (_channel != 5) exitWith { false; };
 private _peopleInRange = (position _person) nearObjects ["Man", 3];
 
+INFO_2("Chat message from %1: %2", _from, _text);
+
 {
 	private _agent_uid = _x getVariable QGVAR(agent_uid);
 	if (!isNil "_agent_uid") exitWith

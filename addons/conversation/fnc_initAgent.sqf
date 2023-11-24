@@ -6,6 +6,8 @@ params [
 	["_activated", true, [true]]		// was module activated?
 ];
 
+if (!isServer) exitWith {};
+
 private _template = 
 "The fictional state of Livonia is in state of armed conflict between rebel Freedom and Independence Army (FIA) 
 faction and government Livonia Defence Force (LDF).
