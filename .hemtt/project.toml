@@ -5,17 +5,13 @@ author = "Kozak"
 mainprefix = "z"
 
 [files]
-include = [
-    "*.dll",
-    "*.so",
-    "README.md",
-]
+include = ["*.dll", "*.so", "README.md"]
 
 key_name = "{{prefix}}_{{version}}"
 authority = "{{prefix}}_{{version}}-{{git \"id 8\"}}"
 
 releasebuild = [
-    "@zip dynops_{{semver.major}}.{{semver.minor}}.{{semver.patch}}"
+    "@zip dynops_{{semver.major}}.{{semver.minor}}.{{semver.patch}}",
 ]
 
 show_output = true
