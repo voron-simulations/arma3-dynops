@@ -12,8 +12,8 @@ class CfgPatches {
     };
 };
 
+#include "Cfg3DEN.hpp"
 #include "CfgEventHandlers.hpp"
 #include "CfgFunctions.hpp"
 #include "CfgMissions.hpp"
-#include "CfgModules.hpp"
 #include "CfgRemoteExec.hpp"

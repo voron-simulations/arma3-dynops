@@ -1,37 +1,31 @@
 #include "script_component.hpp"
 
-params [
-	["_logic", objNull, [objNull]],		// module logic
-	["_units", [], [[]]],				// list of affected units
-	["_activated", true, [true]]		// was module activated?
-];
+params ["_agent"];
 
 if (!isServer) exitWith { };
+if (isPlayer _agent) exitWith { };
+if (_agent getVariable ["DynOps_ConversationEnabled", false] != true) exitWith { };
+
+private _name = name _agent;
+private _occupation = _agent getVariable ["DynOps_ConversationOccupation", "Civilian"];
+private _facts = _agent getVariable ["DynOps_ConversationFacts", "Arma 4 will be released soon"];
 
 private _template = 
-"The fictional state of Livonia is in state of armed conflict between rebel Freedom and Independence Army (FIA) 
-faction and government Livonia Defence Force (LDF).
-I want you to act as %1, %2 year old %3.
+"I want you to act as %1, %2.
 
 You know following facts:
-%4.
+%3.
 
 Do not break character. Use vocabulary and vernacular which would be expected from person of such background.
 Give short answers only";
 
+private _current_uid = _agent getVariable QGVAR(agent_uid);
+if (!isNil "_current_uid") exitWith { };
 
-{
-	if (!isNull (_x getVariable QGVAR(agent_uid))) then { continue };
+private _uuid = call EFUNC(extension,uuid);
+_agent setVariable [QGVAR(agent_uid), _uuid];
+GVAR(agents) set [_uuid, _agent];
 
-	private _name = name _x;
-	private _age = _logic getVariable "age";
-	private _occupation = _logic getVariable "occupation";
-	private _facts = _logic getVariable "facts";
-	private _uuid = call EFUNC(extension,uuid);
-
-	_x setVariable [QGVAR(agent_uid), _uuid];
-	GVAR(agents) set [_uuid, _x];
-
-	private _input = format [_template, _name, _age, _occupation, _facts];
-	["chat:init", [_uuid, _input]] call EFUNC(extension,call);
-} forEach _units;
+private _input = format [_template, _name, _occupation, _facts];
+["chat:init", [_uuid, _input]] call EFUNC(extension,call);
+INFO_3("Conversation agent initialized name=%1 occupation=%2 uuid=%3", _name, _occupation, _uuid);

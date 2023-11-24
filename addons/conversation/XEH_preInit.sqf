@@ -21,3 +21,5 @@ if (isMultiplayer && isServer) then {
 		}
 	] remoteExec ["CBA_fnc_addEventHandler", 2, true];
 };
+
+["Man", "init", { (_this select 0) spawn FUNC(initAgent); }] call CBA_fnc_addClassEventHandler;
