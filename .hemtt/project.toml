@@ -2,6 +2,7 @@ name = "Dynamic Operations"
 prefix = "dynops"
 modname = "dynops"
 author = "Kozak"
+mainprefix = "z"
 
 [files]
 include = [
@@ -18,3 +19,16 @@ releasebuild = [
 ]
 
 show_output = true
+
+[hemtt.launch.default]
+workshop = [
+    "450814997", # CBA_A3's Workshop ID
+]
+parameters = [
+    "-skipIntro",
+    "-noSplash",
+    "-showScriptErrors",
+    "-debug",
+    "-filePatching",
+    "mpmissions\\MP_DynOps_ChatTest.Enoch\\mission.sqm", # Launch into existing Editor Mission - \\ needed
+]

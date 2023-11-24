@@ -1,9 +1,0 @@
-author			= "Kozak";
-onLoadName		= "Dynamic Operations Chat Test";
-
-class Header
-{
-	gameType = "Coop";
-	minPlayers =  1;
-	maxPlayers = 10;
-};
