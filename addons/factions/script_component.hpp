@@ -3,4 +3,4 @@
 #define COMPONENT factions
 #define COMPONENT_BEAUTIFIED DynOps Factions
 
-#include "\z\dynops\addons\main\script_mod.hpp"
+#include "\dw\dynops\addons\main\script_mod.hpp"

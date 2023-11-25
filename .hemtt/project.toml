@@ -1,8 +1,11 @@
 name = "Dynamic Operations"
 prefix = "dynops"
 modname = "dynops"
+mainprefix = "dw"
+
+[properties]
 author = "Kozak"
-mainprefix = "z"
+url = "https://github.com/DarkWanderer/DynamicOperations"
 
 [files]
 include = ["*.dll", "*.so", "README.md"]
@@ -26,5 +29,5 @@ parameters = [
     "-showScriptErrors",
     "-debug",
     "-filePatching",
-    "mpmissions\\MP_DynOps_ChatTest.Enoch\\mission.sqm", # Launch into existing Editor Mission - \\ needed
+    "mpmissions\\MP_DynOps_ChatTest.Enoch\\mission.sqm",
 ]

@@ -3,4 +3,4 @@
 #define COMPONENT conversation
 #define COMPONENT_BEAUTIFIED DynOps Dynamic Simulation
 
-#include "\z\dynops\addons\main\script_mod.hpp"
+#include "\dw\dynops\addons\main\script_mod.hpp"

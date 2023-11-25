@@ -19,13 +19,13 @@ pub fn group() -> Group {
 fn init_chat_gpt() -> ChatGPT {
     let key = env::var("CHATGPT_KEY").unwrap();
     let config = ModelConfigurationBuilder::default()
-        .timeout(Duration::from_secs(30))
+        .timeout(Duration::from_secs(15))
         .build()
         .unwrap();
     ChatGPT::new_with_config(key, config).unwrap()
 }
 
-fn init(context: Context, uid: String, prompt: String) {
+fn init(uid: String, prompt: String) {
     let mut conversations = CONVERSATIONS.blocking_lock();
     if conversations.contains_key(&uid) {
         return;

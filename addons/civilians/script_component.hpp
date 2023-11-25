@@ -3,4 +3,4 @@
 #define COMPONENT civilians
 #define COMPONENT_BEAUTIFIED DynOps Civilians
 
-#include "\z\dynops\addons\main\script_mod.hpp"
+#include "\dw\dynops\addons\main\script_mod.hpp"

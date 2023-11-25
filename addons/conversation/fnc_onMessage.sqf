@@ -1,7 +1,6 @@
 #include "script_component.hpp"
 
 params ["_sender", "_text"];
-if (_channel != 5) exitWith { false; };
 private _peopleInRange = (position _sender) nearObjects ["Man", 3];
 
 INFO_2("Chat message from %1: %2", name _sender, _text);

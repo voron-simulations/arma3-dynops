@@ -3,4 +3,4 @@
 #define COMPONENT extension
 #define COMPONENT_BEAUTIFIED DynOps Extension Wrapper
 
-#include "\z\dynops\addons\main\script_mod.hpp"
+#include "\dw\dynops\addons\main\script_mod.hpp"
