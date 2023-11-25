@@ -23,12 +23,10 @@ impl<T: PartialOrd + Copy> KdNode<T> {
             } else {
                 self.left = Some(Box::new(Self::new(point)));
             }
+        } else if let Some(right) = self.right.as_mut() {
+            right.insert(point, depth + 1);
         } else {
-            if let Some(right) = self.right.as_mut() {
-                right.insert(point, depth + 1);
-            } else {
-                self.right = Some(Box::new(Self::new(point)));
-            }
+            self.right = Some(Box::new(Self::new(point)));
         }
     }
 
@@ -46,12 +44,10 @@ impl<T: PartialOrd + Copy> KdNode<T> {
             } else {
                 None
             }
+        } else if let Some(right) = self.right.as_ref() {
+            right.search(point, depth + 1)
         } else {
-            if let Some(right) = self.right.as_ref() {
-                right.search(point, depth + 1)
-            } else {
-                None
-            }
+            None
         }
     }
 }

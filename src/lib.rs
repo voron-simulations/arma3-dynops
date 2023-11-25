@@ -5,7 +5,7 @@ mod kdtree;
 mod shape;
 
 use arma_rs::{arma, Context, Extension};
-use lazy_static;
+
 use std::result::Result;
 use tokio::sync::RwLock;
 use uuid::Uuid;

@@ -1,8 +1,8 @@
 use crate::{CONTEXT, RUNTIME};
-use arma_rs::{Context, Group};
+use arma_rs::Group;
 use chatgpt::{config::ModelConfigurationBuilder, converse::Conversation, prelude::ChatGPT};
 use std::{collections::HashMap, env, sync::Arc, time::Duration};
-use tokio::sync::{Mutex, RwLock};
+use tokio::sync::Mutex;
 use tokio::time::sleep;
 
 lazy_static::lazy_static! {
