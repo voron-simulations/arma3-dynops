@@ -8,7 +8,7 @@ for dir in addons_dir.iterdir():
     functions = []
 
     contents = "class CfgFunctions {\n"
-    contents += "    class ADDON {\n"
+    contents += "    class DynOps {\n"
     contents += "        class COMPONENT {\n"
 
     function_files = (f for f in dir.iterdir() 
