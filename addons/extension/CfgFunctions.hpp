@@ -5,5 +5,5 @@ class CfgFunctions {
             PATHTO_FNC(callback);
             PATHTO_FNC(uuid);
         };
-	};
+    };
 };

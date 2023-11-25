@@ -4,5 +4,5 @@ class CfgFunctions {
             PATHTO_FNC(hashAdd);
             PATHTO_FNC(perfLog);
         };
-	};
+    };
 };

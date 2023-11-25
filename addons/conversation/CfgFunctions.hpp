@@ -4,5 +4,5 @@ class CfgFunctions {
             PATHTO_FNC(initAgent);
             PATHTO_FNC(onMessage);
         };
-	};
+    };
 };

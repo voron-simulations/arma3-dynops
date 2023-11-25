@@ -18,8 +18,7 @@ impl Distance for Vector2<f64> {
 }
 
 pub fn entrypoint(data: &String) -> Result<String, String> {
-    let mut points: Vec<Vector2<f64>> = Vec::new();
-    points.reserve(1000);
+    let mut points: Vec<Vector2<f64>> = Vec::with_capacity(1000);
 
     for line in data.lines() {
         if line.is_empty() {

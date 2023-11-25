@@ -6,5 +6,5 @@ class CfgFunctions {
             PATHTO_FNC(getIntelPoints);
             PATHTO_FNC(initLaptop);
         };
-	};
+    };
 };

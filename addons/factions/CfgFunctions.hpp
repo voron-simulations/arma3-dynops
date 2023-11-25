@@ -5,5 +5,5 @@ class CfgFunctions {
             PATHTO_FNC(factionStaticData);
             PATHTO_FNC(initFactions);
         };
-	};
+    };
 };

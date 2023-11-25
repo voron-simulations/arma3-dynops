@@ -4,5 +4,5 @@ class CfgFunctions {
             PATHTO_FNC(onCivilianCasualtyListUpdated);
             PATHTO_FNC(onCivilianKilled);
         };
-	};
+    };
 };

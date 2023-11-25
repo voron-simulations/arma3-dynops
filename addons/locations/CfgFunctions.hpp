@@ -6,5 +6,5 @@ class CfgFunctions {
             PATHTO_FNC(getAllMapObjects);
             PATHTO_FNC(initLocations);
         };
-	};
+    };
 };

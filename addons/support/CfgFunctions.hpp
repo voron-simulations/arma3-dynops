@@ -3,5 +3,5 @@ class CfgFunctions {
         class COMPONENT {
             PATHTO_FNC(uavSupport);
         };
-	};
+    };
 };
