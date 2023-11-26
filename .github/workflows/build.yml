@@ -132,11 +132,11 @@ jobs:
       uses: arma-actions/hemtt@main
 
     - name: Run HEMTT build
-      run: hemtt release
+      run: hemtt release --no-archive
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: DynamicOperations
-        path: releases/dynops-latest.zip
+        name: dynops-latest
+        path: ./hemttout/release/
         if-no-files-found: error
