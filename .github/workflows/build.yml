@@ -138,5 +138,5 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: dynops-latest
-        path: ./hemttout/release/
+        path: ./.hemttout/release/
         if-no-files-found: error
