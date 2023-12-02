@@ -1,5 +1,5 @@
 class CfgFunctions {
-    class ADDON {
+    class DynOps {
         class COMPONENT {
             PATHTO_FNC(populateCivilians);
         };

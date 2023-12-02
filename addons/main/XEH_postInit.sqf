@@ -1,3 +1,3 @@
 #include "script_component.hpp"
 
-[] spawn FUNC(perfLog);
+[] spawn DynOps_fnc_perfLog;

@@ -35,10 +35,10 @@ Give short answers only";
 private _current_uid = _agent getVariable QGVAR(agent_uid);
 if (!isNil "_current_uid") exitWith { };
 
-private _uuid = call EFUNC(extension,uuid);
+private _uuid = call DynOps_fnc_uuid;
 _agent setVariable [QGVAR(agent_uid), _uuid];
 GVAR(agents) set [_uuid, _agent];
 
 private _input = format [_template, _name, _occupation, _facts joinString endl];
-["chat:init", [_uuid, _input]] call EFUNC(extension,call);
+["chat:init", [_uuid, _input]] call DynOps_fnc_call;
 INFO_3("Agent initialized %1 (%2) %3", _name, _occupation, _uuid);

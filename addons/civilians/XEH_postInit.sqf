@@ -4,8 +4,8 @@ GVAR(Casualties) = [];
 
 if (hasInterface && isMultiplayer) then
 {
-	QGVAR(Casualties) addPublicVariableEventHandler FUNC(onCivilianCasualtyListUpdated);
+	QGVAR(Casualties) addPublicVariableEventHandler DynOps_fnc_onCivilianCasualtyListUpdated;
 };
 
-["Civilian", "Killed", FUNC(onCivilianKilled)] call CBA_fnc_addClassEventHandler;
+["Civilian", "Killed", DynOps_fnc_onCivilianKilled] call CBA_fnc_addClassEventHandler;
 INFO("PostInit finished");

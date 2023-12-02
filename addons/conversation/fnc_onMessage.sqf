@@ -1,7 +1,7 @@
 #include "script_component.hpp"
 
 params ["_sender", "_text"];
-private _peopleInRange = (position _sender) nearObjects ["Man", 3];
+private _peopleInRange = (position _sender) nearObjects ["CAManBase", GVAR(ConversationRange)];
 
 INFO_2("Chat message from %1: %2", name _sender, _text);
 
@@ -10,7 +10,7 @@ INFO_2("Chat message from %1: %2", name _sender, _text);
 	if (!isNil "_agent_uid") exitWith
 	{
 		private _formatted_message = format ["%1: %2", name _sender, _text];
-		["chat:message", [_agent_uid, _formatted_message]] call EFUNC(extension,call);
+		["chat:message", [_agent_uid, _formatted_message]] call DynOps_fnc_call;
 	};
 	// systemChat format ["%1 heard you but doesn't want to talk", name _x];
 } forEach _peopleInRange;

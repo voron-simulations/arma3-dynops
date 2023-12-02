@@ -22,7 +22,7 @@ private _points = 0;
 
 // Show notification, add rating, increase side's counter
 if (_points > 0) then {
-	[_side, _points] call FUNC(addIntelPoints);
+	[_side, _points] call DynOps_fnc_addIntelPoints;
 	player addRating _points;
 	["IntelDelivered", [_points]] spawn BIS_fnc_showNotification;
 };

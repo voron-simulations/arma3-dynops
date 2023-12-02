@@ -16,6 +16,6 @@ with missionNamespace do
 	INFO_2("Civilian casualty: %1 killed by %2", name _unit, name _instigator);
 	publicVariable QGVAR(Casualties);
 	if (hasInterface) then {
-		[QGVAR(Casualties), GVAR(Casualties)] spawn FUNC(onCivilianCasualtyListUpdated);
+		[QGVAR(Casualties), GVAR(Casualties)] spawn DynOps_fnc_onCivilianCasualtyListUpdated;
 	};
 }

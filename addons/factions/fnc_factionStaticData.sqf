@@ -40,9 +40,9 @@ private _weapons = ["srifle_dmr_02_f","srifle_dmr_02_camo_f","srifle_dmr_02_snip
 private _magazines = ["10Rnd_338_Mag"];
 private _uniforms = ["U_B_CTRG_1","U_B_CTRG_2","U_B_CTRG_3","U_B_CTRG_Soldier_F","U_B_CTRG_Soldier_2_F","U_B_CTRG_Soldier_3_F","U_B_CTRG_Soldier_Arid_F","U_B_CTRG_Soldier_2_Arid_F","U_B_CTRG_Soldier_3_Arid_F","U_B_CTRG_Soldier_urb_1_F","U_B_CTRG_Soldier_urb_2_F","U_B_CTRG_Soldier_urb_3_F"];
 
-[_factionData, "Items", _items] call EFUNC(main,hashAdd);
-[_factionData, "Magazines", _magazines] call EFUNC(main,hashAdd);
-[_factionData, "Uniforms", _uniforms] call EFUNC(main,hashAdd);
-[_factionData, "Weapons", _weapons] call EFUNC(main,hashAdd);
+[_factionData, "Items", _items] call DynOps_fnc_hashAdd;
+[_factionData, "Magazines", _magazines] call DynOps_fnc_hashAdd;
+[_factionData, "Uniforms", _uniforms] call DynOps_fnc_hashAdd;
+[_factionData, "Weapons", _weapons] call DynOps_fnc_hashAdd;
 
 true;

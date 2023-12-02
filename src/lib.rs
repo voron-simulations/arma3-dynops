@@ -24,12 +24,9 @@ fn init() -> Extension {
         .group("chat", chat::group())
         // .command("cluster", cluster::entrypoint)
         .command("ok", || -> Result<String, String> { Ok("OK".to_owned()) })
-        .command("err", || -> Result<String, String> {
-            Err("ERR".to_owned())
-        })
+        .command("err", || -> Result<String, String> { Err("E".to_owned()) })
         .command("echo", echo)
         .command("hint", hint)
-        .command("call", call)
         .command("uuid", Uuid::new_v4)
         .finish();
 
@@ -49,13 +46,6 @@ fn echo(input: Vec<String>) -> String {
 
 fn hint(context: Context, input: String) -> Result<String, String> {
     match context.callback_data("dynops", "hint", input) {
-        Ok(_) => Ok("OK".to_owned()),
-        Err(e) => Err(e.to_string()),
-    }
-}
-
-fn call(context: Context, input: String) -> Result<String, String> {
-    match context.callback_data("dynops", "dynops_extension_fnc_callback", input) {
         Ok(_) => Ok("OK".to_owned()),
         Err(e) => Err(e.to_string()),
     }

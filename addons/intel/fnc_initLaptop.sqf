@@ -11,7 +11,7 @@
         player setPos (_target getRelPos [0.5, 0]);
         player setDir (180 + direction _target);
         [_caller, "Acts_Accessing_Computer_Loop"] remoteExec ["playMove"];
-        ["a3\missions_f_oldman\data\sound\intel_laptop\1sec\intel_laptop_1sec_02.wss", target] remoteExec ["playSound3d"];
+        ["a3\missions_f_oldman\data\sound\intel_laptop\1sec\intel_laptop_1sec_02.wss", _target] remoteExec ["playSound3d"];
         _target setObjectTextureGlobal [0, "a3\structures_f\items\electronics\data\electronics_screens_laptop_co.paa"];
     }, // Code executed when action starts
     {}, // Code executed on every progress tick
@@ -23,6 +23,6 @@
     [], // Arguments passed to the scripts as _this select 3
     8, // Action duration in seconds
     0, // Priority
-    true, // Remove on completion
+    false, // Remove on completion
     false // Show in unconscious state
 ] remoteExec ["BIS_fnc_holdActionAdd", 0, _this]; // MP compatible implementation
