@@ -1,6 +1,9 @@
 name: Build
 
 on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 3 * * *'
   push:
     branches: [ "main" ]
     paths-ignore:
@@ -146,7 +149,7 @@ jobs:
     name: Publish pre-release
     needs: build
     runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/main' }}
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     permissions:
       contents: write
     steps:
