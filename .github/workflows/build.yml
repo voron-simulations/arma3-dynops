@@ -69,7 +69,7 @@ jobs:
         run: move target/release/dynops.dll dynops_x64.dll
           
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: extension-x64-windows
           path: dynops_x64.dll
@@ -102,7 +102,7 @@ jobs:
         run: strip --strip-unneeded --keep-file-symbols dynops_x64.so
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: extension-x64-linux
           path: dynops_x64.so
@@ -139,7 +139,7 @@ jobs:
       run: hemtt release
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: DynamicOperations
         path: releases/dynops-latest.zip
