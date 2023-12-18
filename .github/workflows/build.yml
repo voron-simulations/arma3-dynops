@@ -121,13 +121,13 @@ jobs:
       uses: actions/checkout@v4
       
     - name: Download Windows x64
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: extension-x64-windows
         path: .
 
     - name: Download Linux x64
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: extension-x64-linux
         path: .
@@ -154,7 +154,7 @@ jobs:
       contents: write
     steps:
     - name: Download Addon
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: DynamicOperations
         path: .
