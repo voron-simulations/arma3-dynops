@@ -109,7 +109,7 @@ jobs:
           retention-days: 1
 
   virustotal:
-    name: Submit to VirusTotal
+    name: VirusTotal Scan
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs:
@@ -133,6 +133,7 @@ jobs:
         uses: crazy-max/ghaction-virustotal@v4
         with:
           vt_api_key: ${{ secrets.VIRUSTOTAL_APIKEY }}
+          request_rate: 4
           files: |
             ./dynops_x64.dll
             ./dynops_x64.so
