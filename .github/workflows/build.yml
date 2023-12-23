@@ -108,6 +108,35 @@ jobs:
           path: dynops_x64.so
           retention-days: 1
 
+  virustotal:
+    name: Submit to VirusTotal
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs:
+     - build-extension-windows-x64
+     - build-extension-linux-x64
+
+    steps:
+      - name: Download Windows x64
+        uses: actions/download-artifact@v4
+        with:
+          name: extension-x64-windows
+          path: .
+  
+      - name: Download Linux x64
+        uses: actions/download-artifact@v4
+        with:
+          name: extension-x64-linux
+          path: .
+          
+      - name: VirusTotal Scan
+        uses: crazy-max/ghaction-virustotal@v4
+        with:
+          vt_api_key: ${{ secrets.VIRUSTOTAL_APIKEY }}
+          files: |
+            ./dynops_x64.dll
+            ./dynops_x64.so
+     
   build:
     name: Build addon
     runs-on: ubuntu-latest
@@ -115,7 +144,7 @@ jobs:
     needs:
      - build-extension-windows-x64
      - build-extension-linux-x64
-    
+     
     steps:
     - name: Checkout
       uses: actions/checkout@v4
