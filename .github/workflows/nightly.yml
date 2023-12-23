@@ -51,7 +51,7 @@ jobs:
     - name: Download Addon
       uses: actions/download-artifact@v4
       with:
-        name: DynamicOperations
+        name: addon
         path: .
         
     - name: Push pre-release
