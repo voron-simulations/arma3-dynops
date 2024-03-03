@@ -1,6 +1,6 @@
 use crate::{CONTEXT, RUNTIME};
 use arma_rs::Group;
-use chatgpt::functions::{GptFunction, gpt_function};
+use chatgpt::functions::{gpt_function, GptFunction};
 use chatgpt::{config::ModelConfigurationBuilder, converse::Conversation, prelude::ChatGPT};
 use std::{collections::HashMap, env, sync::Arc, time::Duration};
 use tokio::sync::Mutex;
@@ -19,7 +19,7 @@ pub fn group() -> Group {
 }
 
 /// Makes character flee from confrontation
-/// 
+///
 #[gpt_function]
 async fn flee() {
     let context_store = CONTEXT.read().await;
@@ -36,7 +36,6 @@ async fn attack() {
         _ = context.callback_null("dynops", "systemChat");
     }
 }
-
 
 fn init_chat_gpt() -> ChatGPT {
     let key = env::var("CHATGPT_KEY").unwrap();
