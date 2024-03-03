@@ -11,7 +11,7 @@ _factions = _factions select {
 };
 
 private _factionNames = _factions apply { configName _x; };
-INFO_1("Detected factions: %1", _factionNames);
+INFO_1("Detected factions: %1",_factionNames);
 
 // Create the root hashset
 GVARMAIN(FactionData) = createHashMap;
@@ -20,7 +20,7 @@ GVARMAIN(FactionData) = createHashMap;
 {
 	// Pre-fill arsenal items which are available for any faction
 	private _baseSet = createHashMap;
-	[_baseSet, "Items", ["FirstAidKit","ItemWatch","ItemCompass","ItemRadio","ItemMap","Medikit","ToolKit"]] call EFUNC(main,hashAdd);
+	[_baseSet, "Items", ["FirstAidKit","ItemWatch","ItemCompass","ItemRadio","ItemMap","Medikit","ToolKit"]] call DynOps_fnc_hashAdd;
 
 	GVARMAIN(FactionData) set [_x, _baseSet];
 } forEach _factionNames;
@@ -37,10 +37,10 @@ _cfgVehicles = _cfgVehicles select { getText (_x >> "faction") in _factionNames 
 	private _tags = (configName _x) call BIS_fnc_objectType;
 	private _key = (_tags # 0) + "_" + (_tags # 1); // See https://community.bistudio.com/wiki/BIS_fnc_objectType
 	private _factionData = GVARMAIN(FactionData) get _faction;
-	[_factionData, _key, configName _x] call EFUNC(main,hashAdd);
+	[_factionData, _key, configName _x] call DynOps_fnc_hashAdd;
 	
 	// Fill weapons/items/magazines while we're at it
-	if ((configName _x) isKindOf "Man") then {
+	if ((configName _x) isKindOf "CAManBase") then {
 		// Get person's equipment from config
 		private _backpack = getText (_x >> "backpack");
 		private _items = getArray (_x >> "linkeditems");
@@ -51,15 +51,15 @@ _cfgVehicles = _cfgVehicles select { getText (_x >> "faction") in _factionNames 
 		// Backpacks on units are customized - find 'empty' base class for them
 		_backpack = [_backpack, "CfgVehicles"] call CBA_fnc_getNonPresetClass;
 
-		[_factionData, "Backpacks", _backpack] call EFUNC(main,hashAdd);
-        [_factionData, "Items", _items] call EFUNC(main,hashAdd);
-        [_factionData, "Magazines", _magazines] call EFUNC(main,hashAdd);
-        [_factionData, "Uniforms", _uniform] call EFUNC(main,hashAdd);
-        [_factionData, "Weapons", _weapons] call EFUNC(main,hashAdd);
+		[_factionData, "Backpacks", _backpack] call DynOps_fnc_hashAdd;
+        [_factionData, "Items", _items] call DynOps_fnc_hashAdd;
+        [_factionData, "Magazines", _magazines] call DynOps_fnc_hashAdd;
+        [_factionData, "Uniforms", _uniform] call DynOps_fnc_hashAdd;
+        [_factionData, "Weapons", _weapons] call DynOps_fnc_hashAdd;
 	};
 } forEach _cfgVehicles;
 
-INFO_1("Processed %1 CfgVehicle configs", count _cfgVehicles);
+INFO_1("Processed %1 CfgVehicle configs",count _cfgVehicles);
 
 /****** STAGE 2: Groups data ******/
 // Enumerate "group side" classes
@@ -82,7 +82,7 @@ _groupFactions = _groupFactions select { configName _x in _factionNames; };
 		{
 			private _groupName = configName (_x);
 			private _key = "Group_" + _groupType;
-			[_factionData, _key, _groupName] call EFUNC(main,hashAdd);
+			[_factionData, _key, _groupName] call DynOps_fnc_hashAdd;
 		} forEach ("true" configClasses (_x));
 	} forEach ("true" configClasses (_x));
 } forEach _groupFactions;
@@ -100,4 +100,7 @@ _groupFactions = _groupFactions select { configName _x in _factionNames; };
 } forEach _factions;
 
 /****** STAGE 4: Add canned data ******/
-call FUNC(factionStaticData);
+call DynOps_fnc_factionStaticData;
+
+/****** STAGE 5: Make faction data final ******/
+GVARMAIN(FactionData) = compileFinal GVARMAIN(FactionData);

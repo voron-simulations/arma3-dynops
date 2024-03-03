@@ -15,13 +15,13 @@ private _houses = nearestTerrainObjects [_center, ["BUILDING", "HOUSE"], _radius
 private _enterables = _houses; // TODO: better filtering
 GVAR(EnterableBuildings) = _enterables;
 
-INFO_1("Detected %1 objects", count _enterables);
+INFO_1("Detected %1 objects",count _enterables);
 private _input = _enterables joinString endl;
 
-private _clusters = parseSimpleArray (["cluster", [_input]] call EFUNC(extension,call));
+private _clusters = parseSimpleArray (["cluster", [_input]] call DynOps_fnc_call);
 
 {
-	private _uuid = call EFUNC(extension,uuid);
+	private _uuid = call DynOps_fnc_uuid;
 	createMarker [_uuid, _x # 0];
 	_uuid setMarkerSize [ _x # 1, _x # 2];
 	_uuid setMarkerDir ( _x # 3 );

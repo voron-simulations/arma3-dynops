@@ -1,5 +1,6 @@
 use crate::{CONTEXT, RUNTIME};
 use arma_rs::Group;
+use chatgpt::functions::{gpt_function, GptFunction};
 use chatgpt::{config::ModelConfigurationBuilder, converse::Conversation, prelude::ChatGPT};
 use std::{collections::HashMap, env, sync::Arc, time::Duration};
 use tokio::sync::Mutex;
@@ -13,7 +14,27 @@ lazy_static::lazy_static! {
 pub fn group() -> Group {
     Group::new()
         .command("init", init)
+        .command("destroy", destroy)
         .command("message", message)
+}
+
+/// Makes character flee from confrontation
+///
+#[gpt_function]
+async fn flee() {
+    let context_store = CONTEXT.read().await;
+    if let Some(context) = context_store.as_ref() {
+        _ = context.callback_null("dynops", "DynOps_fnc_agentFlee");
+    }
+}
+
+/// Makes character attack nearest player, if the character feels too threatened
+#[gpt_function]
+async fn attack() {
+    let context_store = CONTEXT.read().await;
+    if let Some(context) = context_store.as_ref() {
+        _ = context.callback_null("dynops", "systemChat");
+    }
 }
 
 fn init_chat_gpt() -> ChatGPT {
@@ -31,8 +52,15 @@ fn init(uid: String, prompt: String) {
         return;
     }
 
-    let conversation = CLIENT.new_conversation_directed(prompt);
+    let mut conversation = CLIENT.new_conversation_directed(prompt);
+    _ = conversation.add_function(flee());
+    _ = conversation.add_function(attack());
     conversations.insert(uid, Arc::new(Mutex::new(conversation)));
+}
+
+fn destroy(uid: String) {
+    let mut conversations = CONVERSATIONS.blocking_lock();
+    conversations.remove(&uid);
 }
 
 fn message(uid: String, message: String) {
@@ -46,8 +74,8 @@ fn message(uid: String, message: String) {
         sleep(Duration::from_millis(5)).await;
         _ = context.callback_data(
             "dynops",
-            "systemChat",
-            "The person heard you and is thinking of response",
+            "DynOps_fnc_agentReply",
+            "This person heard you and is thinking of response",
         );
 
         let conversation_store = {
@@ -57,6 +85,6 @@ fn message(uid: String, message: String) {
         let mut conversation = conversation_store.lock().await;
         let response = conversation.send_message(message).await.unwrap(); // Send request to ChatGPT
         let reply: String = response.message().content.clone();
-        _ = context.callback_data("dynops", "systemChat", reply);
+        _ = context.callback_data("dynops", "DynOps_fnc_agentReply", reply);
     });
 }

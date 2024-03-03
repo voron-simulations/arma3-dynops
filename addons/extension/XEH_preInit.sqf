@@ -1,8 +1,8 @@
 #include "script_component.hpp"
 
-addMissionEventHandler ["ExtensionCallback", FUNC(callback)];
+addMissionEventHandler ["ExtensionCallback", DynOps_fnc_callback];
 
 addMissionEventHandler ["Ended", { 
     params ["_endType"];
-    ["onMissionEnded"] call FUNC(call);
+    ["onMissionEnded"] call DynOps_fnc_call;
 }];

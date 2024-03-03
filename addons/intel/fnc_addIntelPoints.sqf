@@ -16,5 +16,5 @@ if (!isMultiplayer || isServer) then
 else 
 {
 	// Otherwise, defer execution to server
-	_this remoteExec [FUNC(addIntelPoints), 2, false];
+	_this remoteExec [DynOps_fnc_addIntelPoints, 2, false];
 };

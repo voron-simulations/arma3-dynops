@@ -21,7 +21,8 @@ show_output = true
 
 [hemtt.launch.default]
 workshop = [
-    "450814997", # CBA_A3's Workshop ID
+    "450814997",  # CBA_A3's Workshop ID
+    "1858075458", # LAMBS_danger.fsm Workshop ID
 ]
 parameters = [
     "-skipIntro",
@@ -29,5 +30,4 @@ parameters = [
     "-showScriptErrors",
     "-debug",
     "-filePatching",
-    "mpmissions\\MP_DynOps_ChatTest.Enoch\\mission.sqm",
 ]

@@ -1,3 +1,3 @@
 #include "script_component.hpp"
 
-["uuid"] call FUNC(call);
+["uuid"] call DynOps_fnc_call;

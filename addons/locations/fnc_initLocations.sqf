@@ -11,10 +11,10 @@ private _houses = nearestTerrainObjects [_center, ["BUILDING", "HOUSE"], _radius
 private _enterables = _houses select { _x call BIS_fnc_isBuildingEnterable};
 private _input = (_enterables apply { format ["%1,%2", position _x # 0, position _x # 1] }) joinString endl;
 
-private _clusters = parseSimpleArray (["cluster", [_input]] call EFUNC(extension,call));
+private _clusters = parseSimpleArray (["cluster", [_input]] call DynOps_fnc_call);
 
 {
-	private _uuid = call EFUNC(extension,uuid);
+	private _uuid = call DynOps_fnc_uuid;
 	createMarker [_uuid, _x # 0];
 	_uuid setMarkerSize [ _x # 1, _x # 2];
 	_uuid setMarkerDir ( _x # 3 );

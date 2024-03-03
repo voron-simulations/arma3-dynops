@@ -1,5 +1,5 @@
 #include "script_component.hpp"
 
-call FUNC(initFactions);
+call DynOps_fnc_initFactions;
 
 INFO("PreInit finished");
