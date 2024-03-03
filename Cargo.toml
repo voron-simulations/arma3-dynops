@@ -12,12 +12,11 @@ name = "dynops"
 
 [dependencies]
 arma-rs = { version = "*", features = ["uuid"] }
-chatgpt_rs = { version = "*", features = ["functions"] }
+chatgpt_rs = "*"
 image = "*"
 lazy_static = "*"
 libc = "*"
 nalgebra = "*"
-serde = "*"
 tokio = { version = "*", features = ["full"] }
 uuid = { version = "*", features = ["v4"] }
 
