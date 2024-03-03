@@ -11,7 +11,7 @@ _factions = _factions select {
 };
 
 private _factionNames = _factions apply { configName _x; };
-INFO_1("Detected factions: %1", _factionNames);
+INFO_1("Detected factions: %1",_factionNames);
 
 // Create the root hashset
 GVARMAIN(FactionData) = createHashMap;
@@ -59,7 +59,7 @@ _cfgVehicles = _cfgVehicles select { getText (_x >> "faction") in _factionNames 
 	};
 } forEach _cfgVehicles;
 
-INFO_1("Processed %1 CfgVehicle configs", count _cfgVehicles);
+INFO_1("Processed %1 CfgVehicle configs",count _cfgVehicles);
 
 /****** STAGE 2: Groups data ******/
 // Enumerate "group side" classes

@@ -3,7 +3,7 @@
 params ["_sender", "_text"];
 private _peopleInRange = (position _sender) nearObjects ["CAManBase", GVAR(ConversationRange)];
 
-INFO_2("Chat message from %1: %2", name _sender, _text);
+INFO_2("Chat message from %1: %2",name _sender,_text);
 
 {
 	private _agent_uid = _x getVariable QGVAR(agent_uid);

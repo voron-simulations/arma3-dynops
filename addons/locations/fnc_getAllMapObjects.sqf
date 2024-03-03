@@ -15,7 +15,7 @@ private _houses = nearestTerrainObjects [_center, ["BUILDING", "HOUSE"], _radius
 private _enterables = _houses; // TODO: better filtering
 GVAR(EnterableBuildings) = _enterables;
 
-INFO_1("Detected %1 objects", count _enterables);
+INFO_1("Detected %1 objects",count _enterables);
 private _input = _enterables joinString endl;
 
 private _clusters = parseSimpleArray (["cluster", [_input]] call DynOps_fnc_call);

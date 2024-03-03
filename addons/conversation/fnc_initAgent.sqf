@@ -41,4 +41,4 @@ GVAR(agents) set [_uuid, _agent];
 
 private _input = format [_template, _name, _occupation, _facts joinString endl];
 ["chat:init", [_uuid, _input]] call DynOps_fnc_call;
-INFO_3("Agent initialized %1 (%2) %3", _name, _occupation, _uuid);
+INFO_3("Agent initialized %1 (%2) %3",_name,_occupation,_uuid);

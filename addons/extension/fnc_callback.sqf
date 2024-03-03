@@ -4,7 +4,7 @@ params ["_name", "_component", "_data"];
 
 if ((tolower _name) != "dynops") exitWith { };
 
-TRACE_3("Callback %1 called with args %2", _component, _data);
+TRACE_2("Callback %1 called with args %2",_component,_data);
 
 if (_component == "hint") exitWith { hint _data; };
 if (_component == "systemChat") exitWith { _data remoteExec ["systemChat", 0]; };
