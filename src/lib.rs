@@ -24,7 +24,9 @@ fn init() -> Extension {
         .group("chat", chat::group())
         // .command("cluster", cluster::entrypoint)
         .command("ok", || -> Result<String, String> { Ok("OK".to_owned()) })
-        .command("err", || -> Result<String, String> { Err("ERR".to_owned()) })
+        .command("err", || -> Result<String, String> {
+            Err("ERR".to_owned())
+        })
         .command("echo", echo)
         .command("hint", hint)
         .command("uuid", Uuid::new_v4)
