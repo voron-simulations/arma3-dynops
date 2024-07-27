@@ -7,12 +7,13 @@ on:
 
 jobs:  
   check:
+    name: Pre-check
     runs-on: 'ubuntu-latest'
     steps:
     - uses: octokit/request-action@v2.x
       id: check_last_run
       with:
-        route: GET /repos/${{github.repository}}/actions/workflows/daily.yml/runs?per_page=1&status=completed
+        route: GET /repos/${{github.repository}}/actions/workflows/nightly.yml/runs?per_page=1&status=completed
       env:
         GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
 
@@ -28,7 +29,7 @@ jobs:
     uses: ./.github/workflows/reusable-build.yml
     
   virustotal:
-    needs: [check, build]
+    needs: [build]
     if: needs.check.outputs.last_sha != github.sha
     name: VirusTotal Scan
     runs-on: ubuntu-latest
@@ -59,7 +60,7 @@ jobs:
             ./dynops_x64.so
 
   pre-release:
-    needs: [check, build]
+    needs: [build]
     if: needs.check.outputs.last_sha != github.sha && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
     name: Publish pre-release
     runs-on: ubuntu-latest
