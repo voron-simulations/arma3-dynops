@@ -13,13 +13,14 @@ jobs:
     - uses: octokit/request-action@v2.x
       id: check_last_run
       with:
-        route: GET /repos/${{github.repository}}/actions/workflows/nightly.yml/runs?per_page=1&status=completed
+        route: GET /repos/${{github.workflow_ref}}/runs?per_page=1&status=completed
       env:
         GITHUB_TOKEN: ${{ github.token }}
 
     - run: |
         echo Last nightly commit: ${{ fromJson(steps.check_last_run.outputs.data).workflow_runs[0].head_sha }}
         echo Current run commit:  ${{ github.sha }}
+        echo Should run: ${{ fromJson(steps.check_last_run.outputs.data).workflow_runs[0].head_sha != github.sha }}
 
     outputs:
       should_run: ${{ fromJson(steps.check_last_run.outputs.data).workflow_runs[0].head_sha != github.sha }}
