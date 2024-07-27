@@ -19,10 +19,13 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}
 
-    - run: |
-        echo Last nightly commit: ${{ steps.last_run.outputs.sha }}
-        echo Current run commit:  ${{ github.sha }}
+    - name: Print
+      run: |
+        echo Last sha: ${{ steps.last_run.outputs.sha }}
+        echo Current:  ${{ github.sha }}
         echo Should cancel: ${{ steps.last_run.outputs.sha == github.sha }}
+        echo ${{ github.workflow_ref }}
+        echo ${{ github.action_path }}
 
     - if: ${{ steps.last_run.outputs.sha == github.sha }}
       run: gh run cancel ${{ github.run_id }} --repo ${{ github.repository }}
