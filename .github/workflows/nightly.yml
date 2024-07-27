@@ -28,7 +28,7 @@ jobs:
   build:
     name: Build
     needs: [check]
-    if: needs.check.outputs.should_run
+    if: ${{ needs.check.outputs.should_run }}
     uses: ./.github/workflows/reusable-build.yml
     
   virustotal:
