@@ -22,18 +22,16 @@ jobs:
         echo Current run commit:  ${{ github.sha }}
         echo Should run: ${{ fromJson(steps.check_last_run.outputs.data).workflow_runs[0].head_sha != github.sha }}
 
-    outputs:
-      should_run: ${{ fromJson(steps.check_last_run.outputs.data).workflow_runs[0].head_sha != github.sha }}
+    - if: ${{ fromJson(steps.check_last_run.outputs.data).workflow_runs[0].head_sha == github.sha }}
+      run: gh run cancel ${{ github.run_id }}
       
   build:
     name: Build
     needs: [check]
-    if: ${{ needs.check.outputs.should_run }}
     uses: ./.github/workflows/reusable-build.yml
     
   virustotal:
     needs: [build]
-    if: needs.check.outputs.last_sha != github.sha
     name: VirusTotal Scan
     runs-on: ubuntu-latest
     permissions:
@@ -64,7 +62,6 @@ jobs:
 
   pre-release:
     needs: [build]
-    if: needs.check.outputs.last_sha != github.sha && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
     name: Publish pre-release
     runs-on: ubuntu-latest
     permissions:
