@@ -15,17 +15,19 @@ jobs:
       with:
         route: GET /repos/${{github.repository}}/actions/workflows/nightly.yml/runs?per_page=1&status=completed
       env:
-        GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
+        GITHUB_TOKEN: ${{ github.token }}
 
-    - run: "echo Last daily build: ${{ fromJson(steps.check_last_run.outputs.data).workflow_runs[0].head_sha }}"
+    - run: |
+        echo Last nightly commit: ${{ fromJson(steps.check_last_run.outputs.data).workflow_runs[0].head_sha }}
+        echo Current run commit:  ${{ github.sha }}
 
     outputs:
-      last_sha: ${{ fromJson(steps.check_last_run.outputs.data).workflow_runs[0].head_sha }}
-
+      should_run: ${{ fromJson(steps.check_last_run.outputs.data).workflow_runs[0].head_sha != github.sha }}
+      
   build:
-    needs: [check]
-    if: needs.check.outputs.last_sha != github.sha
     name: Build
+    needs: [check]
+    if: needs.check.outputs.should_run
     uses: ./.github/workflows/reusable-build.yml
     
   virustotal:
