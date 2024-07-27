@@ -24,6 +24,8 @@ jobs:
 
     - if: ${{ fromJson(steps.check_last_run.outputs.data).workflow_runs[0].head_sha == github.sha }}
       run: gh run cancel ${{ github.run_id }}
+      env:
+        GH_TOKEN: ${{ github.token }}
       
   build:
     name: Build
