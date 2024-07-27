@@ -5,18 +5,37 @@ on:
   schedule:
     - cron: '17 3 * * 1'
 
-jobs:
+jobs:  
+  check:
+    name: Pre-check
+    runs-on: 'ubuntu-latest'
+    steps:
+    - uses: octokit/request-action@v2.x
+      id: check_last_run
+      with:
+        route: GET /repos/${{github.repository}}/actions/workflows/nightly.yml/runs?per_page=1&status=completed
+      env:
+        GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
+
+    - run: "echo Last daily build: ${{ fromJson(steps.check_last_run.outputs.data).workflow_runs[0].head_sha }}"
+
+    outputs:
+      last_sha: ${{ fromJson(steps.check_last_run.outputs.data).workflow_runs[0].head_sha }}
+
   build:
+    needs: [check]
+    if: needs.check.outputs.last_sha != github.sha
     name: Build
     uses: ./.github/workflows/reusable-build.yml
     
   virustotal:
+    needs: [build]
+    if: needs.check.outputs.last_sha != github.sha
     name: VirusTotal Scan
     runs-on: ubuntu-latest
     permissions:
       contents: read
     timeout-minutes: 10
-    needs: build
 
     steps:
       - name: Download Windows x64
@@ -41,10 +60,10 @@ jobs:
             ./dynops_x64.so
 
   pre-release:
+    needs: [build]
+    if: needs.check.outputs.last_sha != github.sha && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
     name: Publish pre-release
-    needs: build
     runs-on: ubuntu-latest
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     permissions:
       contents: write
     steps:
