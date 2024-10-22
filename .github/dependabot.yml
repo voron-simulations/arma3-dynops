@@ -6,6 +6,7 @@ updates:
       interval: weekly
     groups:
       cargo:
+        applies-to: version-updates
   - package-ecosystem: github-actions
     directory: /
     schedule:
