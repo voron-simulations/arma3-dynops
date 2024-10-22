@@ -4,6 +4,8 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    groups:
+      cargo:
   - package-ecosystem: github-actions
     directory: /
     schedule:
