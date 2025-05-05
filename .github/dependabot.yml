@@ -8,9 +8,6 @@ updates:
       rust:
         patterns:
           - "*"
-        update-types:
-          - major
-          - minor
   - package-ecosystem: github-actions
     directory: /
     schedule:
