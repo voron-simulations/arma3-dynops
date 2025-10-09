@@ -7,7 +7,7 @@ class CfgPatches {
         weapons[] = {};
         requiredVersion = REQUIRED_VERSION;
         requiredAddons[] = {"dynops_main", "dynops_factions", "dynops_civilians", "cba_main"};
-        author = ECSTRING(main,Team);
+
         VERSION_CONFIG;
     };
 };

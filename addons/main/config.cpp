@@ -9,7 +9,6 @@ class CfgPatches
         weapons[] = {};
         requiredVersion = REQUIRED_VERSION;
         requiredAddons[] = {"cba_main"};
-        author = CSTRING(Team);
         VERSION_CONFIG;
     };
 };
@@ -20,12 +19,12 @@ class CfgMods
     {
         dir = "@dynops";
         name = "Dynamic Operations";
-        picture = "A3\Ui_f\data\Logos\arma3_expansion_alpha_ca";
+        //picture = "A3\Ui_f\data\Logos\arma3_expansion_alpha_ca";
         hidePicture = "true";
         hideName = "true";
         actionName = "Website";
         action = "https://github.com/DarkWanderer/DynamicOperations";
-        description = "Issue Tracker: https://github.com/DarkWanderer/DynamicOperations/issues";
+        description = "Issue Tracker: https://github.com/voron-simulations/arma3-dynops/issues";
     };
 };
 
