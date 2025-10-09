@@ -1,4 +1,4 @@
-/* 
+/*
   Finds locations on map and sets relevant variables in mission namespace
 */
 
@@ -16,9 +16,9 @@ private _clusters = parseSimpleArray (["cluster", [_input]] call DynOps_fnc_call
 {
 	private _uuid = call DynOps_fnc_uuid;
 	createMarker [_uuid, _x # 0];
-	_uuid setMarkerSize [ _x # 1, _x # 2];
-	_uuid setMarkerDir ( _x # 3 );
-	_uuid setMarkerShape "ELLIPSE";
+	_uuid setMarkerSizeLocal [ _x # 1, _x # 2];
+	_uuid setMarkerDirLocal ( _x # 3 );
+	_uuid setMarkerShapeLocal "ELLIPSE";
 	_uuid setMarkerColor "ColorRed";
 } forEach _clusters;
 

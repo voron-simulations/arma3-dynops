@@ -111,7 +111,7 @@ Examples:
         #ifndef DEBUG_MODE_FULL
         #define DEBUG_MODE_FULL
         #endif
-        #include "\dw\dynops\addons\main\script_macros_common.hpp"
+
     (end)
 
 Author:

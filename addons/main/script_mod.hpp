@@ -15,3 +15,5 @@
 #else
     #define COMPONENT_NAME QUOTE(DynOps COMPONENT)
 #endif
+
+#include "script_macros_common.hpp"

@@ -19,7 +19,7 @@ _group = createVehicleCrew _uav;
 // Set UAV loadout
 // Previously used PylonRack_4Rnd_LG_scalpel
 private _pylons = ["PylonRack_Bomb_SDB_x4", "PylonRack_Bomb_SDB_x4"];
-private _pylonPaths = (configProperties [configFile >> "CfgVehicles" >> typeOf _uav >> "Components" >> "TransportPylonsComponent" >> "Pylons", "isClass _x"]) apply {getArray (_x >> "turret")};
+private _pylonPaths = (configProperties [configOf _uav >> "Components" >> "TransportPylonsComponent" >> "Pylons", "isClass _x"]) apply {getArray (_x >> "turret")};
 { _uav removeWeaponGlobal getText (configFile >> "CfgMagazines" >> _x >> "pylonWeapon") } forEach getPylonMagazines _uav;
 { _uav setPylonLoadout [_forEachIndex + 1, _x, true, _pylonPaths select _forEachIndex] } forEach _pylons;
 
@@ -42,8 +42,8 @@ _uav setVehicleReceiveRemoteTargets true;
 
 _start = time;
 
-while { time < _start + 300 && alive _uav; } do 
-{ 
+while { time < _start + 300 && alive _uav; } do
+{
     // Loop while
 };
 
