@@ -25,7 +25,7 @@ class CfgMods
         hideName = "true";
         actionName = "Website";
         action = "https://github.com/DarkWanderer/DynamicOperations";
-        description = "Issue Tracker: https://github.com/DarkWanderer/DynamicOperations/issues";
+        description = "Issue Tracker: https://github.com/voron-simulations/arma3-dynops/issues";
     };
 };
 
