@@ -66,25 +66,3 @@ jobs:
           files: |
             ./dynops_x64.dll
             ./dynops_x64.so
-
-  pre-release:
-    needs: [build]
-    name: Publish pre-release
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-    - name: Download Addon
-      uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6
-      with:
-        name: addon
-        path: .
-        
-    - name: Push pre-release
-      uses: "marvinpinto/action-automatic-releases@latest"
-      with:
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: "latest"
-        prerelease: true
-        title: "Development build"
-        files: dynops-latest.zip
