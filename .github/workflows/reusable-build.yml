@@ -28,7 +28,7 @@ jobs:
         run: move target/release/dynops.dll dynops_x64.dll
           
       - name: Upload artifact
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: extension-x64-windows
           path: dynops_x64.dll
@@ -61,7 +61,7 @@ jobs:
         run: strip --strip-unneeded --keep-file-symbols dynops_x64.so
 
       - name: Upload artifact
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: extension-x64-linux
           path: dynops_x64.so
@@ -98,7 +98,7 @@ jobs:
       run: hemtt release
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
+      uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
       with:
         name: addon
         path: releases/dynops-latest.zip
