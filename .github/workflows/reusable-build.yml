@@ -93,9 +93,10 @@ jobs:
     
     - name: Install HEMTT
       run: |
-        curl -fsSL https://github.com/BrettMayson/HEMTT/releases/latest/download/linux-x64.zip -o hemtt.zip
-        unzip -q hemtt.zip
-        echo "$PWD/hemtt" >> "$GITHUB_PATH"
+        curl -fsSL https://github.com/BrettMayson/HEMTT/releases/latest/download/linux-x64.zip -o "$RUNNER_TEMP/hemtt.zip"
+        unzip -q "$RUNNER_TEMP/hemtt.zip" -d "$RUNNER_TEMP/hemtt"
+        chmod +x "$RUNNER_TEMP/hemtt/hemtt"
+        echo "$RUNNER_TEMP/hemtt" >> "$GITHUB_PATH"
 
     - name: Run HEMTT build
       run: hemtt release
