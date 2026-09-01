@@ -1,52 +1,69 @@
-#[cfg(test)]
-mod integration {
+fn test_map_data(data: &str) {
+    let result = dynops::cluster::entrypoint(data);
+    assert!(result.is_ok(), "{:?}", result.err());
+    let Ok(output) = result else {
+        return;
+    };
 
-    // fn test_map_data(data: &str) {
-    //     let mut c_chars = vec![0; 1024 * 128];
-    //     let function = CString::new("cluster").unwrap();
-    //     let input = CString::new(data).unwrap();
-    //     let args: Vec<*const c_char> = vec![input.as_ptr()];
+    let ellipses: Vec<&str> = output
+        .trim_start_matches('[')
+        .trim_end_matches(']')
+        .split(",\n")
+        .map(str::trim)
+        .filter(|s| !s.is_empty())
+        .collect();
+    assert!(!ellipses.is_empty(), "expected at least one cluster");
 
-    //     let retval = unsafe {
-    //         dynops::RVExtensionArgs(
-    //             c_chars.as_mut_ptr(),
-    //             c_chars.len() as i32,
-    //             function.as_ptr(),
-    //             args.as_ptr(),
-    //             args.len() as i32,
-    //         )
-    //     };
-    //     let result = unsafe { CStr::from_ptr(c_chars.as_ptr()).to_str().unwrap() };
-    //     assert!(retval != 0, "{}", result);
-    // }
-
-    #[test]
-    fn test_map_altis() {
-        //test_map_data(include_str!("../data/objects.Altis.txt"));
+    for ellipse in ellipses {
+        let parsed: Result<Vec<f64>, _> = ellipse
+            .trim_start_matches('[')
+            .trim_end_matches(']')
+            .split(',')
+            .map(|v| v.parse::<f64>())
+            .collect();
+        let Ok(params) = parsed else {
+            panic!(
+                "failed to parse ellipse params from {}: {:?}",
+                ellipse, parsed
+            );
+        };
+        assert_eq!(params.len(), 5, "expected [x,y,a,b,r], got {}", ellipse);
+        for param in params {
+            assert!(
+                param.is_finite(),
+                "non-finite ellipse parameter in {}",
+                ellipse
+            );
+        }
     }
+}
 
-    #[test]
-    fn test_map_stratis() {
-        //test_map_data(include_str!("../data/objects.Stratis.txt"));
-    }
+#[test]
+fn test_map_altis() {
+    test_map_data(include_str!("../data/objects.Altis.txt"));
+}
 
-    #[test]
-    fn test_map_livonia() {
-        //test_map_data(include_str!("../data/objects.Livonia.txt"));
-    }
+#[test]
+fn test_map_stratis() {
+    test_map_data(include_str!("../data/objects.Stratis.txt"));
+}
 
-    #[test]
-    fn test_map_tanoa() {
-        //test_map_data(include_str!("../data/objects.Tanoa.txt"));
-    }
+#[test]
+fn test_map_livonia() {
+    test_map_data(include_str!("../data/objects.Livonia.txt"));
+}
 
-    #[test]
-    fn test_map_malden() {
-        //test_map_data(include_str!("../data/objects.Malden.txt"));
-    }
+#[test]
+fn test_map_tanoa() {
+    test_map_data(include_str!("../data/objects.Tanoa.txt"));
+}
 
-    #[test]
-    fn test_map_chernarus() {
-        //test_map_data(include_str!("../data/objects.Chernarus2020.txt"));
-    }
+#[test]
+fn test_map_malden() {
+    test_map_data(include_str!("../data/objects.Malden.txt"));
+}
+
+#[test]
+fn test_map_chernarus() {
+    test_map_data(include_str!("../data/objects.Chernarus2020.txt"));
 }

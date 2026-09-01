@@ -1,6 +1,6 @@
 mod bounding;
-mod cluster;
-mod kdtree;
+pub mod cluster;
+pub mod kdtree;
 mod shape;
 
 use arma_rs::{arma, Context, Extension};

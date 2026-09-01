@@ -18,6 +18,13 @@ nalgebra = "*"
 serde = "*"
 uuid = { version = "*", features = ["v4"] }
 
+[dev-dependencies]
+criterion = "*"
+
+[[bench]]
+name = "cluster"
+harness = false
+
 [profile.dev]
 panic = "unwind"
 
