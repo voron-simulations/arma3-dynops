@@ -36,9 +36,10 @@ jobs:
   build:
     name: Build
     needs: [check]
-    uses: ./.github/workflows/reusable-build.yml
+    uses: ./.github/workflows/ci.yml
     permissions:
       contents: read
+      security-events: write
 
   virustotal:
     needs: [build]
