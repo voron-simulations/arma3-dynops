@@ -30,7 +30,7 @@ pub fn bounding_ellipse(coords: &[Vector2<f64>], tolerance: f64) -> Ellipse {
         }
     }
     let p = q.rows(0, d);
-    let pu = &p * &u;
+    let pu = p * &u;
     let pt = &p.transpose();
     let put = &pu.transpose();
     // Resulting ellipse A-matrix

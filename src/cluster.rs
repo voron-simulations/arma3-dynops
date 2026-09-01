@@ -17,7 +17,7 @@ impl Distance for Vector2<f64> {
     }
 }
 
-pub fn entrypoint(data: &String) -> Result<String, String> {
+pub fn entrypoint(data: &str) -> Result<String, String> {
     let mut points: Vec<Vector2<f64>> = Vec::with_capacity(1000);
 
     for line in data.lines() {
@@ -166,7 +166,7 @@ where
     }
 
     #[inline]
-    fn range_query(&self, sample: &T, population: &Vec<T>) -> Vec<usize> {
+    fn range_query(&self, sample: &T, population: &[T]) -> Vec<usize> {
         population
             .iter()
             .enumerate()
