@@ -1,5 +1,4 @@
 mod bounding;
-mod chat;
 mod cluster;
 mod kdtree;
 mod shape;
@@ -7,21 +6,11 @@ mod shape;
 use arma_rs::{arma, Context, Extension};
 
 use std::result::Result;
-use tokio::sync::RwLock;
 use uuid::Uuid;
-
-lazy_static::lazy_static! {
-    static ref RUNTIME: tokio::runtime::Runtime = tokio::runtime::Builder::new_multi_thread()
-        .enable_all()
-        .build()
-        .expect("failed to initialize tokio runtime");
-    static ref CONTEXT: RwLock<Option<Context>> = RwLock::new(None);
-}
 
 #[arma]
 fn init() -> Extension {
-    let ext = Extension::build()
-        .group("chat", chat::group())
+    Extension::build()
         // .command("cluster", cluster::entrypoint)
         .command("ok", || -> Result<String, String> { Ok("OK".to_owned()) })
         .command("err", || -> Result<String, String> {
@@ -30,16 +19,7 @@ fn init() -> Extension {
         .command("echo", echo)
         .command("hint", hint)
         .command("uuid", Uuid::new_v4)
-        .finish();
-
-    let ctx_tokio = ext.context();
-    std::thread::spawn(move || {
-        RUNTIME.block_on(async {
-            *CONTEXT.write().await = Some(ctx_tokio);
-            // tokio::join!(handler::start(), listener::start());
-        });
-    });
-    ext
+        .finish()
 }
 
 fn echo(input: Vec<String>) -> String {
