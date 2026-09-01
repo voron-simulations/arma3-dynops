@@ -69,3 +69,27 @@ jobs:
           files: |
             ./dynops_x64.dll
             ./dynops_x64.so
+
+  publish:
+    needs: [build, virustotal]
+    name: Publish nightly release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    timeout-minutes: 5
+
+    steps:
+      - name: Download addon
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: addon
+          path: .
+
+      - name: Publish nightly release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete nightly --repo "${{ github.repository }}" --cleanup-tag --yes || true
+          gh release create nightly --repo "${{ github.repository }}" --prerelease --target "${{ github.sha }}" \
+            --title "Nightly $(date -u +%Y-%m-%d)" --notes "Automated nightly build of the DynamicOperations extension and addon." \
+            dynops-latest.zip
