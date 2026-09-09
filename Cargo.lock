@@ -396,12 +396,15 @@ checksum = "460fbee9c2c2f33933d720630a6a0bac33ba7053db5344fac858d4b8952d77d5"
 name = "dynops-test"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "arma-rs",
  "criterion",
  "image",
  "libc",
  "nalgebra",
  "serde",
+ "tracing",
+ "tracing-subscriber",
  "uuid",
 ]
 

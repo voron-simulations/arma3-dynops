@@ -32,21 +32,8 @@ pub fn entrypoint(data: &str) -> Result<String, String> {
     let mut clusters: HashMap<usize, Vec<Vector2<f64>>> = HashMap::new();
     for (class, coord) in classifications.iter().zip(points) {
         match class {
-            Core(i) => {
-                if clusters.contains_key(i) {
-                    clusters.get_mut(i).unwrap().push(coord);
-                } else {
-                    clusters.insert(*i, vec![coord]);
-                }
-            }
-            Edge(i) => {
-                if clusters.contains_key(i) {
-                    clusters.get_mut(i).unwrap().push(coord);
-                } else {
-                    clusters.insert(*i, vec![coord]);
-                }
-            }
-            _ => {}
+            Core(i) | Edge(i) => clusters.entry(*i).or_default().push(coord),
+            Noise => {}
         }
     }
     let centers: Vec<String> = clusters
@@ -319,7 +306,7 @@ mod tests {
                 points
                     .iter()
                     .enumerate()
-                    .filter(|(_, &pt)| (sample - pt).norm() < self.eps)
+                    .filter(|&(_, &pt)| (sample - pt).norm() < self.eps)
                     .map(|(idx, _)| idx)
                     .collect()
             }

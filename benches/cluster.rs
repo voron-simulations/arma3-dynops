@@ -1,5 +1,5 @@
-use criterion::{criterion_group, criterion_main, Criterion};
-use dynops::cluster::{cluster, entrypoint, EPSILON, MIN_POINTS};
+use criterion::{Criterion, criterion_group, criterion_main};
+use dynops::cluster::{EPSILON, MIN_POINTS, cluster, entrypoint};
 use dynops::kdtree::KdTree;
 use nalgebra::Vector2;
 use std::hint::black_box;

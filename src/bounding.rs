@@ -13,11 +13,10 @@ pub fn bounding_ellipse(coords: &[Vector2<f64>], tolerance: f64) -> Ellipse {
     let mut u = DVector::from_element(len, 1. / (len as f64));
     loop {
         let weighted_coords = &q * DMatrix::from_diagonal(&u) * &q_t;
-        let inverse = weighted_coords.try_inverse();
-        if inverse.is_none() {
+        let Some(inverse) = weighted_coords.try_inverse() else {
             break;
-        }
-        let deviations = (&q_t * inverse.unwrap() * &q).diagonal();
+        };
+        let deviations = (&q_t * inverse * &q).diagonal();
         let (max_i, max_v) = deviations.argmax();
         let df = (d + 1) as f64;
         let step_size = (max_v - df) / df / (max_v - 1.);
@@ -38,7 +37,9 @@ pub fn bounding_ellipse(coords: &[Vector2<f64>], tolerance: f64) -> Ellipse {
     // Center
     let c = p * u;
     let svd = a_matrix.svd(true, false);
-    let u = svd.u.unwrap();
+    // `compute_u = true` was requested above, so nalgebra guarantees `u` is
+    // `Some`; the identity fallback only matters if that contract changes.
+    let u = svd.u.unwrap_or_else(|| DMatrix::identity(d, d));
     //println!("SVD: {} {}", &svd.singular_values, u);
     let a01 = u.row(0)[0];
     let a11 = u.row(1)[0];
