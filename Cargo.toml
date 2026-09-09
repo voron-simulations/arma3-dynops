@@ -1,6 +1,21 @@
+[workspace]
+members = ["."]
+
+[workspace.dependencies]
+anyhow = "1.0.104"
+arma-rs = { version = "1.13.0", features = ["uuid"] }
+criterion = "0.8.2"
+image = "0.25.10"
+libc = "0.2.189"
+nalgebra = "0.35.0"
+serde = "1.0.229"
+tracing = "0.1.44"
+tracing-subscriber = "0.3.23"
+uuid = { version = "1.26.0", features = ["v4"] }
+
 [package]
 authors = ["DarkWanderer <elquentaro@gmail.com>"]
-edition = "2018"
+edition = "2024"
 # name of test executable, main library defined in next section
 name = "dynops-test"
 version = "0.1.0"
@@ -10,19 +25,34 @@ bench = false
 crate-type = ["cdylib", "rlib"]
 name = "dynops"
 
+[[bin]]
+name = "dynops-test"
+path = "src/main.rs"
+required-features = ["viz"]
+
+[features]
+viz = ["dep:image"]
+
 [dependencies]
-arma-rs = { version = "*", features = ["uuid"] }
-image = "*"
-libc = "*"
-nalgebra = "*"
-serde = "*"
-uuid = { version = "*", features = ["v4"] }
+anyhow = { workspace = true }
+arma-rs = { workspace = true }
+image = { workspace = true, optional = true }
+libc = { workspace = true }
+nalgebra = { workspace = true }
+serde = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+uuid = { workspace = true }
 
 [dev-dependencies]
-criterion = "*"
+criterion = { workspace = true }
 
 [[bench]]
 name = "cluster"
+harness = false
+
+[[bench]]
+name = "locations"
 harness = false
 
 [profile.dev]

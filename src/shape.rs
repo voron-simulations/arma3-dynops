@@ -2,11 +2,6 @@ use std::fmt;
 
 use nalgebra::{Rotation2, Vector2};
 
-pub trait Shape {
-    fn contains_xy(&self, x: f64, y: f64) -> String;
-    fn contains_vec(&self, pos: &Vector2<f64>) -> String;
-}
-
 pub struct Ellipse {
     pub x: f64,
     pub y: f64,
