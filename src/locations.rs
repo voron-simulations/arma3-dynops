@@ -11,21 +11,159 @@ use crate::cluster::{Classification, cluster};
 use crate::geometry::{Obb, min_area_obb};
 use nalgebra::Vector2;
 use std::collections::HashMap;
+use std::fmt;
+
+/// Upper bound on how many times [`detect`] may shrink `eps` before reaching
+/// `min_eps`. Bounds the recursion depth (and the work, since every level
+/// re-clusters its components) independently of the input points.
+pub const MAX_RECURSION_LEVELS: u32 = 64;
 
 /// Tuning knobs for [`detect`]. Defaults are the values validated against the
 /// bundled map dumps (see the ADR's measurement table).
+///
+/// Fields are private and [`DetectParams::new`] is the only way to build a
+/// non-default value, so every `DetectParams` in existence satisfies the
+/// invariants that make [`detect`]'s recursion terminate: a `split_factor`
+/// outside `(0, 1)` would never shrink `eps` toward `min_eps`.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct DetectParams {
+    eps: f64,
+    max_span: f64,
+    split_factor: f64,
+    min_eps: f64,
+    min_buildings: usize,
+}
+
+/// Why [`DetectParams::new`] rejected its arguments.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum DetectParamsError {
+    /// The named float parameter is NaN or infinite.
+    NonFinite(&'static str),
+    /// The named float parameter is zero or negative.
+    NotPositive(&'static str),
+    /// `min_eps` is larger than `eps`.
+    MinEpsAboveEps,
+    /// `split_factor` is not strictly between 0 and 1.
+    SplitFactorOutOfRange,
+    /// `min_buildings` is zero.
+    NoMinBuildings,
+    /// Shrinking `eps` by `split_factor` down to `min_eps` takes more than
+    /// [`MAX_RECURSION_LEVELS`] steps.
+    TooManyLevels,
+}
+
+impl fmt::Display for DetectParamsError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::NonFinite(field) => write!(f, "{field} must be finite"),
+            Self::NotPositive(field) => write!(f, "{field} must be greater than 0"),
+            Self::MinEpsAboveEps => write!(f, "min_eps must not exceed eps"),
+            Self::SplitFactorOutOfRange => {
+                write!(f, "split_factor must be strictly between 0 and 1")
+            }
+            Self::NoMinBuildings => write!(f, "min_buildings must be at least 1"),
+            Self::TooManyLevels => write!(
+                f,
+                "eps shrinks to min_eps in more than {MAX_RECURSION_LEVELS} split_factor steps"
+            ),
+        }
+    }
+}
+
+impl std::error::Error for DetectParamsError {}
+
+impl DetectParams {
+    /// Validates and bundles the detection parameters.
+    ///
+    /// Requires every float to be finite, `eps`, `min_eps` and `max_span` to be
+    /// positive, `min_eps <= eps`, `0 < split_factor < 1`, `min_buildings >= 1`,
+    /// and `eps` to reach `min_eps` within [`MAX_RECURSION_LEVELS`] shrink steps.
+    pub fn new(
+        eps: f64,
+        max_span: f64,
+        split_factor: f64,
+        min_eps: f64,
+        min_buildings: usize,
+    ) -> Result<Self, DetectParamsError> {
+        // Finiteness comes first so NaN is reported as such rather than as a
+        // failed range comparison further down.
+        for (field, value) in [
+            ("eps", eps),
+            ("max_span", max_span),
+            ("split_factor", split_factor),
+            ("min_eps", min_eps),
+        ] {
+            if !value.is_finite() {
+                return Err(DetectParamsError::NonFinite(field));
+            }
+        }
+        for (field, value) in [("eps", eps), ("max_span", max_span), ("min_eps", min_eps)] {
+            if value <= 0.0 {
+                return Err(DetectParamsError::NotPositive(field));
+            }
+        }
+        if min_eps > eps {
+            return Err(DetectParamsError::MinEpsAboveEps);
+        }
+        if split_factor <= 0.0 || split_factor >= 1.0 {
+            return Err(DetectParamsError::SplitFactorOutOfRange);
+        }
+        if min_buildings == 0 {
+            return Err(DetectParamsError::NoMinBuildings);
+        }
+        if shrink_steps_exceed_limit(eps, min_eps, split_factor) {
+            return Err(DetectParamsError::TooManyLevels);
+        }
+        Ok(DetectParams {
+            eps,
+            max_span,
+            split_factor,
+            min_eps,
+            min_buildings,
+        })
+    }
+
     /// Initial single-linkage radius.
-    pub eps: f64,
+    pub fn eps(&self) -> f64 {
+        self.eps
+    }
+
     /// A component wider than this (in either axis) gets re-cut at a smaller eps.
-    pub max_span: f64,
-    /// eps multiplier applied at each recursion level.
-    pub split_factor: f64,
+    pub fn max_span(&self) -> f64 {
+        self.max_span
+    }
+
+    /// eps multiplier applied at each recursion level, strictly inside `(0, 1)`.
+    pub fn split_factor(&self) -> f64 {
+        self.split_factor
+    }
+
     /// Recursion stops here even if a component is still oversized.
-    pub min_eps: f64,
+    pub fn min_eps(&self) -> f64 {
+        self.min_eps
+    }
+
     /// Components smaller than this are dropped.
-    pub min_buildings: usize,
+    pub fn min_buildings(&self) -> usize {
+        self.min_buildings
+    }
+}
+
+/// Replays the `eps` schedule of `detect_into` (recurse while `eps > min_eps`)
+/// and reports whether it would take more than [`MAX_RECURSION_LEVELS`] steps.
+/// Counting the actual schedule avoids a float `ln` ratio whose rounding could
+/// disagree with the real recursion at the limit.
+fn shrink_steps_exceed_limit(eps: f64, min_eps: f64, split_factor: f64) -> bool {
+    let mut current = eps;
+    let mut steps = 0u32;
+    while current > min_eps {
+        steps += 1;
+        if steps > MAX_RECURSION_LEVELS {
+            return true;
+        }
+        current *= split_factor;
+    }
+    false
 }
 
 impl Default for DetectParams {
@@ -111,6 +249,9 @@ fn group_by_cluster(points: &[Vector2<f64>], eps: f64) -> Vec<Vec<Vector2<f64>>>
     groups.into_values().collect()
 }
 
+// Recursion depth is at most `MAX_RECURSION_LEVELS`: `DetectParams` guarantees
+// `split_factor` in (0, 1) and a bounded eps -> min_eps shrink schedule, so each
+// level strictly shrinks eps toward `min_eps`.
 fn detect_into(
     points: &[Vector2<f64>],
     eps: f64,
@@ -118,9 +259,9 @@ fn detect_into(
     out: &mut Vec<Vec<Vector2<f64>>>,
 ) {
     for group in group_by_cluster(points, eps) {
-        if span(&group) > params.max_span && eps > params.min_eps {
-            detect_into(&group, eps * params.split_factor, params, out);
-        } else if group.len() >= params.min_buildings {
+        if span(&group) > params.max_span() && eps > params.min_eps() {
+            detect_into(&group, eps * params.split_factor(), params, out);
+        } else if group.len() >= params.min_buildings() {
             out.push(group);
         }
     }
@@ -128,13 +269,14 @@ fn detect_into(
 
 /// Detects settlements in `points` (building positions).
 ///
-/// Runs DBSCAN-as-connected-components at `params.eps`; any resulting component
-/// wider than `params.max_span` is re-cut at `eps * params.split_factor` and so
-/// on down to `params.min_eps`. Each surviving component becomes a [`Location`]
-/// with a minimum-area bounding box and a class derived from building count.
+/// Runs DBSCAN-as-connected-components at `params.eps()`; any resulting component
+/// wider than `params.max_span()` is re-cut at `eps * params.split_factor()` and
+/// so on down to `params.min_eps()`. Each surviving component becomes a
+/// [`Location`] with a minimum-area bounding box and a class derived from
+/// building count. Takes validated [`DetectParams`], so it always terminates.
 pub fn detect(points: &[Vector2<f64>], params: &DetectParams) -> Vec<Location> {
     let mut groups = Vec::new();
-    detect_into(points, params.eps, params, &mut groups);
+    detect_into(points, params.eps(), params, &mut groups);
 
     groups
         .into_iter()
@@ -228,8 +370,8 @@ mod tests {
             "expected the bridge to be cut, got {locations:?}"
         );
         for loc in &locations {
-            assert!(loc.obb.a * 2.0 <= params.max_span + 1e-6);
-            assert!(loc.obb.b * 2.0 <= params.max_span + 1e-6);
+            assert!(loc.obb.a * 2.0 <= params.max_span() + 1e-6);
+            assert!(loc.obb.b * 2.0 <= params.max_span() + 1e-6);
         }
     }
 
@@ -244,20 +386,148 @@ mod tests {
         let points: Vec<Vector2<f64>> = (0..200)
             .map(|i| Vector2::new(i as f64 * 5.0, 0.0))
             .collect();
-        let params = DetectParams {
-            eps: 100.0,
-            max_span: 700.0,
-            split_factor: 0.7,
-            min_eps: 35.0,
-            min_buildings: 2,
-        };
+        let params = DetectParams::new(100.0, 700.0, 0.7, 35.0, 2).expect("valid params");
         let locations = detect(&points, &params);
         assert_eq!(
             locations.len(),
             1,
             "expected one oversized location, got {locations:?}"
         );
-        assert!(locations[0].obb.a * 2.0 > params.max_span);
+        assert!(locations[0].obb.a * 2.0 > params.max_span());
+    }
+
+    #[test]
+    fn defaults_are_valid() {
+        assert_eq!(
+            DetectParams::new(100.0, 700.0, 0.7, 35.0, 2),
+            Ok(DetectParams::default())
+        );
+    }
+
+    #[test]
+    fn rejects_split_factor_outside_open_unit_interval() {
+        // 1.0 and above never shrinks eps, so the recursion would not terminate.
+        for split_factor in [1.0, 0.0, 1.5, -0.5] {
+            assert_eq!(
+                DetectParams::new(100.0, 700.0, split_factor, 35.0, 2),
+                Err(DetectParamsError::SplitFactorOutOfRange),
+                "split_factor {split_factor}"
+            );
+        }
+    }
+
+    #[test]
+    fn rejects_non_finite_values() {
+        let nan = f64::NAN;
+        let inf = f64::INFINITY;
+        assert_eq!(
+            DetectParams::new(100.0, 700.0, nan, 35.0, 2),
+            Err(DetectParamsError::NonFinite("split_factor"))
+        );
+        assert_eq!(
+            DetectParams::new(100.0, inf, 0.7, 35.0, 2),
+            Err(DetectParamsError::NonFinite("max_span"))
+        );
+        assert_eq!(
+            DetectParams::new(inf, 700.0, 0.7, 35.0, 2),
+            Err(DetectParamsError::NonFinite("eps"))
+        );
+        assert_eq!(
+            DetectParams::new(100.0, 700.0, 0.7, nan, 2),
+            Err(DetectParamsError::NonFinite("min_eps"))
+        );
+        assert_eq!(
+            DetectParams::new(100.0, 700.0, f64::NEG_INFINITY, 35.0, 2),
+            Err(DetectParamsError::NonFinite("split_factor"))
+        );
+    }
+
+    #[test]
+    fn rejects_non_positive_radii_and_span() {
+        for bad in [0.0, -1.0] {
+            assert_eq!(
+                DetectParams::new(bad, 700.0, 0.7, 35.0, 2),
+                Err(DetectParamsError::NotPositive("eps"))
+            );
+            assert_eq!(
+                DetectParams::new(100.0, 700.0, 0.7, bad, 2),
+                Err(DetectParamsError::NotPositive("min_eps"))
+            );
+            assert_eq!(
+                DetectParams::new(100.0, bad, 0.7, 35.0, 2),
+                Err(DetectParamsError::NotPositive("max_span"))
+            );
+        }
+    }
+
+    #[test]
+    fn rejects_min_eps_above_eps_but_allows_equal() {
+        assert_eq!(
+            DetectParams::new(100.0, 700.0, 0.7, 100.5, 2),
+            Err(DetectParamsError::MinEpsAboveEps)
+        );
+        assert!(DetectParams::new(100.0, 700.0, 0.7, 100.0, 2).is_ok());
+    }
+
+    #[test]
+    fn rejects_zero_min_buildings_but_allows_one() {
+        assert_eq!(
+            DetectParams::new(100.0, 700.0, 0.7, 35.0, 0),
+            Err(DetectParamsError::NoMinBuildings)
+        );
+        assert!(DetectParams::new(100.0, 700.0, 0.7, 35.0, 1).is_ok());
+    }
+
+    #[test]
+    fn rejects_shrink_schedules_deeper_than_the_recursion_limit() {
+        // Strictly inside (0, 1) is not enough: this would recurse ~1e11 levels.
+        assert_eq!(
+            DetectParams::new(100.0, 700.0, 1.0 - f64::EPSILON / 2.0, 35.0, 2),
+            Err(DetectParamsError::TooManyLevels)
+        );
+        assert_eq!(
+            DetectParams::new(100.0, 700.0, 0.999, 1e-300, 2),
+            Err(DetectParamsError::TooManyLevels)
+        );
+        // Halving from 2^N down to 1 takes exactly N levels: the limit itself is
+        // accepted and one more is not.
+        let limit = i32::try_from(MAX_RECURSION_LEVELS).expect("limit fits in i32");
+        assert!(DetectParams::new(2f64.powi(limit), 700.0, 0.5, 1.0, 2).is_ok());
+        assert_eq!(
+            DetectParams::new(2f64.powi(limit + 1), 700.0, 0.5, 1.0, 2),
+            Err(DetectParamsError::TooManyLevels)
+        );
+    }
+
+    #[test]
+    fn deepest_accepted_schedule_terminates() {
+        // 2^64 -> 1 in 64 halvings; the chain stays one component until eps
+        // drops below its 5-unit spacing, then dissolves into dropped singletons.
+        let limit = i32::try_from(MAX_RECURSION_LEVELS).expect("limit fits in i32");
+        let params = DetectParams::new(2f64.powi(limit), 700.0, 0.5, 1.0, 2).expect("valid params");
+        let points: Vec<Vector2<f64>> = (0..200)
+            .map(|i| Vector2::new(i as f64 * 5.0, 0.0))
+            .collect();
+        assert!(detect(&points, &params).is_empty());
+    }
+
+    #[test]
+    fn error_messages_name_the_offending_parameter() {
+        assert!(
+            DetectParamsError::SplitFactorOutOfRange
+                .to_string()
+                .contains("split_factor")
+        );
+        assert!(
+            DetectParamsError::NonFinite("max_span")
+                .to_string()
+                .contains("max_span")
+        );
+        assert!(
+            DetectParamsError::NotPositive("eps")
+                .to_string()
+                .contains("eps")
+        );
     }
 
     #[test]

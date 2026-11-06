@@ -13,11 +13,15 @@
 		0: ARRAY of Object - buildings to detect settlements from, as
 			returned by DynOps_fnc_collectBuildings
 		1: ARRAY (optional) - detection params [eps, maxSpan, splitFactor,
-			minEps, minBuildings], default [100, 700, 0.7, 35, 2]
+			minEps, minBuildings], default [100, 700, 0.7, 35, 2]. Valid
+			ranges: eps, minEps, maxSpan > 0 and finite; minEps <= eps;
+			0 < splitFactor < 1 (strictly); minBuildings >= 1; eps must
+			reach minEps within 64 splitFactor steps. Invalid values make
+			the extension return an error and no detection runs.
 
 	Returns: ARRAY of HashMap - one per detected location, keys:
 		"pos" (Position2D), "a" (Number), "b" (Number), "dir" (Number,
-		compass degrees), "buildings" (Number), "class" (Number, 0=Farm
+		marker direction in degrees, clockwise; a lies along east at 0), "buildings" (Number), "class" (Number, 0=Farm
 		.. 4=City)
 */
 #include "script_component.hpp"

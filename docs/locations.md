@@ -22,9 +22,16 @@ order is a protocol error (`Result::Err`), not undefined behaviour.
 |---|---|---|---|---|
 | `locations:begin` | -- | `"OK"` | any | `Collecting([])` |
 | `locations:add` | `chunk: String` ("x,y\nx,y...") | points accumulated so far | `Collecting` | `Collecting` |
-| `locations:detect` | `eps, maxSpan, splitFactor, minEps, minBuildings` | location count | `Collecting` | `Detected` |
+| `locations:detect` | `eps, maxSpan, splitFactor, minEps, minBuildings` | location count; invalid params return a protocol error | `Collecting` | `Detected` on success; unchanged (`Collecting`) on invalid params |
 | `locations:page` | `offset: usize` | `[nextOffset, [entry, ...]]` | `Detected` | `Detected` |
 | `locations:end` | -- | `"OK"` | any | cleared (`None`) |
+
+`locations:detect` validates its parameters before touching the session
+(`DetectParams::new` in `src/locations.rs`): all finite; `eps`, `minEps`,
+`maxSpan` > 0; `minEps <= eps`; `0 < splitFactor < 1`; `minBuildings >= 1`;
+and `eps` must reach `minEps` within 64 `splitFactor` steps. Anything else is
+a protocol error naming the offending parameter, and the session stays in
+`Collecting` so the caller can retry.
 
 `onMissionEnded` (a flat, non-grouped command registered for the `Ended`
 mission event handler in `addons/extension/XEH_preInit.sqf`) also clears the
@@ -38,9 +45,11 @@ Each `locations:page` entry, already in SQF marker order:
 
 - `a`, `b`: OBB half-extents in metres (matches `setMarkerSize`'s half-size
   convention).
-- `dirDegrees`: compass degrees (0 = north, clockwise), already converted
-  from the OBB's internal radians-CCW-from-+X representation by
-  `geometry::obb_to_marker_dir` -- SQF never does angle math.
+- `dirDegrees`: Arma marker/location direction in degrees, clockwise. At 0,
+  `a` lies along east and `b` along north; it is not a compass heading of the
+  `a` axis. Already converted from the OBB's internal radians-CCW-from-+X
+  representation by `geometry::obb_to_marker_dir` (negation) -- SQF never does
+  angle math.
 - `classIndex`: `0` Farm (2-4 buildings), `1` Hamlet (5-12), `2` Village
   (13-40), `3` Town (41-120), `4` City (120+).
 
