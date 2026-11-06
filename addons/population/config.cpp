@@ -6,10 +6,12 @@ class CfgPatches {
         units[] = {};
         weapons[] = {};
         requiredVersion = REQUIRED_VERSION;
-        requiredAddons[] = {"dynops_main", "dynops_factions", "dynops_civilians", "cba_main"};
+        requiredAddons[] = {"dynops_main", "dynops_extension", "dynops_factions", "dynops_locations", "dynops_civilians", "cba_main"};
 
         VERSION_CONFIG;
     };
 };
 
+#include "CfgDynOpsCosts.hpp"
+#include "CfgEventHandlers.hpp"
 #include "CfgFunctions.hpp"
