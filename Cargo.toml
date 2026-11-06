@@ -55,6 +55,10 @@ harness = false
 name = "locations"
 harness = false
 
+[[bench]]
+name = "population"
+harness = false
+
 [profile.dev]
 panic = "unwind"
 

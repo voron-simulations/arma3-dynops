@@ -7,5 +7,6 @@ Mission generation framework for ArmA 3. Aims to provide a set of scripts/module
 ## Components
 
 - **Location detection** - settlement detection from building positions, exposed to SQF as data and as `Location` objects. See [`docs/locations.md`](docs/locations.md).
+- **Population** - budget-driven allocation of AI groups over faction-owned locations, computed in the extension and spawned from SQF. See [`docs/population.md`](docs/population.md).
 
 Design decisions are recorded in [`adr/`](adr/).

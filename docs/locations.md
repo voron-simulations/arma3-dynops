@@ -66,9 +66,41 @@ count from `locations:detect`.
 | `fnc_collectBuildings` | The one building scan (`nearestTerrainObjects` + `BIS_fnc_isBuildingEnterable`). Called once per pipeline run and threaded through, rather than re-scanned by every downstream function. |
 | `fnc_detectLocations` | Drives the chunked protocol above: `begin`, batched `add` (400 buildings/chunk), `detect`, `page` to exhaustion, `end`. Returns an array of hashmaps (`pos`, `a`, `b`, `dir`, `buildings`, `class`). |
 | `fnc_annotateLocations` | Enriches each detection in place with `name`/`type` (adopted from a real map-config location if its position falls inside the detection's OBB, else synthesised from class + `BIS_fnc_locationDescription`), `isAirport`, `isMilitary`, `hasHospital`. |
-| `fnc_createLocationObjects` | Creates real Arma `Location` objects, gated by a minimum class (default `1`, Hamlet) -- 1106 locations on Altis, most of them 2-4 building farms, would slow down every `nearestLocations` call in the mission if all became real Locations. |
+| `fnc_assignOwners` | Sets the `owner` key on every location (`"WEST"`, `"EAST"`, `"GUER"` or `""` for unowned): the mission variable `dynops_locations_defaultOwner` (default `"EAST"`) first, then `dynops_owner_<SIDE>*` editor markers override it for every location whose centre is inside the marker. See [Ownership](#ownership). |
+| `fnc_createLocationObjects` | Creates real Arma `Location` objects, gated by a minimum class (default `1`, Hamlet) -- 1106 locations on Altis, most of them 2-4 building farms, would slow down every `nearestLocations` call in the mission if all became real Locations. Mirrors each location's owner onto the object as the variable `dynops_locations_Owner`. |
 | `fnc_drawLocationMarkers` | Debug tool. Runs the full pipeline standalone and draws one `RECTANGLE` marker per location, coloured by class, labelled with name + building count. Clears its own previously-drawn markers first, so it's safe to re-run from the debug console. |
-| `fnc_initLocations` | Orchestrator: collects buildings once, runs detect + annotate + create, and publishes `GVAR(EnterableBuildings)`, `GVAR(Locations)` (all detections, annotated), and `GVAR(LocationObjects)` (the gated real `Location`s). Called from `XEH_postInit.sqf`, server-guarded. |
+| `fnc_initLocations` | Orchestrator: collects buildings once, runs detect + annotate + assign owners + create, and publishes `GVAR(EnterableBuildings)`, `GVAR(Locations)` (all detections, annotated), and `GVAR(LocationObjects)` (the gated real `Location`s). Called from `XEH_postInit.sqf`, server-guarded. |
+
+### Ownership
+
+Every location has an `owner` key naming the side that holds it, which
+population uses to decide whose force goes where
+([`adr/0002-population.md`](../adr/0002-population.md)). The same value is
+readable from a `Location` object as `dynops_locations_Owner`, without going
+through the hashmap:
+
+```sqf
+(nearestLocation [player, "NameVillage"]) getVariable "dynops_locations_Owner"   // "EAST"
+```
+
+Initial assignment, in `fnc_assignOwners`:
+
+1. Every location is owned by `dynops_locations_defaultOwner` (a side name,
+   `"WEST"`, `"EAST"`, `"GUER"` or `"none"`; default `"EAST"`).
+2. Editor markers named `dynops_owner_<SIDE>` plus any suffix
+   (`dynops_owner_WEST_1`, `dynops_owner_none`) override it for every location
+   whose centre is inside the marker. Use rectangle or ellipse markers. `<SIDE>`
+   is case-insensitive and read up to the next `_`. Markers apply in name
+   order, so on overlap the later name wins. A marker with an invalid side is
+   logged and ignored.
+
+Budgets are per faction but placement is per side: population plans each
+side's factions together over the locations that side owns, see
+[`addons/population/README.md`](../addons/population/README.md).
+
+`fnc_initLocations` runs once the mission clock has started (`time > 0`), after
+`init.sqf` and `initServer.sqf` have been launched, so the default can be set
+there.
 
 ### Usage
 

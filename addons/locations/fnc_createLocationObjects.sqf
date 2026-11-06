@@ -4,9 +4,14 @@
 	Altis (~780 of them) would slow down every nearestLocations call in the
 	mission for marginal value.
 
+	Each Location carries two variables: dynops_locations_Detection (the
+	source hashmap) and dynops_locations_Owner (its owning side name, "" when
+	unowned), so nearestLocations consumers need not touch the hashmap.
+
 	Params:
 		0: ARRAY of HashMap - annotated locations, as returned by
-			DynOps_fnc_annotateLocations
+			DynOps_fnc_annotateLocations (and, for the owner variable,
+			DynOps_fnc_assignOwners)
 		1: NUMBER (optional) - minimum class index to create an object for
 			(default: 1, Hamlet)
 
@@ -30,6 +35,8 @@ private _created = [];
 		_loc setText (_location get "name");
 		_loc setRectangular true;
 		_loc setVariable [QGVAR(Detection), _location];
+		// getOrDefault so this still works when fnc_assignOwners was not run.
+		_loc setVariable [QGVAR(Owner), _location getOrDefault ["owner", ""]];
 		_created pushBack _loc;
 	};
 } forEach _locations;

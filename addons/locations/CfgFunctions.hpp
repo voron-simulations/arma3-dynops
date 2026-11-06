@@ -7,6 +7,7 @@ class CfgFunctions {
             PATHTO_FNC(createLocationObjects);
             PATHTO_FNC(drawLocationMarkers);
             PATHTO_FNC(annotateLocations);
+            PATHTO_FNC(assignOwners);
             PATHTO_FNC(collectBuildings);
         };
     };
