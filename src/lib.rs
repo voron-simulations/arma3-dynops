@@ -240,7 +240,8 @@ mod tests {
         assert_eq!(code, 0, "begin failed: {output}");
 
         let chunk = "0,0\n10,0\n1000,0\n1010,0".to_string();
-        let (output, code) = extension.call("locations:add", Some(vec![chunk]));
+        let (output, code) =
+            extension.call("locations:add", Some(vec![chunk.to_arma().to_string()]));
         assert_eq!(code, 0, "add failed: {output}");
         assert_eq!(output, "4");
 
@@ -293,8 +294,15 @@ mod tests {
             ]),
         );
 
-        let (output, code) = extension.call("locations:add", Some(vec!["0,0".to_string()]));
+        let (output, code) =
+            extension.call("locations:add", Some(vec!["0,0".to_arma().to_string()]));
         assert_ne!(code, 0, "add after detect should fail, got: {output}");
+        // Pins the failure to the session-state check; an unquoted or malformed
+        // chunk would also return non-zero, just for the wrong reason.
+        assert!(
+            output.contains("without an active locations:begin"),
+            "add after detect failed for the wrong reason: {output}"
+        );
     }
 
     #[test]
@@ -326,7 +334,8 @@ mod tests {
             let base = i as f64 * 1000.0;
             chunk.push_str(&format!("{base},0\n{},0\n", base + 10.0));
         }
-        let (output, code) = extension.call("locations:add", Some(vec![chunk]));
+        let (output, code) =
+            extension.call("locations:add", Some(vec![chunk.to_arma().to_string()]));
         assert_eq!(code, 0, "add failed: {output}");
 
         let (output, code) = extension.call(
