@@ -1,9 +1,18 @@
+/*
+	Computes a bounding square for every airfield on the current map: the main
+	airport (cfgWorlds >> worldName) plus each class under its SecondaryAirports.
+
+	Each square is centred on the bounding box of the airfield's ILS taxi points
+	(ilsTaxiIn + ilsTaxiOff). sizeX and sizeY are both the larger span (max - min)
+	of that box, scaled by 1.2 to cover the apron.
+
+	Returns: ARRAY of [[x, y], [sizeX, sizeY]] - one entry per airfield, with
+		[x, y] the centre of the taxi-point bounding box
+*/
 private _configItems = "true" configClasses (configFile >> "cfgWorlds" >> worldName >> "SecondaryAirports");
 _configItems pushBack (configFile >> "cfgWorlds" >> worldName);
 
 private _airfields = [];
-
-//_cnt = 0;
 
 {
 	private _pos = getArray (_x >> "ilsPosition");
@@ -21,12 +30,6 @@ private _airfields = [];
 		_max_x = _max_x max (_taxi_points select _i);
 		_min_y = _min_y min (_taxi_points select (_i + 1));
 		_max_y = _max_y max (_taxi_points select (_i + 1));
-
-		// DEBUG
-		//_cnt = _cnt + 1;
-		//_marker = createMarker ["taxi_marker_" + str _cnt, [_taxi_points select _i, _taxi_points select (_i+1), 0]];
-		//_marker setMarkerShape "ICON";
-		//_marker setMarkerType "mil_dot";
 	};
 
 	private _pos_x = (_max_x + _min_x) / 2;

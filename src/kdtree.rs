@@ -145,7 +145,7 @@ mod tests {
         points
             .iter()
             .enumerate()
-            .filter(|(_, &p)| (p - center).norm_squared() < radius * radius)
+            .filter(|&(_, &p)| (p - center).norm_squared() < radius * radius)
             .map(|(i, _)| i)
             .collect()
     }

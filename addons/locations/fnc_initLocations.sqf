@@ -1,25 +1,28 @@
 /*
-  Finds locations on map and sets relevant variables in mission namespace
-*/
+	Orchestrates the full location-detection pipeline for the current map:
+	collects buildings, detects settlements, annotates them, and creates real
+	Location objects for downstream (population/intel/dynsim) use.
 
+	Publishes:
+		GVAR(EnterableBuildings) - ARRAY of Object, the buildings the
+			detection ran against
+		GVAR(Locations) - ARRAY of HashMap, every detected+annotated
+			location (including ones too small to get a real Location object)
+		GVAR(LocationObjects) - ARRAY of Location, the created Location
+			objects (gated to GVAR(Locations) entries at or above the
+			default minimum class)
+*/
 #include "script_component.hpp"
 
-private _radius = worldSize / (sqrt 2);
-private _center = [worldSize/2, worldSize/2, 0];
+INFO("Starting location detection");
 
-private _houses = nearestTerrainObjects [_center, ["BUILDING", "HOUSE"], _radius, false, true];
-private _enterables = _houses select { _x call BIS_fnc_isBuildingEnterable};
-private _input = (_enterables apply { format ["%1,%2", position _x # 0, position _x # 1] }) joinString endl;
+GVAR(EnterableBuildings) = call DynOps_fnc_collectBuildings;
+INFO_1("Collected %1 enterable buildings",count GVAR(EnterableBuildings));
 
-private _clusters = parseSimpleArray (["cluster", [_input]] call DynOps_fnc_call);
+private _locations = [GVAR(EnterableBuildings)] call DynOps_fnc_detectLocations;
+_locations = [_locations] call DynOps_fnc_annotateLocations;
+GVAR(Locations) = _locations;
 
-{
-	private _uuid = call DynOps_fnc_uuid;
-	createMarker [_uuid, _x # 0];
-	_uuid setMarkerSizeLocal [ _x # 1, _x # 2];
-	_uuid setMarkerDirLocal ( _x # 3 );
-	_uuid setMarkerShapeLocal "ELLIPSE";
-	_uuid setMarkerColor "ColorRed";
-} forEach _clusters;
+GVAR(LocationObjects) = [_locations] call DynOps_fnc_createLocationObjects;
 
-INFO("Locations initialized");
+INFO_2("Location detection complete: %1 detections, %2 Location objects",count _locations,count GVAR(LocationObjects));
