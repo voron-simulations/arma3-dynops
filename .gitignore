@@ -6,6 +6,7 @@ releases/*
 
 # Utility files
 *.biprivatekey
+.hemttprivatekey
 hemtt.exe
 
 # Built libraries

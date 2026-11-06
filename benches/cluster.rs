@@ -1,5 +1,5 @@
 use criterion::{Criterion, criterion_group, criterion_main};
-use dynops::cluster::{EPSILON, MIN_POINTS, cluster, entrypoint};
+use dynops::cluster::{EPSILON, MIN_POINTS, cluster};
 use dynops::kdtree::KdTree;
 use nalgebra::Vector2;
 use std::hint::black_box;
@@ -38,18 +38,6 @@ fn bench_dbscan(c: &mut Criterion) {
     group.finish();
 }
 
-fn bench_entrypoint(c: &mut Criterion) {
-    let mut group = c.benchmark_group("entrypoint");
-
-    group.bench_function("stratis_332", |b| b.iter(|| entrypoint(black_box(STRATIS))));
-    group.bench_function("malden_2478", |b| b.iter(|| entrypoint(black_box(MALDEN))));
-
-    group.sample_size(10);
-    group.bench_function("altis_11771", |b| b.iter(|| entrypoint(black_box(ALTIS))));
-
-    group.finish();
-}
-
 fn bench_kdtree(c: &mut Criterion) {
     let mut group = c.benchmark_group("kdtree");
 
@@ -74,5 +62,5 @@ fn bench_kdtree(c: &mut Criterion) {
     group.finish();
 }
 
-criterion_group!(benches, bench_dbscan, bench_entrypoint, bench_kdtree);
+criterion_group!(benches, bench_dbscan, bench_kdtree);
 criterion_main!(benches);

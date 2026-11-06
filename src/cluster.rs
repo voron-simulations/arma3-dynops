@@ -1,55 +1,9 @@
-use crate::bounding::bounding_ellipse;
 use crate::kdtree::KdTree;
 use nalgebra::Vector2;
-use std::collections::{HashMap, VecDeque};
+use std::collections::VecDeque;
 
 pub const EPSILON: f64 = 100.0;
 pub const MIN_POINTS: usize = 6;
-
-pub fn entrypoint(data: &str) -> Result<String, String> {
-    let mut points: Vec<Vector2<f64>> = Vec::with_capacity(1000);
-
-    for line in data.lines() {
-        if line.is_empty() {
-            continue;
-        }
-        let parts = line.split_once(',').ok_or(format!(
-            "Expected two comma-delimited coordinates, got {line}"
-        ))?;
-        let x: f64 = parts
-            .0
-            .parse::<f64>()
-            .map_err(|_| format!("Failed to parse value {}", parts.0))?;
-        let y: f64 = parts
-            .1
-            .parse::<f64>()
-            .map_err(|_| format!("Failed to parse value {}", parts.1))?;
-        points.push(Vector2::new(x, y));
-    }
-
-    let classifications = cluster(EPSILON, MIN_POINTS, &points);
-
-    let mut clusters: HashMap<usize, Vec<Vector2<f64>>> = HashMap::new();
-    for (class, coord) in classifications.iter().zip(points) {
-        match class {
-            Core(i) | Edge(i) => clusters.entry(*i).or_default().push(coord),
-            Noise => {}
-        }
-    }
-    let centers: Vec<String> = clusters
-        .values()
-        .map(|cluster_points| bounding_ellipse(cluster_points, 0.1))
-        .map(|area| format_area(&area))
-        .collect();
-    Ok(format!("[\n{}\n]", centers.join(",\n")))
-}
-
-fn format_area(_area: &crate::shape::Ellipse) -> String {
-    format!(
-        "[{},{},{},{},{}]",
-        _area.x, _area.y, _area.a, _area.b, _area.r
-    )
-}
 
 // https://github.com/lazear/dbscan/blob/master/src/lib.rs
 use Classification::{Core, Edge, Noise};
@@ -182,12 +136,6 @@ impl<'a> Model<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn nine_point_center() {
-        let data = "0,0\n1,0\n2,0\n0,1\n1,1\n2,1\n0,2\n1,2\n2,2".to_owned();
-        entrypoint(&data).unwrap();
-    }
 
     #[test]
     fn cluster_nine_points() {

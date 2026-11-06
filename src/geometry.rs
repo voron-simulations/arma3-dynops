@@ -1,10 +1,11 @@
 //! Exact, deterministic bounding geometry for building clusters.
 //!
-//! `bounding::bounding_ellipse` is an iterative MVEE fit: it is outlier-sensitive
-//! and its inner matrix inversion is singular for fewer than 3 points, which is
-//! exactly the 2-3 house farm case this module exists to handle. A convex-hull +
-//! rotating-calipers minimum-area oriented bounding box is O(n log n), exact, and
-//! well-defined for n = 0, 1, 2 points and for collinear/duplicate input.
+//! The former MVEE-based `bounding_ellipse` (removed) was an iterative fit that
+//! was outlier-sensitive, and its inner matrix inversion was singular for fewer
+//! than 3 points, which is exactly the 2-3 house farm case this module exists
+//! to handle. A convex-hull + rotating-calipers minimum-area oriented bounding
+//! box is O(n log n), exact, and well-defined for n = 0, 1, 2 points and for
+//! collinear/duplicate input.
 
 use nalgebra::Vector2;
 

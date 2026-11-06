@@ -1,10 +1,11 @@
 //! Settlement detection: recursive span-limited single-linkage clustering.
 //!
-//! A single fixed `EPSILON` (as `cluster::entrypoint` used) chains settlements
-//! together on dense maps -- on Altis the largest single-linkage component at
-//! eps=100 spans 2468x3688m, a tenth of the map. Cutting the dendrogram at a
-//! settlement-sized span instead fixes that without losing 2-3 house farms the
-//! way a large `min_points` floor would. See adr/0001-location-detection.md.
+//! A single fixed `EPSILON` (as the former fixed-eps `cluster::entrypoint`,
+//! since removed, used) chains settlements together on dense maps -- on Altis
+//! the largest single-linkage component at eps=100 spans 2468x3688m, a tenth of
+//! the map. Cutting the dendrogram at a settlement-sized span instead fixes
+//! that without losing 2-3 house farms the way a large `min_points` floor
+//! would. See adr/0001-location-detection.md.
 
 use crate::cluster::{Classification, cluster};
 use crate::geometry::{Obb, min_area_obb};

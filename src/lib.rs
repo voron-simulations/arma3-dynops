@@ -1,9 +1,7 @@
-mod bounding;
 pub mod cluster;
 pub mod geometry;
 pub mod kdtree;
 pub mod locations;
-mod shape;
 
 use anyhow::Context as _;
 use arma_rs::{Context, ContextState, Extension, Group, arma};
