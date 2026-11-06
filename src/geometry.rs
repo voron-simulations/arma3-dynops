@@ -146,14 +146,19 @@ pub fn min_area_obb(points: &[Vector2<f64>]) -> Option<Obb> {
 }
 
 /// Converts an OBB angle (radians, CCW from +X) to an Arma marker/location
-/// direction (degrees, clockwise from north/+Y), normalized to `[0, 360)`.
+/// direction (degrees, clockwise), normalized to `[0, 360)`.
+///
+/// Arma's convention is that at direction 0 the half-size `a` lies along east
+/// and `b` along north, and the box is then turned clockwise by the direction.
+/// An [`Obb`] has `a` along its local X axis, which is east at angle 0, so the
+/// two frames coincide at the identity and only the sense of rotation differs:
+/// counter-clockwise radians become clockwise degrees by negation. The result
+/// is not a compass heading of the `a` axis.
 pub fn obb_to_marker_dir(angle: f64) -> f64 {
-    let degrees = (90.0 - angle.to_degrees()) % 360.0;
-    if degrees < 0.0 {
-        degrees + 360.0
-    } else {
-        degrees
-    }
+    let dir = (-angle.to_degrees()).rem_euclid(360.0);
+    // `rem_euclid` rounds a tiny negative remainder up to exactly 360.0 and
+    // passes -0.0 through (serialized as "-0"); `+ 0.0` turns -0.0 into 0.0.
+    if dir >= 360.0 { 0.0 } else { dir + 0.0 }
 }
 
 #[cfg(test)]
@@ -347,10 +352,14 @@ mod tests {
 
     #[test]
     fn marker_dir_cardinal_directions() {
-        assert!((obb_to_marker_dir(0.0) - 90.0).abs() < 1e-9); // +X (east) -> 90
-        assert!((obb_to_marker_dir(FRAC_PI_2) - 0.0).abs() < 1e-9); // +Y (north) -> 0
-        assert!((obb_to_marker_dir(PI) - 270.0).abs() < 1e-9); // -X (west) -> 270
-        assert!((obb_to_marker_dir(-FRAC_PI_2) - 180.0).abs() < 1e-9); // -Y (south) -> 180
+        // `a` along local +X at angle 0 is `a` along east at direction 0, so the
+        // identity orientation must map to 0 (not a compass heading of the axis).
+        assert!((obb_to_marker_dir(0.0) - 0.0).abs() < 1e-9);
+        // `a` axis pointing north: a quarter turn CCW is three quarters CW.
+        assert!((obb_to_marker_dir(FRAC_PI_2) - 270.0).abs() < 1e-9);
+        assert!((obb_to_marker_dir(PI) - 180.0).abs() < 1e-9);
+        // `a` axis pointing south: a quarter turn CW.
+        assert!((obb_to_marker_dir(-FRAC_PI_2) - 90.0).abs() < 1e-9);
     }
 
     #[test]
@@ -369,8 +378,129 @@ mod tests {
     }
 
     #[test]
+    fn marker_dir_tiny_angles_stay_below_360_and_unsigned() {
+        // `rem_euclid` rounds a tiny negative remainder up to exactly 360.0, and
+        // passes -0.0 through (which would be serialized as "-0").
+        for angle in [1e-18, 1e-300, f64::MIN_POSITIVE, 0.0, -0.0] {
+            let dir = obb_to_marker_dir(angle);
+            assert!(
+                (0.0..360.0).contains(&dir) && dir.is_sign_positive(),
+                "dir {dir:?} invalid for angle {angle:?}"
+            );
+        }
+    }
+
+    #[test]
     fn marker_dir_diagonal() {
-        // 45 degrees CCW from +X is compass NE = 45 degrees.
-        assert!((obb_to_marker_dir(FRAC_PI_4) - 45.0).abs() < 1e-9);
+        // 45 degrees CCW is 315 degrees CW.
+        assert!((obb_to_marker_dir(FRAC_PI_4) - 315.0).abs() < 1e-9);
+    }
+
+    /// Reference implementation of SQF `inArea` for a rectangle: Arma rotates the
+    /// area clockwise by `dir` (at 0, `a` is the half-width along east and `b`
+    /// along north), so a point is tested by undoing that rotation about `center`.
+    fn in_marker_area(point: Vector2<f64>, center: Vector2<f64>, a: f64, b: f64, dir: f64) -> bool {
+        let d = point - center;
+        let (s, c) = dir.to_radians().sin_cos();
+        // Undoing a clockwise rotation by `dir` is a counter-clockwise rotation by it.
+        let u = d.x * c - d.y * s;
+        let v = d.x * s + d.y * c;
+        u.abs() <= a && v.abs() <= b
+    }
+
+    #[test]
+    fn in_marker_area_follows_arma_convention() {
+        let origin = Vector2::new(0.0, 0.0);
+        // dir 0: `a` along east, `b` along north.
+        assert!(in_marker_area(
+            Vector2::new(9.0, 0.0),
+            origin,
+            10.0,
+            1.0,
+            0.0
+        ));
+        assert!(!in_marker_area(
+            Vector2::new(0.0, 9.0),
+            origin,
+            10.0,
+            1.0,
+            0.0
+        ));
+        // dir 90 turns the box clockwise: `a` now points south.
+        assert!(in_marker_area(
+            Vector2::new(0.0, -9.0),
+            origin,
+            10.0,
+            1.0,
+            90.0
+        ));
+        assert!(!in_marker_area(
+            Vector2::new(9.0, 0.0),
+            origin,
+            10.0,
+            1.0,
+            90.0
+        ));
+        // dir 45: `a` points south-east, so +x,-y is inside and +x,+y is not.
+        assert!(in_marker_area(
+            Vector2::new(6.0, -6.0),
+            origin,
+            10.0,
+            1.0,
+            45.0
+        ));
+        assert!(!in_marker_area(
+            Vector2::new(6.0, 6.0),
+            origin,
+            10.0,
+            1.0,
+            45.0
+        ));
+    }
+
+    #[test]
+    fn obb_agrees_with_sqf_in_area_for_converted_direction() {
+        struct Lcg(u64);
+        impl Lcg {
+            fn next(&mut self) -> f64 {
+                self.0 = self.0.wrapping_mul(6364136223846793005).wrapping_add(1);
+                ((self.0 >> 33) as f64) / (u32::MAX as f64)
+            }
+        }
+        let mut rng = Lcg(2024);
+        let (mut inside, mut outside) = (0usize, 0usize);
+
+        for _ in 0..200 {
+            // Elongated on purpose: a square would hide a 90 degree rotation error.
+            let a = 20.0 + rng.next() * 80.0;
+            let b = 2.0 + rng.next() * 10.0;
+            let obb = Obb {
+                center: Vector2::new((rng.next() - 0.5) * 2000.0, (rng.next() - 0.5) * 2000.0),
+                a,
+                b,
+                angle: (rng.next() - 0.5) * 4.0 * PI,
+            };
+            let dir = obb_to_marker_dir(obb.angle);
+
+            for _ in 0..50 {
+                let point = obb.center
+                    + Vector2::new((rng.next() - 0.5) * 3.0 * a, (rng.next() - 0.5) * 3.0 * a);
+                let expected = in_marker_area(point, obb.center, obb.a, obb.b, dir);
+                assert_eq!(
+                    obb.contains(point, 1e-9),
+                    expected,
+                    "OBB {obb:?} and marker dir {dir} disagree on {point:?}"
+                );
+                if expected {
+                    inside += 1;
+                } else {
+                    outside += 1;
+                }
+            }
+        }
+        assert!(
+            inside > 100 && outside > 100,
+            "vacuous sample: {inside} inside, {outside} outside"
+        );
     }
 }

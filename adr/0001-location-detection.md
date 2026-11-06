@@ -109,6 +109,11 @@ where an ellipse would need translating.
 - `min_buildings = 2` means single isolated buildings are never their own
   location. If a lone building genuinely needs tracking, it needs a
   different mechanism (this component only detects clusters).
+- `DetectParams` can only be built through a validating constructor
+  (`split_factor` must be strictly in (0, 1), and `eps` must reach `min_eps`
+  within a bounded number of steps), which makes the recursion provably
+  terminating; invalid params from SQF become a protocol error instead of a
+  stack overflow inside Arma.
 - Detection is recomputed from scratch each run (no persistence across
   missions); `onMissionEnded` clears the extension's session state so a
   restarted mission can't page into stale data.

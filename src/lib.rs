@@ -121,13 +121,10 @@ fn locations_detect(
     min_eps: f64,
     min_buildings: usize,
 ) -> Result<String, String> {
-    let params = DetectParams {
-        eps,
-        max_span,
-        split_factor,
-        min_eps,
-        min_buildings,
-    };
+    // Validated before the session is touched: a rejected call must leave the
+    // session in `Collecting` so SQF can retry with corrected parameters.
+    let params = DetectParams::new(eps, max_span, split_factor, min_eps, min_buildings)
+        .map_err(|e| format!("invalid locations:detect parameters: {e}"))?;
     let mut guard = lock(session_mutex(&context)?)?;
     let points = match guard.take() {
         Some(Session::Collecting(points)) => points,
@@ -319,6 +316,57 @@ mod tests {
             ]),
         );
         assert_ne!(code, 0, "detect without begin should fail, got: {output}");
+    }
+
+    #[test]
+    fn detect_rejects_invalid_params() {
+        let extension = init().testing();
+        let (_, code) = extension.call("locations:begin", None);
+        assert_eq!(code, 0);
+        let (output, code) = extension.call(
+            "locations:add",
+            Some(vec!["0,0\n10,0".to_string().to_arma().to_string()]),
+        );
+        assert_eq!(code, 0, "add failed: {output}");
+        assert_eq!(output, "2");
+
+        // split_factor 1 never shrinks eps; unvalidated it recursed until the
+        // stack overflowed inside Arma.
+        let (output, code) = extension.call(
+            "locations:detect",
+            Some(vec![
+                "100.0".to_string(),
+                "700.0".to_string(),
+                "1".to_string(),
+                "35.0".to_string(),
+                "2".to_string(),
+            ]),
+        );
+        assert_ne!(code, 0, "invalid params should fail, got: {output}");
+        assert!(
+            output.contains("split_factor"),
+            "error should name the offending parameter: {output}"
+        );
+
+        // Still `Collecting`: adding works and the count continues from before.
+        let (output, code) =
+            extension.call("locations:add", Some(vec!["20,0".to_arma().to_string()]));
+        assert_eq!(code, 0, "add after rejected detect failed: {output}");
+        assert_eq!(output, "3");
+
+        // And a corrected detect succeeds over the points collected so far.
+        let (output, code) = extension.call(
+            "locations:detect",
+            Some(vec![
+                "100.0".to_string(),
+                "700.0".to_string(),
+                "0.7".to_string(),
+                "35.0".to_string(),
+                "2".to_string(),
+            ]),
+        );
+        assert_eq!(code, 0, "valid detect failed: {output}");
+        assert_eq!(output, "1");
     }
 
     #[test]

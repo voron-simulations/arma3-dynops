@@ -28,11 +28,11 @@ fn check_structural_invariants(
 
     for loc in locations {
         assert!(
-            loc.buildings >= params.min_buildings,
+            loc.buildings >= params.min_buildings(),
             "{name}: location {} has {} buildings, below min_buildings {}",
             loc.id,
             loc.buildings,
-            params.min_buildings
+            params.min_buildings()
         );
 
         // Every one of the location's own buildings must lie inside its OBB.
@@ -65,7 +65,7 @@ fn check_structural_invariants(
         // the old unbounded-chain failure mode by a wide margin.
         let span = (loc.obb.a * 2.0).max(loc.obb.b * 2.0);
         assert!(
-            span <= params.max_span * 2.0,
+            span <= params.max_span() * 2.0,
             "{name}: location {} span {span:.1}m looks like the old unbounded single-linkage chain, not a min_eps floor overrun",
             loc.id
         );
