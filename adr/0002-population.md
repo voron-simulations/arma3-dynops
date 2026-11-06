@@ -130,9 +130,14 @@ the budget yields no assignments (not a panic).
 `fnc_populateLocation` spawns each assigned group with `BIS_fnc_spawnGroup`
 at the location centre, then:
 
-- if the location has `>= 4` building positions, the group is given a
-  garrison pattern (units moved into `buildingPos` slots, `doStop`), else
+- if the location still has `>= 4` free building positions, the group is
+  given a garrison pattern (units moved into `buildingPos` slots, `doStop`),
+  else
 - it gets a cycling patrol of 3-5 waypoints inside the location OBB.
+
+Free positions are tracked per location and shared by all groups assigned to
+it, so each garrisoned group uses some up and later groups fall back to the
+patrol once fewer than 4 remain.
 
 Only `Group_Infantry` is used in this iteration. Motorized/armour groups
 need road and open-ground placement that detection does not yet provide,

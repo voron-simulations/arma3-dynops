@@ -1,11 +1,20 @@
 /*
 	Spawns one CfgGroups group at a location and gives it something to do:
-	garrisons the location's buildings when there are enough building
-	positions, otherwise sets it patrolling inside the location's bounding box.
+	garrisons the location's buildings when at least 4 free building positions
+	are left, otherwise sets it patrolling inside the location's bounding box.
 
 	If LAMBS Danger is loaded (lambs_wp_fnc_taskGarrison exists) its garrison
 	is used in preference to the vanilla one. It is detected at runtime, not
 	declared as a dependency, so the addon works without it.
+
+	Several groups can be assigned to one location, so the free building
+	positions are tracked on the location HashMap itself, which every call for
+	that location shares by reference:
+		"garrisonSlots" - ARRAY of positions not yet taken by a garrisoned
+			group. Computed on the first call for the location, then only
+			shrunk; nothing returns a slot when a group dies. Both garrison
+			implementations draw from it, so a location stops garrisoning
+			once fewer than 4 positions are left and sends the group on patrol.
 
 	The group is tagged so a later cleanup/respawn system has a handle:
 		dynops_population_Location - the location HashMap it was spawned for
@@ -49,13 +58,21 @@ if (isNull _group) exitWith {
 	grpNull
 };
 
-// Same type list as DynOps_fnc_collectBuildings, so the garrison considers
-// exactly the buildings detection counted. Non-enterable ones simply yield no
-// positions.
-private _houses = nearestTerrainObjects [_pos, ["BUILDING", "HOUSE"], _radius, false, true];
-_houses = _houses select { (getPos _x) inArea _area };
-private _slots = [];
-{ _slots append (_x buildingPos -1); } forEach _houses;
+// Positions are collected once per location and shared by all its groups: the
+// vanilla garrison teleports units and disables their pathing, so two groups
+// handed the same positions would be stuck inside each other for good.
+if !("garrisonSlots" in _location) then {
+	// Same type list as DynOps_fnc_collectBuildings, so the garrison considers
+	// exactly the buildings detection counted. Non-enterable ones simply yield no
+	// positions.
+	private _houses = nearestTerrainObjects [_pos, ["BUILDING", "HOUSE"], _radius, false, true];
+	_houses = _houses select { (getPos _x) inArea _area };
+	private _allSlots = [];
+	{ _allSlots append (_x buildingPos -1); } forEach _houses;
+	_location set ["garrisonSlots", _allSlots];
+};
+// Arrays are references, so removing from this one updates the location.
+private _slots = _location get "garrisonSlots";
 
 if (count _slots >= 4) then {
 	if (isNil "lambs_wp_fnc_taskGarrison") then {
@@ -68,9 +85,19 @@ if (count _slots >= 4) then {
 			_x disableAI "PATH";
 		} forEach units _group;
 	} else {
-		// Radius is the longer half-extent, not the diagonal: the LAMBS search
-		// is a circle, and the diagonal would reach into neighbouring settlements.
-		[_group, _pos, _a max _b, [], true, false, -1] call lambs_wp_fnc_taskGarrison;
+		// LAMBS filters the building positions it finds with this area, so the
+		// search circle only has to enclose the box. A circle of the longer
+		// half-extent instead would reach into neighbouring settlements on long
+		// locations and miss the corners of the box.
+		[_group, _pos, _radius, [_a, _b, _dir, true], true, false, -1] call lambs_wp_fnc_taskGarrison;
+
+		// LAMBS cannot see positions earlier groups already took and does not
+		// report the ones it used, so only the count is accounted for here. Which
+		// slots are dropped is irrelevant: LAMBS never reads the array, the count
+		// just decides when later groups are sent on patrol instead.
+		for "_i" from 1 to ((count units _group) min (count _slots)) do {
+			_slots deleteAt (floor random count _slots);
+		};
 	};
 } else {
 	// Rejection sampling inside the rotated box: inArea owns the angle
